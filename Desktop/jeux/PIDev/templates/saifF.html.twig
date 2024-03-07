@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Meta Tags -->
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="keywords" content="Site keywords here">
+		<meta name="description" content="">
+		<meta name='copyright' content=''>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		
+		<!-- Title -->
+        <title>MediConnect </title>
+		
+		<!-- Favicon -->
+        <link rel="icon" href="{{asset('front/img/logo1.png')}}">
+		
+		<!-- Google Fonts -->
+		<link href="{{asset('https://fonts.googleapis.com/css?family=Poppins:200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&display=swap')}}" rel="stylesheet">
+
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="{{asset('front/css/bootstrap.min.css')}}">
+		<!-- Nice Select CSS -->
+		<link rel="stylesheet" href="{{asset('front/css/nice-select.css')}}">
+		<!-- Font Awesome CSS -->
+        <link rel="stylesheet" href="{{asset('front/css/font-awesome.min.css')}}">
+		<!-- icofont CSS -->
+        <link rel="stylesheet" href="{{asset('front/css/icofont.css')}}">
+		<!-- Slicknav -->
+		<link rel="stylesheet" href="{{asset('front/css/slicknav.min.css')}}">
+		<!-- Owl Carousel CSS -->
+        <link rel="stylesheet" href="{{asset('front/css/owl-carousel.css')}}">
+		<!-- Datepicker CSS -->
+		<link rel="stylesheet" href="{{asset('front/css/datepicker.css')}}">
+		<!-- Animate CSS -->
+        <link rel="stylesheet" href="{{asset('front/css/animate.min.css')}}">
+		<!-- Magnific Popup CSS -->
+        <link rel="stylesheet" href="{{asset('front/css/magnific-popup.css')}}">
+		
+		<!-- Medipro CSS -->
+        <link rel="stylesheet" href="{{asset('front/css/normalize.css')}}">
+        <link rel="stylesheet" href="{{asset('front/style.css')}}">
+        <link rel="stylesheet" href="{{asset('front/css/responsive.css')}}">
+		
+    </head>
+    <body>
+    <header class="header" >
+			<!-- Topbar -->
+			<div class="topbar">
+				<div class="container">
+					<div class="row">
+						<div class="col-lg-6 col-md-5 col-12">
+							<!-- Contact -->
+								<ul class="top-link">
+								<li><a href="{{asset('#')}}">A propos</a></li>
+								<li><a href="{{asset('#')}}">Docteurs</a></li>
+								<li><a href="{{asset('#')}}">Contact</a></li>
+								<li><a href="{{asset('#')}}">FAQ</a></li>
+							</ul>
+							<!-- End Contact -->
+						</div>
+						<div class="col-lg-6 col-md-7 col-12">
+							<!-- Top Contact -->
+							<ul class="top-contact">
+								<li><i class="fa fa-phone"></i>+216 90601935</li>
+								<li><i class="fa fa-envelope"></i><a href="{{asset('mailto:support@yourmail.com')}}">MediConnect@gmail.com</a></li>
+							</ul>
+							<!-- End Top Contact -->
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- End Topbar -->
+			<!-- Header Inner -->
+			<div class="header-inner">
+				<div class="container">
+					<div class="inner">
+						<div class="row">
+							<div class="col-lg-3 col-md-3 col-12">
+								<!-- Start Logo -->
+								<div class="logo">
+									<a href="{{asset('index.html')}}"><img src="{{asset('front/img/medimedi.jpg')}}" alt="#"></a>
+								</div>
+								<!-- End Logo -->
+								<!-- Mobile Nav -->
+								<div class="mobile-nav"></div>
+								<!-- End Mobile Nav -->
+							</div>
+							<div class="col-lg-7 col-md-9 col-12">
+								<!-- Main Menu -->
+								<div class="main-menu">
+									<nav class="navigation">
+										<ul class="nav menu">
+											<li ><a href="#">Accueil </i></a>
+												
+											</li>
+											<li><a href="#">Docteurs </a></li>
+											<li><a href="#">Services </a></li>
+										
+											<li><a href="/blogfront">Blogs <i class="icofont-rounded-down"></i></a>
+												<ul class="dropdown">
+													<li><a href="{{asset('/blogfront')}}">Blog Details</a></li>
+												</ul>
+											</li>
+											<li><a href="contact.html">Contact</a></li>
+										</ul>
+									</nav>
+								</div>
+								<!--/ End Main Menu -->
+							</div>
+							<div class="col-lg-2 col-12">
+								<div class="get-quote">
+									<a href="appointment.html" class="btn">Se connecter</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--/ End Header Inner -->
+		</header>
+		
+        {% block body %}{% endblock %}
+<footer id="footer" class="footer ">
+			<!-- Footer Top -->
+			<div class="footer-top">
+				<div class="container">
+					<div class="row">
+						<div class="col-lg-3 col-md-6 col-12">
+							<div class="single-footer">
+								<h2>à propos</h2>
+								<p>Etablit en 2024, un site web qui sert a digitalisé les fonctionnalités de l’hôpital militaire pour rendre en hommage au soldats et gendarmes qui se battent H24 pour nous défendre.</p>
+								<!-- Social -->
+								<ul class="social">
+									<li><a href="#"><i class="icofont-facebook"></i></a></li>
+									<li><a href="#"><i class="icofont-google-plus"></i></a></li>
+									<li><a href="#"><i class="icofont-twitter"></i></a></li>
+									<li><a href="#"><i class="icofont-vimeo"></i></a></li>
+									<li><a href="#"><i class="icofont-pinterest"></i></a></li>
+								</ul>
+								<!-- End Social -->
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6 col-12">
+							<div class="single-footer f-link">
+								<h2>
+									Liens</h2>
+								<div class="row">
+									<div class="col-lg-6 col-md-6 col-12">
+										<ul>
+											<li><a href="#"><i class="{{asset('fa fa-caret-right')}}" aria-hidden="true"></i>Accueil</a></li>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>à propos</a></li>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Services</a></li>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Nos cas</a></li>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Autre liens</a></li>	
+										</ul>
+									</div>
+									<div class="col-lg-6 col-md-6 col-12">
+										<ul>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Conseils</a></li>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Finance</a></li>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Témoignages</a></li>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>FAQ</a></li>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Contact </a></li>	
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6 col-12">
+							<div class="single-footer">
+								<h2>Calendrier</h2>
+								<p>Horaires d'ouvertures</p>
+								<ul class="time-sidual">
+									<li class="day">Lundi-vendredi <span>8.00-20.00</span></li>
+									<li class="day">Samedi <span>9.00-18.30</span></li>
+									<li class="day">Dimanche<span>9.00-15.00</span></li>
+								</ul>
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6 col-12">
+							<div class="single-footer">
+								<h2>Inscription</h2>
+								<p>abonnez-vous à notre MediConnect pour recevoir toutes nos actualités dans votre boîte de réception.</p>
+								<form action="mail/mail.php" method="get" target="_blank" class="newsletter-inner">
+									<input name="email" placeholder="Adresse email" class="common-input" onfocus="this.placeholder = ''"
+										onblur="this.placeholder = 'Your email address'" required="" type="email">
+									<button class="button"><i class="icofont icofont-paper-plane"></i></button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--/ End Footer Top -->
+			<!-- Copyright -->
+			<div class="copyright">
+				<div class="container">
+					<div class="row">
+						<div class="col-lg-12 col-md-12 col-12">
+							<div class="copyright-content">
+								<p>© Copyright 2024  </p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--/ End Copyright -->
+		</footer>
+        	<!-- jquery Min JS -->
+        <script src="{{asset('front/js/jquery.min.js')}}"></script>
+		<!-- jquery Migrate JS -->
+		<script src="{{asset('front/js/jquery-migrate-3.0.0.js')}}"></script>
+		<!-- jquery Ui JS -->
+		<script src="{{asset('front/js/jquery-ui.min.js')}}"></script>
+		<!-- Easing JS -->
+        <script src="{{asset('front/js/easing.js')}}"></script>
+		<!-- Color JS -->
+		<script src="{{asset('front/js/colors.js')}}"></script>
+		<!-- Popper JS -->
+		<script src="{{asset('front/js/popper.min.js')}}"></script>
+		<!-- Bootstrap Datepicker JS -->
+		<script src="{{asset('front/js/bootstrap-datepicker.js')}}"></script>
+		<!-- Jquery Nav JS -->
+        <script src="{{asset('front/js/jquery.nav.js')}}"></script>
+		<!-- Slicknav JS -->
+		<script src="{{asset('front/js/slicknav.min.js')}}"></script>
+		<!-- ScrollUp JS -->
+        <script src="{{asset('front/js/jquery.scrollUp.min.js')}}"></script>
+		<!-- Niceselect JS -->
+		<script src="{{asset('front/js/niceselect.js')}}"></script>
+		<!-- Tilt Jquery JS -->
+		<script src="{{asset('front/js/tilt.jquery.min.js')}}"></script>
+		<!-- Owl Carousel JS -->
+        <script src="{{asset('front/js/owl-carousel.js')}}"></script>
+		<!-- counterup JS -->
+		<script src="{{asset('front/js/jquery.counterup.min.js')}}"></script>
+		<!-- Steller JS -->
+		<script src="{asset{('front/js/steller.js')}}"></script>
+		<!-- Wow JS -->
+		<script src="{{asset('front/js/wow.min.js')}}"></script>
+		<!-- Magnific Popup JS -->
+		<script src="{{asset('front/js/jquery.magnific-popup.min.js')}}"></script>
+		<!-- Counter Up CDN JS -->
+		<script src="{{asset('front/http://cdnjs.cloudflare.com/ajax/libs/waypoints/2.0.3/waypoints.min.js')}}"></script>
+		<!-- Bootstrap JS -->
+		<script src="{{asset('front/js/bootstrap.min.js')}}"></script>
+		<!-- Main JS -->
+		<script src="{{asset('front/js/main.js')}}"></script>
+    </body>
+</html>

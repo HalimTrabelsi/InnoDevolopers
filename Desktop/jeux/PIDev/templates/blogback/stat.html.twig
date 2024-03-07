@@ -1,0 +1,81 @@
+{% extends 'saifB.html.twig' %}
+
+{% block body %}
+
+<body>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+ <div class="row">
+    <div class="col-md-8">
+        <canvas id="commentairesChart" style="width: 100%; height: auto;"></canvas>
+    </div>
+    <div class="col-md-8">
+        <canvas id="rateParBlogChart" style="width: 100%; height: auto;"></canvas>
+    </div>
+</div>
+
+    <script>
+        var ctx = document.getElementById('commentairesChart').getContext('2d');
+        var labels = {{ labels|raw }};
+        var data = {{ data|raw }};
+
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Nombre de commentaires',
+                    data: data,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+
+
+        //***********************************
+         document.addEventListener('DOMContentLoaded', function() {
+            fetch('{{ path('rate_par_blog') }}')
+                .then(response => response.json())
+                .then(data => {
+                    var ctx = document.getElementById('rateParBlogChart').getContext('2d');
+                    var chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Taux par blog',
+                                data: data.data,
+                                backgroundColor: '[red]',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                });
+        });
+        
+    </script>
+    
+
+
+
+
+
+    
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'saifF.html.twig' %}
+
+{% block body %} 
+    {# Contenu spécifique à ce bloc #}
+
+
+    {{ parent() }}
+    {{ form_start(formadd, {'attr': {'novalidate': 'novalidate'}}) }}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ form_label(formadd.contenue, 'Ecrire Votre Commentaire dans ce champ') }}
+                <div class="input-group">
+ 
+                    {{ form_widget(formadd.contenue, {'attr': {'class': 'form-control'}}) }}
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-outline-primary" id="startButton">Démarrer</button>
+                        <button type="button" class="btn btn-outline-secondary" id="stopButton">Arrêter</button>
+                    </div>
+                </div>
+                {% for error in formadd.contenue.vars.errors %}
+                    <div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i>{{ error.message }}</div>
+                {% endfor %}
+               
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    {{ form_end(formadd) }}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Fonction pour mettre à jour la valeur du champ 'contenue' avec le texte vocal
+            function updateContenue(text) {
+                var currentContenue = $('#commentaire_contenue').val(); // Utilisez l'ID généré par Symfony
+                $('#commentaire_contenue').val(currentContenue + ' ' + text);
+            }
+
+            if (annyang) {
+                annyang.setLanguage('fr-FR');
+                annyang.addCallback('result', function(phrases) {
+                    var text = phrases[0];
+                    updateContenue(text); // Mettre à jour la valeur du champ 'contenue' avec le texte vocal
+                    console.log(text); // Vérifiez si le résultat est correctement enregistré
+                });
+            }
+
+            $('#startButton').on('click', function() {
+                if (annyang) {
+                    annyang.start();
+                }
+            });
+
+            $('#stopButton').on('click', function() {
+                if (annyang) {
+                    annyang.abort();
+                }
+            });
+        });
+    </script>
+  
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'saifB.html.twig' %}
+
+{% block title %}Ajouter une catégorie de blog{% endblock %}
+
+{% block body %}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
+<style>body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }</style>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6"><br><br>
+<br>
+<br>
+
+
+                <div class="card" >
+                    <div class="card-header"style="color:blue;">
+                        <h1 class="card-title">𝓐𝓳𝓸𝓾𝓽𝓮𝓻 𝓾𝓷𝓮 𝓬𝓪𝓽é𝓰𝓸𝓻𝓲𝓮 𝓭𝓮 𝓫𝓵𝓸𝓰</h1>
+                    </div>
+                   {{ form_start(myForm, {'attr': {'novalidate': 'novalidate'}}) }}
+
+    <div class="page-content">
+        <div class="checkout">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                {{ form_label(myForm.titrecategorie, 'Titre de la catégorie', {'label_attr': {'class': 'control-label text-left font-weight-bold text-primary'}}) }}
+                                {{ form_widget(myForm.titrecategorie, {'attr': {'class': 'form-control', 'placeholder': 'Titre de la catégorie'}}) }}
+                                <span style="color:red;">
+                                    {% if form_errors(myForm.titrecategorie)|raw %}
+                                        <i class="bi bi-exclamation-octagon-fill"></i> {{ form_errors(myForm.titrecategorie)|raw }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                {{ form_label(myForm.descriptioncategorie, 'Description de la catégorie', {'label_attr': {'class': 'control-label text-left font-weight-bold text-primary'}}) }}
+                                {{ form_widget(myForm.descriptioncategorie, {'attr': {'class': 'form-control', 'placeholder': 'Description de la catégorie'}}) }}
+                                <span style="color:red;">
+                                    {% if form_errors(myForm.descriptioncategorie)|raw %}
+                                        <i class="bi bi-exclamation-octagon-fill"></i> {{ form_errors(myForm.descriptioncategorie)|raw }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{ form_end(myForm) }}
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

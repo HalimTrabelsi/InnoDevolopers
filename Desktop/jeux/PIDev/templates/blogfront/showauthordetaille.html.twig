@@ -1,0 +1,410 @@
+    {% extends "saifF.html.twig" %}  
+    {% block body %}
+
+    <style>/* CSS */
+    .liked {
+        color: green; /* Couleur pour le like */
+    }
+
+    .disliked {
+        color: red; /* Couleur pour le dislike */
+    }
+    .actions {
+        margin-bottom: 10px; /* Espacement entre les icônes de like/dislike et les icônes de suppression/édition */
+    }
+
+    .delete-action,
+    .edit-action {
+        margin-left: 10px; /* Espacement entre les icônes de suppression/édition et les icônes de like/dislike */
+        text-decoration: none;
+    }
+
+    </style>
+        
+    <!-- Ajouter ceci dans le fichier head de votre template de base -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+            
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs overlay">
+                <div class="container">
+                    <div class="bread-inner">
+                        <div class="row">
+                            <div class="col-12">
+                                <h2>Blog Single</h2>
+                                <ul class="bread-list">
+                                    <li><a href="index.html">Home</a></li>
+                                    <li><i class="icofont-simple-right"></i></li>
+                                    <li class="active">Blog Single</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Breadcrumbs -->
+            
+            <!-- Single News -->
+            {# Dans votre template Twig (blogfront/showauthordetaille.html.twig) #}
+    
+    <section class="news-single section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-12">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="single-main">
+                                <!-- News Head -->
+                                <div class="news-head">
+                                    <img src="{{ vich_uploader_asset(blog, 'imageFile') }}" alt="blog Image">
+                                </div>
+                                <!-- News Title -->
+                                <h1 class="news-title"><a href="news-single.html">{{ blog.titre }}</a></h1>
+                                <!-- Meta -->
+                                <div class="meta">
+                                    <div class="meta-left">
+                                        <span class="author"><a href="#"> <i class="fa fa-map-marker"></i>{{ blog.lieu }}</a></span>
+                                        <span class="date"><i class="fa fa-clock-o"></i>{{ blog.datepub|date('Y-m-d') }}</span>
+                                    </div>
+                                    <div class="meta-right">
+                                        {# Compter le nombre de commentaires associés au blog #}
+                                        {% set commentCount = 0 %}
+                                        {% for commentaire in blog.commentaires %}
+                                            {% set commentCount = commentCount + 1 %}
+                                        {% endfor %}
+                                        <span class="comments"><a href="#"><i class="fa fa-comments"></i>{{ commentCount }} Comments</a></span>
+                                    </div>
+                                </div>
+                                <!-- News Text -->
+                                <div class="news-text">
+                                    <p>{{ blog.description }}</p>
+                                </div>
+                                <div class="blog-bottom">
+                                <ul class="social-share">
+        <li class="facebook">
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ absolute_url(path('blogdetails', {'id': blog.getId()})) }}" class="social-icon social-facebook" title="Facebook" target="_blank">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+        </li>
+        <li class="twitter">
+            <a href="https://twitter.com/intent/tweet?text={{ blog.titre|url_encode }}%20{{ absolute_url(path('blogdetails', {'id': blog.getId()})) }}%20@medihealth" class="social-icon social-twitter" title="Twitter" target="_blank">
+                <i class="fab fa-twitter"></i>
+            </a>
+        </li>
+        <li class="linkedin">
+            <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ absolute_url(path('blogdetails', {'id': blog.getId()})) }}" class="social-icon social-linkedin" title="LinkedIn" target="_blank">
+                <i class="fab fa-linkedin-in"></i>
+            </a>
+        </li>
+        <li class="pinterest">
+            <a href="https://www.pinterest.com/pin/create/button/?url={{ absolute_url(path('blogdetails', {'id': blog.getId()})) }}&media={{ blog.image }}&description={{ blog.description }}" class="social-icon social-pinterest" title="Pinterest" target="_blank">
+                <i class="fab fa-pinterest"></i>
+            </a>
+        </li>
+        <li class="reddit">
+            <a href="https://www.reddit.com/submit?url={{ absolute_url(path('blogdetails', {'id': blog.getId()})) }}" class="social-icon social-reddit" title="Reddit" target="_blank">
+                <i class="fab fa-reddit-alien"></i>
+            </a>
+        </li>
+          <!-- Next Prev -->
+                                    <ul class="prev-next">
+                                      <div id="google_translate_element"></div>
+<div>
+  <button onclick="speakSelectedText()" class="btn btn-danger" style="background-color:green;"><i class="fas fa-volume-up"></i> Lire en vocal</button>
+<button onclick="stopSpeaking()" class="btn btn-danger" style="background-color:red;"><i class="fas fa-stop"></i> Arrêter</button>
+
+</div>
+
+<script type="text/javascript">
+    var currentUtterance = null;
+
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({autoDisplay: false}, 'google_translate_element');
+    }
+
+    function speakSelectedText() {
+        var selectedText = window.getSelection().toString();
+        if (selectedText) {
+            stopSpeaking();
+            currentUtterance = new SpeechSynthesisUtterance(selectedText);
+            // Détecter la langue du texte sélectionné et définir la langue de la synthèse vocale en conséquence
+            if (selectedText.match(/[\u0600-\u06FF]/)) {
+                currentUtterance.lang = 'ar'; // Arabe
+            } else if (selectedText.match(/[àáâãäå]/) || selectedText.match(/[éèêë]/) || selectedText.match(/[îï]/) || selectedText.match(/[ôöøœ]/) || selectedText.match(/[ùúûü]/) || selectedText.match(/[ç]/)) {
+                currentUtterance.lang = 'fr'; // Français
+            } else {
+                currentUtterance.lang = 'en'; // Anglais par défaut
+            }
+            window.speechSynthesis.speak(currentUtterance);
+        } else {
+            alert("Veuillez sélectionner du texte pour le lire à voix haute.");
+        }
+    }
+
+    function stopSpeaking() {
+        if (currentUtterance !== null) {
+            window.speechSynthesis.cancel();
+            currentUtterance = null;
+        }
+    }
+</script>
+
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+                                    
+                                    </ul>
+      </li> 
+        
+    </div>
+ <div>
+        <button onclick="rechercherGooglee()">Rechercher sur Google</button>
+    </div>
+
+    <script>
+        function rechercherGooglee() {
+            var selectedText = window.getSelection().toString().trim();
+            if (selectedText !== '') {
+                // Effectuer une recherche Google avec le texte sélectionné
+                var googleSearchUrl = 'https://www.google.com/search?q=' + encodeURIComponent(selectedText);
+                // Ouvrir les résultats de recherche dans une nouvelle fenêtre
+                window.open(googleSearchUrl, '_blank');
+            } else {
+                alert('Veuillez sélectionner du texte à rechercher.');
+            }
+        }
+    </script>
+    
+
+
+    <script>
+        function genererLiens() {
+            var content = document.getElementById('content').innerText;
+            var container = document.getElementById('google-links-container');
+            container.innerHTML = '';
+
+            // Regex pour détecter les URL dans le contenu
+            var urlRegex = /(https?:\/\/[^\s]+)/g;
+            var matches = content.match(urlRegex);
+            
+            if (matches) {
+                matches.forEach(function (match) {
+                    var link = document.createElement('a');
+                    link.href = match;
+                    link.textContent = match;
+                    link.target = '_blank'; // Ouvrir le lien dans un nouvel onglet
+                    container.appendChild(link);
+                    container.appendChild(document.createElement('br'));
+                });
+            } else {
+                container.textContent = "Aucun lien trouvé dans le contenu.";
+            }
+        }
+    </script>
+ 
+   
+                                
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="blog-comments">
+                                <h2>All Comments</h2>
+                                {# Parcourir tous les commentaires associés au blog #}
+                                {% for commentaire in blog.commentaires %}
+                                    <div class="comments-body">
+                                        <!-- Single Comments -->
+                                        <div class="single-comments">
+                                            <div class="main">
+                                                <div class="head">
+                                                    <img src="{{ asset('front/img/author1.jpg') }}" alt="#">
+                                                </div>
+                                                <div class="body">
+                                                    <h4>{{ commentaire.idadmin.nom }} {{ commentaire.idadmin.prenom }}</h4>
+                                                    <div class="comment-meta">
+                                                        <span class="meta"><i class="fa fa-calendar"></i></span>
+                                                        <span class="meta"><i class="fa fa-clock-o"></i></span>
+                                                    </div>
+                                                    <p>{{ commentaire.contenue }}</p>
+                                                    {# Actions pour chaque commentaire #}
+                                                    <div class="actions">
+                                                        <!-- Icône de suppression -->
+                                                        <a href="{{ path('delete_commentfront', {'id': commentaire.id}) }}" class="delete-action">
+                                                            <i class="fas fa-trash delete-icon" style="color:red;"></i>
+                                                        </a>
+                                                        <!-- Icône d'édition -->
+                                                        <a href="{{ path('edit_commentfront', {'id': commentaire.id}) }}" class="edit-action">
+                                                            <i class="fas fa-pencil-alt edit-icon" style="color:blue;"></i>
+                                                        </a>
+                                                        <!-- Icône de like -->
+                                                        <a href="{{ path('app_commentaire_like', {'id': commentaire.id}) }}"><i class="fas fa-thumbs-up like-icon"></i> </a>
+                                                        {{ commentaire.nblike }}                
+                                                        <!-- Icône de dislike -->
+                                                        <a href="{{ path('app_commentaire_dislike', {'id': commentaire.id}) }}"><i class="fas fa-thumbs-down dislike-icon"></i></a>
+                                                        {{ commentaire.nbdislike }}
+                                                    </div>
+                                                </div>
+                                            </div>		
+                                            <br>
+                                        </div>
+                                        <!--/ End Single Comments -->
+                                    </div>
+                                {% endfor %}
+                                
+                        <div class="col-md-auto mt-2 mt-md-0">
+                                                <div class="col-md-auto mt-2 mt-md-0">
+                                                    
+                                                </div><!-- End .col-auto -->
+                                                
+                                            </div>
+                                    </div>
+                                </div><a href="{{ path('add_commentfront', {'id': blog.id}) }}"  />
+
+                                <div class="col-12">
+                                    <div class="comments-form">
+                                        <h2>Leave Comments</h2>
+                                        <!-- Contact Form -->
+    {# templates/votre_template.html.twig #}
+
+
+
+                <!--/ End Contact Form -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-12">
+                            <div class="main-sidebar">
+                                <!-- Single Widget -->
+                                
+                                <!--/ End Single Widget -->
+                                <!-- Single Widget -->
+                                <div class="single-widget category">
+                                    <h3 class="title">Blog Categories</h3>
+                                    <ul class="categor-list">
+                <li><a >{{ blog.categorieblogs.titrecategorie }}</a></li>
+                                     <!-- Bouton pour déclencher la recherche -->
+    
+       
+                                    </ul>
+                                </div>
+                                <!--/ End Single Widget -->
+                                <!-- Single Widget -->
+                                <div class="single-widget recent-post">
+                                    <h3 class="title">Recent post</h3>
+                                    <!-- Single Post -->
+                                    <div class="single-post">
+                                        <div class="image">
+                                            <img src="{{ asset('front/img/blog-sidebar1.jpg') }}" alt="#">
+                                        </div>
+                                        <div class="content">
+                                            <h5><a href="#">We have annnocuced our new product.</a></h5>
+                                            <ul class="comment">
+                                                <li><i class="fa fa-calendar" aria-hidden="true"></i>Jan 11, 2020</li>
+                                                <li><i class="fa fa-commenting-o" aria-hidden="true"></i>35</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <!-- End Single Post -->
+                                    
+                                    
+                                </div>
+                                <!--/ End Single Widget -->
+                                
+                                <!-- Single Widget -->
+                                <div class="single-widget side-tags">
+                                    <h3 class="title">Tags</h3>
+                                    <ul class="tag">
+<div>
+    <textarea id="content" placeholder="Sélectionnez le texte ici"></textarea>
+</div>
+<div>
+    <button onclick="genererLiens()">Générer des liens similaires</button>
+</div>
+<div id="google-links-container"></div>
+
+<script>
+    function genererLiens() {
+        var selectedText = document.getElementById('content').value.trim();
+        if (selectedText !== '') {
+            var keywords = selectedText.split(' ');
+            var container = document.getElementById('google-links-container');
+            container.innerHTML = '';
+
+            // Liste de sites correspondant à chaque mot-clé
+            var sites = {
+                "santé": ["https://www.sante.fr/", "https://www.lemonde.fr/sante/", "https://www.health-data-hub.fr/","https://www.who.int/news/item/12-10-2023-france-s-new-global-health-strategy"],
+                "nutrition": ["https://www.msdmanuals.com/fr/accueil/troubles-de-la-nutrition/pr%C3%A9sentation-de-la-nutrition/pr%C3%A9sentation-de-la-nutrition#:~:text=La%20nutrition%20est%20le%20processus,le%20maintien%20de%20la%20vie.", "https://fr.wikipedia.org/wiki/Nutrition", "https://www.lanutrition.fr/"],
+                "bien-être": ["https://www.un.org/sustainabledevelopment/fr/health/", "https://www.bienetre-et-sante.fr/", "https://www.who.int/europe/fr/about-us/our-work/core-priorities/promoting-health-and-well-being"],
+                "medicament": ["https://fr.wikipedia.org/wiki/M%C3%A9dicament", "https://base-donnees-publique.medicaments.gouv.fr/index.php", "https://base-donnees-publique.medicaments.gouv.fr/index.php"],
+                "sang": ["https://www.donneurdesang.be/fr/en-savoir-plus-sur-le-sang/qu-est-ce-que-le-sang", "https://fr.wikipedia.org/wiki/Sang", "https://www.futura-sciences.com/sante/questions-reponses/corps-humain-composition-sang-1995/"]
+                // Ajoutez d'autres mots-clés et liens selon vos besoins
+            };
+
+            // Recherche des mots-clés dans le texte sélectionné et génération des liens aléatoires
+            keywords.forEach(function (keyword) {
+                if (sites[keyword.toLowerCase()]) {
+                    var randomIndex = Math.floor(Math.random() * sites[keyword.toLowerCase()].length);
+                    var link = document.createElement('a');
+                    link.href = sites[keyword.toLowerCase()][randomIndex];
+                    link.textContent = keyword;
+                    link.target = '_blank'; // Pour ouvrir le lien dans un nouvel onglet
+                    container.appendChild(link);
+                    container.appendChild(document.createElement('br'));
+                }
+            });
+        } else {
+            alert('Veuillez sélectionner du texte à rechercher.');
+        }
+    }
+</script>
+
+                                </div>
+                                <!--/ End Single Widget -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!--/ End Single News -->
+        
+            <div>
+       
+            
+
+  
+
+    <script>
+        function rechercherGoogle() {
+            var apiKey = 'AIzaSyCdCuUdiDDEz7TiHTtfJik8XnXZg24UJEg';
+            var searchEngineId = 'AskKI-ijghsgSTB8I925bbftyl';
+
+            // Termes de recherche
+            var searchTerm = 'santé nutrition bien-être'; 
+
+            var apiUrl = 'https://www.googleapis.com/customsearch/v1?key=' + apiKey + '&cx=' + searchEngineId + '&q=' + encodeURIComponent(searchTerm);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', apiUrl, true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    var items = response.items;
+                    var container = document.getElementById('google-links-container');
+                    container.innerHTML = '';
+                    items.forEach(function (item) {
+                        var lienHtml = '<a href="' + item.link + '">' + item.title + '</a><br>';
+                        container.innerHTML += lienHtml;
+                    });
+                } else {
+                    console.error('Erreur lors de la récupération des résultats de recherche:', xhr.status);
+                }
+            };
+            xhr.send();
+        }
+    </script>
+    
+            
+          
+            
+                
+    
+    {% endblock %}

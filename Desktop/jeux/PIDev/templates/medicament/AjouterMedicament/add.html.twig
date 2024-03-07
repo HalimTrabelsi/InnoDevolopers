@@ -1,0 +1,39 @@
+{{ form_start(myForm,{'attr':{'novalidate':'novalisate'}}) }}
+<table>
+<tr>
+<td>{{form_label(myForm.ref_med ,"Réference médicament")}}</td>
+<td>{{form_widget(myForm.ref_med)}}</td>
+<td>{{form_errors(myForm.ref_med)}}</td>
+</tr>
+<tr>
+<td>{{form_label(myForm.nom_med, "Nom médicament")}}</td>
+<td>{{form_widget(myForm.nom_med)}}</td>
+<td>{{form_errors(myForm.nom_med)}}</td>
+</tr>
+<tr>
+<td>{{form_label(myForm.date_amm ,"date_amm")}}</td>
+<td>{{form_widget(myForm.date_amm)}}</td>
+<td>{{form_errors(myForm.date_amm)}}</td>
+</tr>
+<tr>
+<td>{{form_label(myForm.date_experation ,"date_experation")}}</td>
+<td>{{form_widget(myForm.date_experation)}}</td>
+<td>{{form_errors(myForm.date_experation)}}</td>
+</tr>
+<tr>
+<td>{{form_label(myForm.Qte ,"Quantité")}}</td>
+<td>{{form_widget(myForm.Qte)}}</td>
+<td>{{form_errors(myForm.Qte)}}</td>
+</tr>
+<tr>
+<td>{{form_label(myForm.description ,"description")}}</td>
+<td>{{form_widget(myForm.description)}}</td>
+<td>{{form_errors(myForm.description)}}</td>
+</tr>
+<tr>
+<td>{{form_label(myForm.etat ,"etat")}}</td>
+<td>{{form_widget(myForm.etat)}}</td>
+<td>{{form_errors(myForm.etat)}}</td>
+</tr>
+</table> 
+{{ form_end(myForm) }}

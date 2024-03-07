@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<style>
+table, th, td {
+  border:1px solid black;
+}
+</style>
+<body>
+
+
+<table style="width:100%">
+
+  <tr>
+    <th>id</th>
+     <th>refe</th>
+    <th>nom_med</th>
+    <th>date_amm</th>
+    <th>date_experation</th>
+    <th>Qte</th>
+    <th>description</th>
+    <th>etat</th>
+  </tr>
+  
+
+ {% for med in list  %}
+ 
+  <tr>
+  
+    <td>{{med.id}}</td>
+    <td>{{med.getRefMed()}}</td>
+    <td>{{med.getNomMed()}}</td>
+    <td>{{med.getDateAmm()| date('Y-m-d')}}</td>
+    <td>{{med.getDateExperation()| date('Y-m-d')}}</td>
+    <td>{{med.getQte()}}</td>
+    <td>{{med.getDescription()}}</td>
+    <td>{{med.getEtat()}}</td>
+    
+ 
+  </tr>
+ 
+ {% endfor %}
+
+
+
+
+</table>
+
+
+</body>
+</html>

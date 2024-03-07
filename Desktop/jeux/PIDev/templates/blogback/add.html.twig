@@ -1,0 +1,79 @@
+{% extends 'saifB.html.twig' %}
+
+{% block title %}Create a new Blog{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<div class="container">
+    <h1 id="dynamicTitle">Ajouter Blog</h1>
+    {% block javascripts %}
+    <script>
+        $(document).ready(function() {
+            function changeTitle() {
+                var titles = ['Créer un contenu', 'Publier un nouvel article', 'Mettre en ligne un article']; // Liste de titres à afficher dynamiquement
+                var index = Math.floor(Math.random() * titles.length); 
+                $('#dynamicTitle').text(titles[index]); 
+            }
+
+            // Appeler la fonction pour changer le titre toutes les 5 secondes
+            setInterval(changeTitle, 1000);
+        });
+    </script>
+    {% endblock %}
+   
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ form_label(form.titre, 'Title') }}
+                {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+                {% for error in form.titre.vars.errors %}
+                    <div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i>{{ error.message }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.lieu, 'Location') }}
+                {{ form_widget(form.lieu, {'attr': {'class': 'form-control'}}) }}
+                {% for error in form.lieu.vars.errors %}
+                    <div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i>{{ error.message }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ form_label(form.description, 'Description') }}
+                {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+                {% for error in form.description.vars.errors %}
+                    <div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i>{{ error.message }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.rate, 'Rating') }}
+                {{ form_widget(form.rate, {'attr': {'class': 'form-control'}}) }}
+                {% for error in form.rate.vars.errors %}
+                    <div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i>{{ error.message }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ form_label(form.categorieblogs, 'Category') }}
+                {{ form_widget(form.categorieblogs, {'attr': {'class': 'form-control'}}) }}
+                {% for error in form.categorieblogs.vars.errors %}
+                    <div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i>{{ error.message }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.imageFile, 'Image URL') }}
+                {{ form_widget(form.imageFile, {'attr': {'class': 'form-control', 'style': 'max-width: 100%;'}}) }}
+                {% for error in form.imageFile.vars.errors %}
+                    <div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i>{{ error.message }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

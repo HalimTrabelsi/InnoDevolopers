@@ -1,0 +1,9 @@
+{
+  "name": "mdb-standard-app",
+  "version": "7.1.0",
+  "homepage": "https://mdbootstrap.com/docs/standard/",
+  "license": "MIT",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.5.1"
+  }
+}

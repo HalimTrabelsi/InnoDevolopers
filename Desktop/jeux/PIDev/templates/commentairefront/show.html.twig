@@ -1,0 +1,9 @@
+{# Dans votre template Twig blog/show.html.twig #}
+
+<h1>{{ blogPost.titre }}</h1>
+<h1><img src="{{ blogPost.image }}"></h1>
+
+<a href="https://www.facebook.com/sharer/sharer.php?u={{ blogUrl }}" target="_blank">
+  <img src="{{blogPost.image}}" alt="Share on Facebook">
+</a>
+<!-- Boutons de partage pour Facebook, Twitter et LinkedIn -->
