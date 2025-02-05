@@ -16,7 +16,7 @@ jobs:
 
       - name: Install Backend Dependencies
         run: |
-          cd backend
+          cd C:\Users\Mega Pc\Desktop\PiDev\InnoDevolopers\Backend
           npm install
 
       - name: Install Frontend Dependencies
