@@ -14,15 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Backend Dependencies
-        run: |
-          cd C:\Users\Mega Pc\Desktop\PiDev\InnoDevolopers\Backend
-          npm install
-
-      - name: Install Frontend Dependencies
-        run: |
-          cd frontend
-          npm install
+    
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
