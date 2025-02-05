@@ -2,7 +2,7 @@ name: MERN CI/CD Pipeline
 
 on:
   push:
-    branches: [ "test" ]
+    branches: [ "test,main" ]
   pull_request:
     branches: [ "test" ]
   workflow_dispatch:
@@ -34,10 +34,6 @@ jobs:
         run: |
           cd frontend
           chmod +x node_modules/.bin/react-scripts  # Fix the permission error
-      -name: run merge test
-      run: |
-        echo "Running merge test"
-        echo "Merge test passed"
-        git merge  test
+      
           
     
