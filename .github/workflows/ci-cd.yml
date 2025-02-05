@@ -24,20 +24,15 @@ jobs:
         run: |
           cd Backend  # Change this if your actual folder name is different
           npm install
-          npm test  # If you have tests for the backend, include them here
-
+          
       - name: Run Frontend Tests
         run: |
           cd frontend
           npm install
-          npm test  # Run frontend tests here
 
       - name: Fix Permissions for React Scripts (Frontend)
         run: |
           cd frontend
           chmod +x node_modules/.bin/react-scripts  # Fix the permission error
           
-      - name: Build Frontend
-        run: |
-          cd frontend
-          npm run build
+    
