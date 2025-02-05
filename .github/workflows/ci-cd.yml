@@ -23,7 +23,7 @@ jobs:
 
       - name: Run Backend Tests
         run: |
-          cd Backend
+          cd C:\Users\Mega Pc\Desktop\PiDev\InnoDevolopers\Backend
           npm test
 
       - name: Run Frontend Tests
