@@ -11,7 +11,6 @@ const SignInLayer = () => {
   });
 
   const navigate = useNavigate();
-
   const { email, password } = formData;
 
   const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,10 +19,22 @@ const SignInLayer = () => {
     e.preventDefault();
     try {
       const res = await axios.post('/api/users/sign-in', formData);
+      const {token , role} = res.data;
       console.log(res.data);
       // Save the token in localStorage or state
-      localStorage.setItem('token', res.data.token);
-      navigate('/');
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', role);
+
+      switch (role) {
+        case 'Admin':
+          navigate("/client/src/components/DashBoardLayerOne.jsx");
+          break;
+        case 'Business owner':
+          navigate("/client/src/components/ViewProfileLayer.jsx");
+          break;
+          default:
+            navigate("/")
+      }
     } catch (error) {
       console.error('Error during sign-in:', error.response ? error.response.data : error.message);
       toast.error(error.response ? error.response.data.message : 'Sign-in failed. Please try again.', {

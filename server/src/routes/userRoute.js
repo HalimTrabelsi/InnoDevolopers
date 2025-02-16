@@ -5,6 +5,8 @@ const upload = require('../middelwares/uploadImage');
 const router = express.Router();
 
 router.post('/register', upload.single('image'), registerUser);
+
 router.post('/sign-in', signInUser);
+
 
 module.exports = router;

@@ -185,6 +185,8 @@ const SignUpLayer = () => {
                 <option value='Business owner'>Business owner</option>
                 <option value='Financial manager'>Financial manager</option>
                 <option value='Accountant'>Accountant</option>
+                <option value='Admin'>Admin</option>
+
               </select>
             </div>
             <div className='icon-field mb-16'>
