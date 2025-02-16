@@ -41,8 +41,8 @@ const ViewProfileLayer = () => {
                                 alt=""
                                 className="border br-white border-width-2-px w-200-px h-200-px rounded-circle object-fit-cover"
                             />
-                            <h6 className="mb-0 mt-16">Jacob Jones</h6>
-                            <span className="text-secondary-light mb-16">ifrandom@gmail.com</span>
+                            <h6 className="mb-0 mt-16">welcome buisness Owenr</h6>
+                            <span className="text-secondary-light mb-16">BUISNESS OWNER</span>
                         </div>
                         <div className="mt-24">
                             <h6 className="text-xl mb-16">Personal Info</h6>

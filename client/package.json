@@ -80,5 +80,5 @@
     "sass": "^1.71.1",
     "webpack": "^5.90.3"
   },
-  "proxy": "http://localhost:5000"
+  "proxy": "http://localhost:5001"
 }

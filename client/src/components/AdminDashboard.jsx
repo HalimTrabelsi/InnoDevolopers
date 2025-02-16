@@ -4,11 +4,10 @@ import TotalSubscriberOne from './child/TotalSubscriberOne';
 import UsersOverviewOne from './child/UsersOverviewOne';
 import LatestRegisteredOne from './child/LatestRegisteredOne';
 import TopPerformerOne from './child/TopPerformerOne';
-import TopCountries from './child/TopCountries';
-import GeneratedContent from './child/GeneratedContent';
+
 import UnitCountOne from './child/UnitCountOne';
 
-const DashBoardLayerOne = () => {
+const AdminDashboard = () => {
 
     return (
         <>
@@ -32,12 +31,7 @@ const DashBoardLayerOne = () => {
                 {/* TopPerformerOne */}
                 <TopPerformerOne />
 
-                {/* TopCountries */}
-                <TopCountries />
-
-                {/* GeneratedContent */}
-                <GeneratedContent />
-
+               
             </section>
         </>
 
@@ -45,4 +39,4 @@ const DashBoardLayerOne = () => {
     )
 }
 
-export default DashBoardLayerOne
+export default AdminDashboard

@@ -9,7 +9,7 @@ import TopPerformanceOne from './child/TopperformanceOne'
 import LatestPerformanceOne from './child/LatestPerformanceOne'
 import LastTransactionOne from './child/LastTransactionOne'
 
-const DashBoardLayerTwo = () => {
+const BuisnessOwnerDashboard = () => {
   return (
     <section className="row gy-4">
 
@@ -44,4 +44,4 @@ const DashBoardLayerTwo = () => {
   )
 }
 
-export default DashBoardLayerTwo
+export default BuisnessOwnerDashboard

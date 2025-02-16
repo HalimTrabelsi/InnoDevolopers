@@ -19,7 +19,7 @@ const SignInLayer = () => {
     e.preventDefault();
     try {
       const res = await axios.post('/api/users/sign-in', formData);
-      const {token , role} = res.data;
+      const { token, role } = res.data;
       console.log(res.data);
       // Save the token in localStorage or state
       localStorage.setItem('token', token);
@@ -27,13 +27,13 @@ const SignInLayer = () => {
 
       switch (role) {
         case 'Admin':
-          navigate("/client/src/components/DashBoardLayerOne.jsx");
+          navigate("/admin-dashboard");
           break;
         case 'Business owner':
-          navigate("/client/src/components/ViewProfileLayer.jsx");
+          navigate("/business-owner-dashboard");
           break;
-          default:
-            navigate("/")
+        default:
+          navigate("/");
       }
     } catch (error) {
       console.error('Error during sign-in:', error.response ? error.response.data : error.message);
@@ -46,7 +46,6 @@ const SignInLayer = () => {
         draggable: true,
         progress: undefined,
       });
-    
     }
   };
 
@@ -116,6 +115,14 @@ const SignInLayer = () => {
               {" "}
               Sign In
             </button>
+            <div className='mt-32 text-center text-sm'>
+              <p className='mb-0'>
+                Forgot password{" "}
+                <Link to='/forgot-password' className='text-primary-600 fw-semibold'>
+                  Reset Password
+                </Link>
+              </p>
+            </div>
             <div className='mt-32 center-border-horizontal text-center'>
               <span className='bg-base z-1 px-4'>Or sign in with</span>
             </div>
