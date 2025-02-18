@@ -27,7 +27,7 @@ const SignUpLayer = () => {
     }
 
     try {
-      const response = await axios.post('/api/users/register', data, {
+      const response = await axios.post('http://localhost:5001/api/users/sign-up', data, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
