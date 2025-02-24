@@ -205,30 +205,6 @@ const verifyEmail = async (req, res) => {
     }
 };
 
-
-// send Verification Email
-
-
-const sendVerificationEmail = async (email, verificationUrl) => {
-    const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-        },
-    });
-
-    const mailOptions = {
-        to: email,
-        from: process.env.EMAIL_USER,
-        subject: "Email Verification",
-        text: `Click the link to verify your email: ${verificationUrl}`,
-    };
-
-    await transporter.sendMail(mailOptions);
-};
-
-
 // Resend Verification Email
 
 const resendVerificationEmail = async (req, res) => {
@@ -274,6 +250,39 @@ const resendVerificationEmail = async (req, res) => {
     }
 };
 
+// Admin Fetch Users
+
+const fetchUsersByFilters = async (req, res) => {
+    const { username, email, phoneNumber, role } = req.query;
+
+    try {
+        const query = {};
+
+        if (username) {
+            query.name = { $regex: username, $options: 'i' };
+        }
+
+        if (email) {
+            query.email = { $regex: email, $options: 'i' };
+        }
+
+        if (phoneNumber) {
+            query.phoneNumber = { $regex: phoneNumber, $options: 'i' };
+        }
+
+        if (role) {
+            query.role = role;
+        }
+
+        const users = await User.find(query);
+
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+};
+
+
 
 module.exports = { 
     registerUser, 
@@ -281,6 +290,6 @@ module.exports = {
     requestPasswordReset, 
     resetPassword, 
     verifyEmail, 
-    sendVerificationEmail,
-    resendVerificationEmail 
+    resendVerificationEmail,
+    fetchUsersByFilters
 };
