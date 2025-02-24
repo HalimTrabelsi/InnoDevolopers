@@ -29,10 +29,13 @@ const ViewProfileLayer = () => {
     const [editing, setEditing] = useState(false);
 
     const fetchUserData = async () => {
+        setLoading(true);
+        setError(""); 
+    
         try {
             const token = localStorage.getItem('token');
             if (!token) {
-                setError('Not authenticated');
+                setError('Not authenticated. Please log in.');
                 setLoading(false);
                 return;
             }
@@ -41,23 +44,42 @@ const ViewProfileLayer = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
     
-            console.log(response.data); 
-            setUserData(response.data);
-            setUpdatedUser(response.data);
-            setLoading(false);
-        } catch (error) {
-            if (error.response && error.response.status === 401) {
-                setError('Unauthorized. Please log in again.');
+            if (response.status === 200) {
+                console.log("User Data:", response.data); 
+                setUserData(response.data);
+                setUpdatedUser(response.data);
             } else {
-                setError('Failed to fetch user data. Please try again.');
+                setError("Unexpected response from server.");
             }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+    
+            if (error.response) {
+                switch (error.response.status) {
+                    case 401:
+                        setError('Unauthorized. Please log in again.');
+                        break;
+                    case 403:
+                        setError('Forbidden access. Contact support.');
+                        break;
+                    case 500:
+                        setError('Server error. Please try again later.');
+                        break;
+                    default:
+                        setError(error.response.data?.message || 'An error occurred.');
+                }
+            } else {
+                setError('Network error. Please check your connection.');
+            }
+        } finally {
+            setLoading(false);
         }
     };
     
     useEffect(() => {
         fetchUserData();
     }, []);
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
     
@@ -200,7 +222,7 @@ const ViewProfileLayer = () => {
     return (
         <div className="row gy-4">
             <div className="col-lg-4">
-                <div className="user-grid-card position-relative border radius-16 overflow-hidden bg-base h-100">
+                <div className="user-grid-card position-relative border radius-16 overflow-hidden h-100" style={{ backgroundColor: 'lightblue' }}>
                     <img
                         src="assets/images/user-grid/user-grid-bg1.png"
                         value={newPassword}
@@ -252,6 +274,19 @@ const ViewProfileLayer = () => {
                                         : {userData?.role || "Loading..."}
                                     </span>
                                 </li>
+                                <li className="d-flex align-items-center gap-1 mb-12">
+                                     <span className="w-30 text-md fw-semibold text-primary-light">
+                                       Status
+                                      </span>
+                                    <span className="w-70 text-secondary-light fw-medium">
+                                        : {userData?.isActive !== undefined ? (
+                                        <span className={`ml-2 ${userData?.isActive ? 'text-success' : 'text-danger'}`}>
+                                          {userData?.isActive ? 'Active' : 'Inactive'}
+                                        </span>
+                                                  ) : "Loading..."}
+                                         </span>
+                                </li>
+
                             </ul>
                         </div>
                     </div>
@@ -337,7 +372,8 @@ const ViewProfileLayer = () => {
                                 </div>
                                 <form onSubmit={handleSubmit}>
     <div className="row">
-        {/* Full Name */}
+
+
         <div className="col-sm-6">
             <div className="mb-20">
                 <label htmlFor="name" className="form-label fw-semibold text-primary-light text-sm mb-8">
@@ -356,7 +392,6 @@ const ViewProfileLayer = () => {
             </div>
         </div>
 
-        {/* Email */}
         <div className="col-sm-6">
             <div className="mb-20">
                 <label htmlFor="email" className="form-label fw-semibold text-primary-light text-sm mb-8">
@@ -375,7 +410,6 @@ const ViewProfileLayer = () => {
             </div>
         </div>
 
-        {/* Phone Number */}
         <div className="col-sm-6">
             <div className="mb-20">
                 <label htmlFor="phoneNumber" className="form-label fw-semibold text-primary-light text-sm mb-8">
@@ -393,7 +427,6 @@ const ViewProfileLayer = () => {
             </div>
         </div>
 
-        {/* Role Selection */}
         <div className="col-sm-6">
             <div className="mb-20">
                 <label htmlFor="role" className="form-label fw-semibold text-primary-light text-sm mb-8">
@@ -417,7 +450,6 @@ const ViewProfileLayer = () => {
         </div>
     </div>
 
-    {/* Submit Button */}
     <div className="d-flex justify-content-end mt-3">
         <button type="submit" className="btn btn-primary px-4 py-2">
             Save Changes

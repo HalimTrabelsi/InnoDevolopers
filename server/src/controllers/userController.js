@@ -206,6 +206,7 @@ const verifyEmail = async (req, res) => {
 };
 
 
+// send Verification Email
 
 
 const sendVerificationEmail = async (email, verificationUrl) => {
