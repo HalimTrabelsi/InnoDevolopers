@@ -146,18 +146,7 @@ const SignInLayer = () => {
                   className='text-primary-600 text-xl line-height-1'
                 />
                 Google
-              </button>
-              <button
-                              type='button'
-                              className='fw-semibold text-primary-light py-16 px-24 w-50 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50'
-                              >
-                              <Icon
-                              icon='mdi:github'
-                              className='text-black text-xl line-height-1'
-                              />
-                              GitHub
-                              </button>
-                              
+              </button>                
             </div>
             <div className='mt-32 text-center text-sm'>
               <p className='mb-0'>

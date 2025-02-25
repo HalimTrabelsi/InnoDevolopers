@@ -14,10 +14,12 @@ const CompleteProfileLayer = () => {
   });
   const [userId, setUserId] = useState(null);
 
-  // Récupérer userId depuis les paramètres d'URL
+  // Récupérer userId depuis l'URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    setUserId(params.get("userId"));
+    const id = params.get("userId");
+    setUserId(id);
+    console.log("User ID récupéré :", id); // Vérification
   }, []);
 
   const handleChange = (e) => {
@@ -30,43 +32,52 @@ const CompleteProfileLayer = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-        alert("Les mots de passe ne correspondent pas.");
-        return;
+
+    // Vérifier si userId est bien récupéré
+    if (!userId) {
+      alert("ID utilisateur manquant !");
+      return;
     }
 
+    // Vérifier la correspondance des mots de passe
+    if (formData.password !== formData.confirmPassword) {
+      alert("Les mots de passe ne correspondent pas.");
+      return;
+    }
+
+    // Vérifier la complexité du mot de passe
     const passwordPattern = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
     if (!passwordPattern.test(formData.password)) {
-        alert("Le mot de passe doit contenir au moins 8 caractères, avec au moins une lettre et un chiffre.");
-        return;
+      alert("Le mot de passe doit contenir au moins 8 caractères, avec au moins une lettre et un chiffre.");
+      return;
     }
 
-    // Créer un objet FormData pour envoyer l'image
+    // Préparer les données à envoyer
     const data = new FormData();
-    data.append("userId", userId);
+    data.append("userId", userId.toString()); // Conversion explicite
     data.append("phoneNumber", formData.phoneNumber);
     data.append("password", formData.password);
     data.append("confirmPassword", formData.confirmPassword);
     data.append("role", formData.role);
     if (formData.image) {
-        data.append("image", formData.image); // Ajout de l'image
+      data.append("image", formData.image);
     }
 
+    console.log("User ID envoyé :", data.get("userId")); // Vérification avant l'envoi
+
+    // Envoyer les données au serveur
     try {
-        const response = await axios.post("http://localhost:5001/auth/complete-profile", data, {
-            withCredentials: true,
-            headers: { "Content-Type": "multipart/form-data" }
-        });
+      const response = await axios.post("http://localhost:5001/auth/complete-profile", data, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" }
+      });
 
-        alert(response.data.message);
-        navigate("/");
+      alert(response.data.message);
+      navigate("/sign-in");
     } catch (error) {
-        alert(error.response?.data?.message || "Erreur lors de l'inscription");
+      alert(error.response?.data?.message || "Erreur lors de l'inscription");
     }
-};
-
-
+  };
 
   return (
     <div className="container">
@@ -89,10 +100,6 @@ const CompleteProfileLayer = () => {
                 required
               />
             </div>
-            <span
-              className='toggle-password ri-eye-line cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light'
-              data-toggle='#your-password'
-            />
           </div>
           <span className='mt-12 text-sm text-secondary-light'>
             Votre mot de passe doit contenir au moins 8 caractères
@@ -116,10 +123,6 @@ const CompleteProfileLayer = () => {
                 required
               />
             </div>
-            <span
-              className='toggle-password ri-eye-line cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light'
-              data-toggle='#confirm-password'
-            />
           </div>
           <span className='mt-12 text-sm text-secondary-light'>
             Assurez-vous que les mots de passe correspondent.

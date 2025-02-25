@@ -9,8 +9,6 @@ const upload = require('../middelwares/uploadImage');
 
 
 const router = express.Router();
-
-// Configuration de Multer pour l'upload des images
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'middelwares/');
@@ -19,9 +17,6 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
-
-
-// ✅ Google Login
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback',
@@ -29,11 +24,10 @@ router.get('/google/callback',
     async (req, res) => {
         const token = jwt.sign({ id: req.user.id, email: req.user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
         req.session.token = token;
-        res.redirect('/dashboard');
+        res.redirect('http://localhost:3000/sing-in');
     }
 );
 
-// ✅ Facebook Login
 router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 
 router.get('/facebook/callback',
@@ -46,7 +40,6 @@ router.get('/facebook/callback',
     }
 );
 
-// ✅ Complétion du profil
 router.post('/complete-profile', upload.single('image'), async (req, res) => {
     try {
         const { userId, password, confirmPassword, phoneNumber, role } = req.body;
@@ -92,7 +85,6 @@ router.post('/complete-profile', upload.single('image'), async (req, res) => {
     }
 });
 
-// ✅ Mise à jour du profil
 router.post('/update-profile', async (req, res) => {
     try {
         const { userId, phoneNumber } = req.body;

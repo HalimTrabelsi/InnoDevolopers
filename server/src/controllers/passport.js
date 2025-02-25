@@ -17,8 +17,6 @@ passport.deserializeUser(async (id, done) => {
         done(err, null);
     }
 });
-
-// ✅ Google Strategy
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -49,14 +47,12 @@ passport.use(new GoogleStrategy({
         return done(error, null);
     }
 }));
-
-// ✅ Facebook Strategy
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
     callbackURL: "/auth/facebook/callback",
     profileFields: ["id", "emails", "name"],
-    passReqToCallback: true  // Assurez-vous que req est accessible
+    passReqToCallback: true  
 }, async (req, accessToken, refreshToken, profile, done) => {
     try {
         const email = profile.emails?.[0]?.value || `facebook_${profile.id}@example.com`;
@@ -66,7 +62,6 @@ passport.use(new FacebookStrategy({
             const tempPassword = Math.random().toString(36).slice(-8);
             const hashedPassword = await bcrypt.hash(tempPassword, 10);
             
-            // Vérifier si req.file est défini avant d'accéder à path
             const imageUrl = req?.file ? req.file.path : "";
 
             user = new User({
@@ -89,8 +84,6 @@ passport.use(new FacebookStrategy({
     }
 }));
 
-
-// ✅ Fonction pour envoyer l'email avec le mot de passe temporaire
 async function sendPasswordEmail(userEmail, tempPassword) {
     let transporter = nodemailer.createTransport({
         service: 'gmail',

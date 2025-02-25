@@ -287,19 +287,7 @@ const SignUpLayer = () => {
                 />
                 Google
               </button>
-              <button
-                type='button'
-                
-                className='fw-semibold text-primary-light py-16 px-24 w-50 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50'
-                >
-                <Icon
-                icon='mdi:github'
-                className='text-black text-xl line-height-1'
-                />
-                GitHub
-                </button>
-
-
+              
               {isRegistered && (
         <div className="success-message" style={{ fontWeight: 'bold', fontSize: '1.5em', marginTop: '20px' }}>
           {successMessage}
