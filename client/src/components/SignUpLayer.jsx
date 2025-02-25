@@ -1,6 +1,6 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import axios from "axios";
 import { toast, ToastContainer } from 'react-toastify'; // Import Toastify
 import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
@@ -9,6 +9,8 @@ const SignUpLayer = () => {
   const [formData, setFormData] = useState({
     name: '', email: '', password: '', phoneNumber: '', role: '', image: ''
   });
+
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,8 +21,75 @@ const SignUpLayer = () => {
     setFormData({ ...formData, image: e.target.files[0] });
   };
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
+
+  const validatePassword = (password) => {
+    const re = /^(?=.*[A-Z])(?=.*\d{3,}).{8,}$/;
+    return re.test(password);
+  };
+
+  const validateForm = () => {
+    const { name, email, password, phoneNumber, role } = formData;
+    const checkbox = document.getElementById('condition').checked;
+
+    if (!name || !email || !password || !phoneNumber || !role) {
+      toast.error('Please fill in all the required fields.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return false;
+    }
+    if (!validateEmail(email)) {
+      toast.error('Please enter a valid email address.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return false;
+    }
+    if (!validatePassword(password)) {
+      toast.error('Password must be at least 8 characters long, contain 1 uppercase letter and at least 3 numbers.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return false;
+    }
+    if (!checkbox) {
+      toast.error('You must agree to the Terms & Conditions and Privacy Policy.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     const data = new FormData();
     for (const key in formData) {
       data.append(key, formData[key]);
@@ -42,6 +111,7 @@ const SignUpLayer = () => {
         draggable: true,
         progress: undefined,
       });
+      navigate('/sign-in'); // Redirect to sign-in page
     } catch (error) {
       console.error('Error during sign-up:', error.response ? error.response.data : error.message);
     
@@ -155,7 +225,7 @@ const SignUpLayer = () => {
                 />
               </div>
               <span className='mt-12 text-sm text-secondary-light'>
-                Your password must have at least 8 characters
+              Password must be at least 8 characters long, contain 1 uppercase letter and at least 3 numbers.
               </span>
             </div>
             <div className='icon-field mb-16'>

@@ -1,9 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminDashboardPage from "./pages/AdminDashboardPage.jsx";
-import SignInPage from "./pages/SignInPage";
-import SignUpPage from "./pages/SignUpPage";
-import PrivateRoute from "./components/PrivateRoute";
-import AccessDeniedPage from "./pages/AccessDeniedPage"; // Ensure this page exists
+import SignInPage from "./pages/SignInPage.jsx";
+import SignUpPage from "./pages/SignUpPage.jsx";
+import PrivateRoute from "./components/PrivateRoute.jsx";
+import AccessDeniedPage from "./pages/AccessDeniedPage.jsx"; // Ensure this page exists
 import BusinessOwnerPage from "./pages/BuisnessOwnerPage.jsx"; // Ensure this page exists
 import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
