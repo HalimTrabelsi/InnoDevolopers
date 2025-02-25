@@ -24,7 +24,7 @@ jobs:
           git pull origin main  # Ensure it's up to date
 
           # List of contributor branches to merge
-          branches=("Halim" "ouday" "mahmoud" "Sayf" "eya")
+          branches=("Halim" "ouday" "mahmoud" "eya" "Sayf")
 
           for branch in "${branches[@]}"; do
             echo "Merging $branch..."
