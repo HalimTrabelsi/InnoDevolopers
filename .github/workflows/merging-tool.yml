@@ -1,34 +1,24 @@
 name: Merge Contributor Branches
 
 on:
-  workflow_dispatch:  # This allows you to run it manually
+  push:
+    branches:
+      - merging-tool  # Or the branch where you want to run the workflow
 
 jobs:
-  merge-branches:
+  merge:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Ensures full history for merging
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Configure Git
+      - name: Merge branches
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-
-      - name: Merge Contributor Branches into merging-test
-        run: |
-          git checkout -b merging-test origin/main  # Create test branch from main
-          git pull origin main  # Ensure it's up to date
-
-          # List of contributor branches to merge
-          branches=("Halim" "ouday" "mahmoud" "eya" "Sayf")
-
-          for branch in "${branches[@]}"; do
-            echo "Merging $branch..."
-            git merge origin/$branch --no-ff -m "Merging $branch into merging-test"
-          done
-
-          git push origin merging-test  # Push the merged test branch
+          git fetch origin
+          git checkout merging-tool
+          git merge origin/Halim
+          git merge origin/ouday
+          git merge origin/mahmoud
+          git merge origin/eya
+          git merge origin/Sayf
+          git push origin merging-tool
