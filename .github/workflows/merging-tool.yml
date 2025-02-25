@@ -16,9 +16,9 @@ jobs:
         run: |
           git fetch origin
           git checkout merging-tool
-          git merge origin/Halim
-          git merge origin/ouday
-          git merge origin/mahmoud
-          git merge origin/eya
-          git merge origin/Sayf
+          git merge origin/Halim --allow-unrelated-histories
+          git merge origin/ouday --allow-unrelated-histories
+          git merge origin/mahmoud --allow-unrelated-histories
+          git merge origin/eya --allow-unrelated-histories
+          git merge origin/Sayf --allow-unrelated-histories
           git push origin merging-tool
