@@ -20,7 +20,10 @@ const SignUpLayer = () => {
   const handleFileChange = (e) => {
     setFormData({ ...formData, image: e.target.files[0] });
   };
-
+const validatePhoneNumber = (phoneNumber) => {
+  const re = /^\d{8}$/; // Ensures exactly 8 digits (Tunisian phone format)
+  return re.test(phoneNumber);
+};
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
@@ -49,6 +52,18 @@ const SignUpLayer = () => {
     }
     if (!validateEmail(email)) {
       toast.error('Please enter a valid email address.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return false;
+    }
+    if (!validatePhoneNumber(phoneNumber)) {
+      toast.error('Please enter a valid phoneNumber.', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -168,9 +183,7 @@ const SignUpLayer = () => {
       <div className='auth-right py-32 px-24 d-flex flex-column justify-content-center'>
         <div className='max-w-464-px mx-auto w-100'>
           <div>
-            <Link to='/' className='mb-40 max-w-290-px'>
-              <img src='/assets/images/2.png' alt='LOGO FINOVA' />
-            </Link>
+           
             <h4 className='mb-12'>Sign Up to your Account</h4>
             <p className='mb-32 text-secondary-light text-lg'>
               Welcome back! please enter your detail

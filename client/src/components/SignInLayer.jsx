@@ -21,7 +21,6 @@ const SignInLayer = () => {
       const res = await axios.post('http://localhost:5001/api/users/sign-in', formData);
       const { token, role } = res.data;
       console.log(res.data);
-      // Save the token in localStorage or state
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
 

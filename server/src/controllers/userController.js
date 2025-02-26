@@ -60,80 +60,23 @@ const signInUser = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "1h" }
         );
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 60 * 60 * 1000
+        });
 
         res.status(200).json({ token, role: user.role });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
-
-// Request Password Reset
-const requestPasswordReset = async (req, res) => {
-    const { email } = req.body;
-
-    try {
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        // Generate reset token
-        const resetToken = crypto.randomBytes(32).toString("hex");
-        user.resetPasswordToken = resetToken;
-        user.resetPasswordExpires = Date.now() + 3600000; // Token expires in 1 hour
-        await user.save();
-
-        // Send email
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
-
-        const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
-        const mailOptions = {
-            to: user.email,
-            from: process.env.EMAIL_USER,
-            subject: "Password Reset",
-            text: `You requested a password reset. Click the link below to reset your password:\n\n${resetUrl}\n\nThis link will expire in 1 hour.`,
-        };
-
-        await transporter.sendMail(mailOptions);
-
-        res.json({ message: "Reset password link sent!" });
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error });
-    }
+const logout = (req, res) => {
+    res.cookie("token", "", { maxAge: 0 });
+    res.json({ message: "Logged out successfully" });
+};
+const checkAuth = (req, res) => {
+    res.json({ user: req.user });
 };
 
-// Reset Password
-const resetPassword = async (req, res) => {
-    const { token } = req.params;
-    const { password } = req.body;
-
-    try {
-        const user = await User.findOne({
-            resetPasswordToken: token,
-            resetPasswordExpires: { $gt: Date.now() }, // Check if token is still valid
-        });
-
-        if (!user) {
-            return res.status(400).json({ message: "Invalid or expired token" });
-        }
-
-        // Hash new password
-        user.password = await bcrypt.hash(password, 10);
-        user.resetPasswordToken = null;
-        user.resetPasswordExpires = null;
-
-        await user.save();
-
-        res.json({ message: "Password reset successful!" });
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error });
-    }
-};
-
-module.exports = { registerUser, signInUser, requestPasswordReset, resetPassword };
+module.exports = { registerUser, signInUser,logout,checkAuth};
