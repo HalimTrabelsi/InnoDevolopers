@@ -9,6 +9,32 @@ const MasterLayout = ({ children }) => {
   let [mobileMenu, setMobileMenu] = useState(false);
   const location = useLocation(); // Hook to get the current route
   const navigate = useNavigate();
+  const [user, setUser] = useState(null); // <-- Add this line
+
+  const fetchUserData = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("No token found");
+        }
+
+        const response = await axios.get("http://localhost:5001/api/users/me", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+        });
+
+        setUser(response.data.user); // Ensure full user object is set
+    } catch (error) {
+        console.error("Failed to fetch user data:", error);
+        if (error.response?.status === 401) {
+            localStorage.removeItem("token");
+            navigate("/sign-in");
+        }
+    }
+};
+
   const handleLogout = async () => {
     try {
       await axios.post("http://localhost:5001/api/users/logout"); // Call backend logout API
@@ -19,6 +45,8 @@ const MasterLayout = ({ children }) => {
     }
   };
   useEffect(() => {
+
+    fetchUserData();
     const handleDropdownClick = (event) => {
       event.preventDefault();
       const clickedLink = event.currentTarget;
@@ -46,6 +74,7 @@ const MasterLayout = ({ children }) => {
           submenu.style.maxHeight = `${submenu.scrollHeight}px`; // Expand submenu
         }
       }
+      
     };
 
     // Attach click event listeners to all dropdown triggers
@@ -1883,21 +1912,24 @@ const MasterLayout = ({ children }) => {
                     type='button'
                     data-bs-toggle='dropdown'
                   >
-                    <img
-                      src='assets/images/user.png'
-                      alt='image_user'
-                      className='w-40-px h-40-px object-fit-cover rounded-circle'
-                    />
+                   <Icon icon="solar:user-linear" className="w-40-px h-40-px text-primary" />
+
                   </button>
                   <div className='dropdown-menu to-top dropdown-menu-sm'>
                     <div className='py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2'>
                       <div>
-                        <h6 className='text-lg text-primary-light fw-semibold mb-2'>
-                          Shaidul Islam
-                        </h6>
-                        <span className='text-secondary-light fw-medium text-sm'>
-                          Admin
-                        </span>
+                      {user ? (
+          <div>
+            <h6 className="text-lg text-primary-light fw-semibold mb-2">
+              {user.name} {/* Display dynamic username */}
+            </h6>
+            <span className="text-secondary-light fw-medium text-sm">
+              {user.role} {/* Display dynamic role */}
+            </span>
+          </div>
+        ) : (
+          <div>Loading...</div>
+        )}
                       </div>
                       <button type='button' className='hover-text-danger'>
                         <Icon

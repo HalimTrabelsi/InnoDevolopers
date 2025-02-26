@@ -183,7 +183,8 @@ const validatePhoneNumber = (phoneNumber) => {
       <div className='auth-right py-32 px-24 d-flex flex-column justify-content-center'>
         <div className='max-w-464-px mx-auto w-100'>
           <div>
-           
+          <h1 className="mb-12" style={{ color: "blue" }}>Finova</h1>
+
             <h4 className='mb-12'>Sign Up to your Account</h4>
             <p className='mb-32 text-secondary-light text-lg'>
               Welcome back! please enter your detail

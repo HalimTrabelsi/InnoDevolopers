@@ -1,7 +1,5 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
-const nodemailer = require("nodemailer");
 const { User } = require("../models/user");
 const { validationResult } = require("express-validator");
 require("dotenv").config();
@@ -71,12 +69,33 @@ const signInUser = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// User Logout
 const logout = (req, res) => {
     res.cookie("token", "", { maxAge: 0 });
     res.json({ message: "Logged out successfully" });
 };
-const checkAuth = (req, res) => {
-    res.json({ user: req.user });
+
+// Check Authentication & Get User Data
+const checkAuth = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        // Fetch full user details from the database using userId
+        const user = await User.findById(req.user.userId).select("-password"); // Exclude password
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({ user }); // Send full user details
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
-module.exports = { registerUser, signInUser,logout,checkAuth};
+
+
+module.exports = { registerUser, signInUser, logout, checkAuth };
