@@ -4,11 +4,18 @@ import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import axios from "axios";
 import { toast, ToastContainer } from 'react-toastify'; // Import Toastify
 import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import PacmanLoader from "react-spinners/PacmanLoader";
 
 const SignUpLayer = () => {
   const [formData, setFormData] = useState({
     name: '', email: '', password: '', phoneNumber: '', role: '', image: ''
   });
+  const [loading, setLoading ] = useState(false);
+  const handlePhoneChange = (value) => {
+    setFormData({ ...formData, phoneNumber: value });
+  };
 
   const navigate = useNavigate(); // Initialize useNavigate
 
@@ -20,10 +27,10 @@ const SignUpLayer = () => {
   const handleFileChange = (e) => {
     setFormData({ ...formData, image: e.target.files[0] });
   };
-const validatePhoneNumber = (phoneNumber) => {
-  const re = /^\d{8}$/; // Ensures exactly 8 digits (Tunisian phone format)
-  return re.test(phoneNumber);
-};
+  const validatePhoneNumber = (phoneNumber) => {
+    const digitsOnly = phoneNumber.replace(/\D/g, ""); 
+    return digitsOnly.length >= 8 && digitsOnly.length <= 15; 
+  };
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
@@ -103,7 +110,10 @@ const validatePhoneNumber = (phoneNumber) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    setLoading(true);
+    if (!validateForm()){
+      setLoading(false);
+      return;} 
 
     const data = new FormData();
     for (const key in formData) {
@@ -117,7 +127,7 @@ const validatePhoneNumber = (phoneNumber) => {
         }
       });
       console.log(response.data);
-      toast.success('Sign-up successful!', {
+      toast.success('Sign-up successful! Redirecting to sign in page', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -126,7 +136,7 @@ const validatePhoneNumber = (phoneNumber) => {
         draggable: true,
         progress: undefined,
       });
-      navigate('/sign-in'); // Redirect to sign-in page
+      setTimeout(() => {navigate('/sign-in'); },3000);
     } catch (error) {
       console.error('Error during sign-up:', error.response ? error.response.data : error.message);
     
@@ -147,7 +157,6 @@ const validatePhoneNumber = (phoneNumber) => {
           progress: undefined,
         });
       }
-      // Check if required fields are missing
       else if (error.response && error.response.data && error.response.data.message && error.response.data.message.includes("Field is missing")) {
         toast.error('Please fill in all the required fields.', {
           position: "top-right",
@@ -190,7 +199,7 @@ const validatePhoneNumber = (phoneNumber) => {
               Welcome back! please enter your detail
             </p>
           </div>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <div className='icon-field mb-16'>
               <span className='icon top-50 translate-middle-y'>
                 <Icon icon='f7:person' />
@@ -243,17 +252,19 @@ const validatePhoneNumber = (phoneNumber) => {
               </span>
             </div>
             <div className='icon-field mb-16'>
-              <span className='icon top-50 translate-middle-y'>
-                <Icon icon='mdi:phone' />
-              </span>
-              <input
-                type='text'
-                name='phoneNumber'
+              
+              <PhoneInput
+                country={"tn"} // Default to Tunisia (+216)
+                name='phoneNumber' 
                 value={formData.phoneNumber}
-                onChange={handleChange}
-                className='form-control h-56-px bg-neutral-50 radius-12'
+                onChange={handlePhoneChange}
                 placeholder='Phone Number'
+                enableSearch={true} // Allows searching countries
               />
+              <span className="mt-12 text-sm text-secondary-light">
+              Add a valid phone number (select your country of residence)
+            </span>
+               
             </div>
             <div className='icon-field mb-16'>
               <span className='icon top-50 translate-middle-y'>
@@ -348,6 +359,13 @@ const validatePhoneNumber = (phoneNumber) => {
                   Sign In
                 </Link>
               </p>
+              {loading && (
+              <div className="loader-container">
+              <PacmanLoader color="#0d6efd" size={60} />
+              <p>Sign-up successful! Redirecting to Sign In...</p>
+               </div>
+                )}
+
             </div>
           </form>
         </div>
