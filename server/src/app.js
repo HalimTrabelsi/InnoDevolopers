@@ -9,8 +9,8 @@ const passwordRoutes = require('./routes/passwordRoutes');
 
 
 const app = express();
-app.use('/api/users', userRoutes);
 app.use(cors());
+app.use(cors({ origin: 'http://localhost:5001' }));
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 5000;
@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //userRoot
 app.use('/api/users', userRoutes);
-app.use('/api/password' , passwordRoutes);
+app.use('/api/password', passwordRoutes);
 // Database connection
 dbConfig();
 

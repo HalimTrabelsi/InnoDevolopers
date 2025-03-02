@@ -6,6 +6,7 @@ import DashBoardLayerOne from "./components/DashBoardLayerOne";
 import ViewProfileLayer from "./components/ViewProfileLayer";
 import PrivateRoute from "./components/PrivateRoute";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
         <Route path="/admin-dashboard" element={<PrivateRoute allowedRoles={["Admin"]}><DashBoardLayerOne /> </PrivateRoute>}/>
         <Route path="/business-owner-dashboard"element={<PrivateRoute allowedRoles={["Business owner"]}><ViewProfileLayer /></PrivateRoute>}/>
         <Route exact path='/forgot-password' element={<ForgotPasswordPage />} />
-        
+        <Route path="/reset-password/:userId/:token" element={<ResetPasswordPage />} />
       </Routes>
     </BrowserRouter>
   );
