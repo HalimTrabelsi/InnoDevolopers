@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: function() {
-            return !this.googleId && !this.facebookId; // Le mot de passe est requis sauf si l'utilisateur s'inscrit via OAuth
+            return !this.googleId && !this.facebookId; 
         }
     },
     phoneNumber: {
@@ -27,8 +27,8 @@ const userSchema = new mongoose.Schema({
         enum: ['Business owner', 'Financial manager', 'Accountant', 'Admin'],
         required: true,
     },
-    googleId: { type: String },  // Ajout du champ pour Google OAuth
-    facebookId: { type: String }, // Ajout du champ pour Facebook OAuth
+    googleId: { type: String },
+    facebookId: { type: String },
     entreprise: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Entreprise',
@@ -38,14 +38,14 @@ const userSchema = new mongoose.Schema({
         ref: 'BankAccount',
     }],
     image: { type: String },
+    lastLogin: { type: Date }, 
+    estActif: { type: Boolean, default: false },
 });
 
-// Comparaison de mot de passe
 userSchema.methods.comparePassword = async function(candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Génération du token JWT
 userSchema.methods.generateAuthToken = function() {
     return jwt.sign({ id: this._id, email: this.email }, process.env.JWT_SECRET, { expiresIn: '2h' });
 };

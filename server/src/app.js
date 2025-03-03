@@ -6,6 +6,9 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoute');
+const userStatsRoutes = require('./routes/userStats');
+
+
 
 dotenv.config();
 require('./controllers/passport');
@@ -39,6 +42,8 @@ app.use(passport.session());
 app.use('/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/complete-profile', authRoutes);
+app.use('/api/userstats', userStatsRoutes);
+
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`✅ Serveur lancé sur le port ${PORT}`));

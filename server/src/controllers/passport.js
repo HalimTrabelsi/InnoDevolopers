@@ -108,3 +108,4 @@ async function sendPasswordEmail(userEmail, tempPassword) {
         console.error(`Erreur d'envoi d'email: ${error}`);
     }
 }
+

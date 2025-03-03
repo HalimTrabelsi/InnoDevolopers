@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const { User } = require('../models/user');
+const { Activity } = require('../models/activity');
 require('dotenv').config();
 const upload = require('../middelwares/uploadImage');
 
@@ -17,6 +18,7 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
+
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback',
@@ -24,7 +26,11 @@ router.get('/google/callback',
     async (req, res) => {
         const token = jwt.sign({ id: req.user.id, email: req.user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
         req.session.token = token;
-        res.redirect('http://localhost:3000/sing-in');
+
+        // Enregistrement de l'activité de connexion
+        await Activity.create({ userId: req.user.id, action: "Connexion Google", date: new Date() });
+
+        res.redirect(`http://localhost:3000/confirmation?email=${req.user.email}`);
     }
 );
 
@@ -32,13 +38,17 @@ router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }))
 
 router.get('/facebook/callback',
     passport.authenticate('facebook', { failureRedirect: '/login' }),
-    (req, res) => {
+    async (req, res) => {
+        // Enregistrement de l'activité de connexion
+        await Activity.create({ userId: req.user.id, action: "Connexion Facebook", date: new Date() });
+
         if (req.user.phoneNumber === "0000000000") {
             return res.redirect(`http://localhost:3000/complete-profile?userId=${req.user.id}`);
         }
         res.redirect("http://localhost:3000/sing-in");
     }
 );
+
 
 router.post('/complete-profile', upload.single('image'), async (req, res) => {
     try {
@@ -96,6 +106,7 @@ router.post('/update-profile', async (req, res) => {
 
         user.phoneNumber = phoneNumber;
         await user.save();
+        await Activity.create({ userId: userId, action: "Mise à jour du profil" });
 
         res.json({ message: "Profil mis à jour avec succès" });
     } catch (error) {
@@ -103,7 +114,6 @@ router.post('/update-profile', async (req, res) => {
     }
 });
 
-// ✅ Déconnexion
 router.get('/logout', (req, res, next) => {
     req.logout((err) => {
         if (err) return next(err);
