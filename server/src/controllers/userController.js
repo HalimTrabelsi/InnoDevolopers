@@ -6,7 +6,15 @@ const { User } = require("../models/user");
 const { validationResult } = require("express-validator");
 require("dotenv").config();
 
-// User Registration
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+    tls: { rejectUnauthorized: false },
+});
+
 const registerUser = async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -23,6 +31,7 @@ const registerUser = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const imageUrl = req.file ? req.file.path : "";
+        const verificationToken = crypto.randomBytes(32).toString("hex");
 
         const newUser = new User({
             name,
@@ -31,16 +40,25 @@ const registerUser = async (req, res) => {
             phoneNumber,
             role,
             image: imageUrl,
+            verificationToken,
+            estActif: false,
         });
 
         await newUser.save();
-        res.status(201).json({ message: "User registered successfully", user: newUser });
+
+        const verificationUrl = `http://localhost:5001/api/users/verify/${verificationToken}`;
+        await transporter.sendMail({
+            to: email,
+            subject: "Vérifiez votre email (Optionnel)",
+            html: `Cliquez sur ce lien pour vérifier votre email et activer votre compte : <a href="${verificationUrl}">${verificationUrl}</a><br>Vous pouvez vous connecter sans vérification.`,
+        });
+
+        res.status(201).json({ message: "User registered successfully. Check your email for verification (optional).", userId: newUser._id });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-// User Sign-In
 const signInUser = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -55,52 +73,40 @@ const signInUser = async (req, res) => {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
+        // Pas d'obligation de vérification : générer le token même si estActif est false
         const token = jwt.sign(
-            { userId: user._id, role: user.role },
+            { id: user._id, email: user.email, role: user.role },
             process.env.JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "2h" }
         );
 
-        res.status(200).json({ token, role: user.role });
+        res.status(200).json({
+            token,
+            user: { id: user._id, name: user.name, email: user.email, role: user.role, estActif: user.estActif },
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-// Request Password Reset
 const requestPasswordReset = async (req, res) => {
     const { email } = req.body;
-
     try {
         const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
+        if (!user) return res.status(404).json({ message: "User not found" });
 
-        // Generate reset token
         const resetToken = crypto.randomBytes(32).toString("hex");
         user.resetPasswordToken = resetToken;
-        user.resetPasswordExpires = Date.now() + 3600000; // Token expires in 1 hour
+        user.resetPasswordExpires = Date.now() + 3600000;
         await user.save();
 
-        // Send email
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
-
         const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
-        const mailOptions = {
+        await transporter.sendMail({
             to: user.email,
             from: process.env.EMAIL_USER,
             subject: "Password Reset",
             text: `You requested a password reset. Click the link below to reset your password:\n\n${resetUrl}\n\nThis link will expire in 1 hour.`,
-        };
-
-        await transporter.sendMail(mailOptions);
+        });
 
         res.json({ message: "Reset password link sent!" });
     } catch (error) {
@@ -108,26 +114,20 @@ const requestPasswordReset = async (req, res) => {
     }
 };
 
-// Reset Password
 const resetPassword = async (req, res) => {
     const { token } = req.params;
     const { password } = req.body;
-
     try {
         const user = await User.findOne({
             resetPasswordToken: token,
-            resetPasswordExpires: { $gt: Date.now() }, // Check if token is still valid
+            resetPasswordExpires: { $gt: Date.now() },
         });
 
-        if (!user) {
-            return res.status(400).json({ message: "Invalid or expired token" });
-        }
+        if (!user) return res.status(400).json({ message: "Invalid or expired token" });
 
-        // Hash new password
         user.password = await bcrypt.hash(password, 10);
         user.resetPasswordToken = null;
         user.resetPasswordExpires = null;
-
         await user.save();
 
         res.json({ message: "Password reset successful!" });

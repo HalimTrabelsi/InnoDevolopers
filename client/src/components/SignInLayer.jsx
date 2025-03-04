@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
-const SignInLayer = () => {
+const SignInPage = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -20,12 +20,23 @@ const SignInLayer = () => {
     console.log('Form data:', formData);
     try {
       const res = await axios.post('http://localhost:5001/api/users/sign-in', formData);
-      const { token, role } = res.data;
       console.log(res.data);
-      localStorage.setItem('token', token);
-      localStorage.setItem('role', role);
 
-      switch (role) {
+      const { token, user } = res.data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', user.role);
+
+      toast.success("Connexion réussie !", {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+      switch (user.role) {
         case 'Admin':
           navigate("/admin-dashboard");
           break;
@@ -64,7 +75,7 @@ const SignInLayer = () => {
             </Link>
             <h4 className='mb-12'>Sign In to your Account</h4>
             <p className='mb-32 text-secondary-light text-lg'>
-              Welcome back! please enter your detail
+              Welcome back! Please enter your details
             </p>
           </div>
           <form onSubmit={onSubmit}>
@@ -83,7 +94,7 @@ const SignInLayer = () => {
               />
             </div>
             <div className='mb-20'>
-              <div className='position-relative '>
+              <div className='position-relative'>
                 <div className='icon-field'>
                   <span className='icon top-50 translate-middle-y'>
                     <Icon icon='solar:lock-password-outline' />
@@ -112,7 +123,6 @@ const SignInLayer = () => {
               type='submit'
               className='btn btn-primary text-sm btn-sm px-12 py-16 w-100 radius-12 mt-32'
             >
-              {" "}
               Sign In
             </button>
             <div className='mt-32 text-center text-sm'>
@@ -127,18 +137,8 @@ const SignInLayer = () => {
               <span className='bg-base z-1 px-4'>Or sign in with</span>
             </div>
             <div className='mt-32 d-flex align-items-center gap-3'>
-              <button
-                type='button'
-                className='fw-semibold text-primary-light py-16 px-24 w-50 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50'
-              >
-                <Icon
-                  icon='ic:baseline-facebook'
-                  className='text-primary-600 text-xl line-height-1'
-                />
-                Google
-              </button>
-              <button
-                type='button'
+              <Link
+                to='/auth/google'
                 className='fw-semibold text-primary-light py-16 px-24 w-50 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50'
               >
                 <Icon
@@ -146,7 +146,7 @@ const SignInLayer = () => {
                   className='text-primary-600 text-xl line-height-1'
                 />
                 Google
-              </button>                
+              </Link>
             </div>
             <div className='mt-32 text-center text-sm'>
               <p className='mb-0'>
@@ -163,4 +163,4 @@ const SignInLayer = () => {
   );
 };
 
-export default SignInLayer;
+export default SignInPage;

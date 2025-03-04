@@ -11,12 +11,13 @@ import CompleteProfile from "./pages/CompleteProfileLayer.jsx";
 import Confirmation from "./pages/ConfirmationLayer.jsx";
 import AdminPanel from "./pages/AdminPanel.jsx";
 import StatPage from "./pages/StatPage.jsx";
+import VerifyEmail from "./pages/VerifyEmailPage.jsx"; // Ajouter ce composant
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route exact path='/' element={<AccessDeniedPage />} />
+        <Route exact path='/' element={<SignInPage />} /> {/* Changement de la racine vers SignIn */}
         <Route exact path='/sign-in' element={<SignInPage />} />
         <Route exact path='/sign-up' element={<SignUpPage />} />
         <Route exact path='/forgot-password' element={<ForgotPasswordPage />} />
@@ -25,6 +26,7 @@ function App() {
         <Route path="/confirmation" element={<Confirmation />} />
         <Route path="/deleteUsers" element={<AdminPanel/>} />
         <Route path="/StatUsers" element={<StatPage/>} />
+        <Route path="/verify-email" element={<VerifyEmail />} /> {/* Nouvelle route */}
 
         {/* Private Routes for role-based access */}
         <Route 
@@ -53,4 +55,3 @@ function App() {
 }
 
 export default App;
-

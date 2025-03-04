@@ -5,7 +5,7 @@ const passport = require('passport');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoute');
+const userRoutes = require('./routes/userRoute'); // Notez le "s" à "userRoutes"
 const userStatsRoutes = require('./routes/userStats');
 
 
@@ -47,3 +47,5 @@ app.use('/api/userstats', userStatsRoutes);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`✅ Serveur lancé sur le port ${PORT}`));
+
+module.exports = app;

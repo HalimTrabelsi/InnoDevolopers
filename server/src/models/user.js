@@ -3,25 +3,13 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     password: {
         type: String,
-        required: function() {
-            return !this.googleId && !this.facebookId; 
-        }
+        required: function() { return !this.googleId && !this.facebookId; }
     },
-    phoneNumber: {
-        type: String,
-        required: false,
-    },
+    phoneNumber: { type: String, required: false },
     role: {
         type: String,
         enum: ['Business owner', 'Financial manager', 'Accountant', 'Admin'],
@@ -29,17 +17,12 @@ const userSchema = new mongoose.Schema({
     },
     googleId: { type: String },
     facebookId: { type: String },
-    entreprise: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Entreprise',
-    },
-    bankAccounts: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'BankAccount',
-    }],
+    entreprise: { type: mongoose.Schema.Types.ObjectId, ref: 'Entreprise' },
+    bankAccounts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BankAccount' }],
     image: { type: String },
-    lastLogin: { type: Date }, 
+    lastLogin: { type: Date },
     estActif: { type: Boolean, default: false },
+    verificationToken: { type: String },
 });
 
 userSchema.methods.comparePassword = async function(candidatePassword) {
@@ -47,7 +30,7 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 };
 
 userSchema.methods.generateAuthToken = function() {
-    return jwt.sign({ id: this._id, email: this.email }, process.env.JWT_SECRET, { expiresIn: '2h' });
+    return jwt.sign({ id: this._id, email: this.email, role: this.role }, process.env.JWT_SECRET, { expiresIn: '2h' });
 };
 
 const User = mongoose.model('User', userSchema);
