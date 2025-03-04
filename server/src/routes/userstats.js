@@ -4,31 +4,58 @@ const { Activity } = require('../models/activity');
 const router = express.Router();
 const moment = require('moment');
 
-// ➤ 📊 Statistiques des utilisateurs
-router.get('/stats', async (req, res) => {
+router.get('/total-accounts', async (req, res) => {
     try {
-        const totalUsers = await User.countDocuments();
-        const activeUsers = await User.countDocuments({ estActif: true });
+        const last30Days = [...Array(30).keys()].map(i => moment().subtract(i, 'days').format('YYYY-MM-DD'));
 
-        // 🔹 Nombre d’utilisateurs actifs par jour (7 derniers jours)
-        const last7Days = [...Array(7).keys()].map(i => moment().subtract(i, 'days').format('YYYY-MM-DD'));
-
-        const activeUsersPerDay = await Promise.all(
-            last7Days.map(async (day) => {
+        const totalAccountsPerDay = await Promise.all(
+            last30Days.map(async (day) => {
                 const count = await User.countDocuments({
-                    lastLogin: { $gte: new Date(`${day}T00:00:00.000Z`), $lt: new Date(`${day}T23:59:59.999Z`) }
+                    createdAt: { $lte: new Date(`${day}T23:59:59.999Z`) }
                 });
                 return { date: day, count };
             })
         );
 
-        res.json({ totalUsers, activeUsers, activeUsersPerDay });
+        console.log("Total accounts per day:", totalAccountsPerDay); // Log pour débogage
+        res.json({ totalAccountsPerDay: totalAccountsPerDay.reverse() });
     } catch (error) {
-        res.status(500).json({ message: 'Erreur lors du chargement des statistiques' });
+        console.error("Error fetching total accounts:", error);
+        res.status(500).json({ message: 'Error fetching total accounts' });
     }
 });
 
-// ➤ 📊 Nombre de connexions par jour
+router.get('/user-stats', async (req, res) => {
+    try {
+        const todayStart = moment().startOf('day').toDate();
+        const todayEnd = moment().endOf('day').toDate();
+
+        const users = await User.find({}, 'name email lastLogin estActif');
+        const userStats = await Promise.all(
+            users.map(async (user) => {
+                const dailyLoginCount = await Activity.countDocuments({
+                    userId: user._id,
+                    action: 'Connexion',
+                    date: { $gte: todayStart, $lte: todayEnd }
+                });
+                return {
+                    name: user.name,
+                    email: user.email,
+                    lastLogin: user.lastLogin || null,
+                    dailyLoginCount,
+                    estActif: user.estActif
+                };
+            })
+        );
+
+        console.log("User stats:", userStats); // Log pour débogage
+        res.json({ userStats });
+    } catch (error) {
+        console.error("Error fetching user stats:", error);
+        res.status(500).json({ message: 'Error fetching user stats' });
+    }
+});
+
 router.get('/login-stats', async (req, res) => {
     try {
         const last7Days = [...Array(7).keys()].map(i => moment().subtract(i, 'days').format('YYYY-MM-DD'));
@@ -42,26 +69,12 @@ router.get('/login-stats', async (req, res) => {
                 return { date: day, count };
             })
         );
-        
 
+        console.log("Login stats per day:", loginPerDay); // Log pour débogage
         res.json({ loginPerDay });
     } catch (error) {
-        res.status(500).json({ message: 'Erreur lors du chargement des connexions' });
-    }
-});
-
-// ➤ 📊 Actions les plus fréquentes
-router.get('/top-actions', async (req, res) => {
-    try {
-        const actions = await Activity.aggregate([
-            { $group: { _id: "$action", count: { $sum: 1 } } },
-            { $sort: { count: -1 } },
-            { $limit: 5 } // 🔹 Top 5 actions
-        ]);
-
-        res.json(actions);
-    } catch (error) {
-        res.status(500).json({ message: 'Erreur lors du chargement des actions' });
+        console.error("Error fetching login stats:", error);
+        res.status(500).json({ message: 'Error fetching login stats' });
     }
 });
 
