@@ -15,15 +15,15 @@ const TermsAndConditions = () => {
             zIndex: 1, // Ensure content is above background
         },
         background: {
-            position: 'absolute',
+            position: 'fixed',
             top: 0,
             left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundImage: 'url("https://imgs.search.brave.com/c3s-hIZsWCsbxHKnNr6lr7vLe1n0V9eRRtbtsfoY_Aw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMTQ1/Mzg0Mzg2Mi9waG90/by9idXNpbmVzcy1t/ZWV0aW5nLmpwZz9z/PTYxMng2MTImdz0w/Jms9MjAmYz00azlI/N2FnbXBuOTJCN2Jr/VXl3dmtLNUNrd205/WThmOFFyR3M0RFJE/V3BFPQ")', // Background image URL
+            width: '100%',
+            height: '100%',
+            backgroundImage: 'url("https://imgs.search.brave.com/gcJVHRvCyNp92TKPPcer71-G2KmxOjAdgXAPVaoDjko/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly92ZW5u/Z2FnZS13b3JkcHJl/c3MuczMuYW1hem9u/YXdzLmNvbS91cGxv/YWRzLzIwMjIvMDkv/YnVzaW5lc3MtYmFj/a2dyb3VuZC0yLnBu/Zw")',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            opacity: 0.1, // Adjust opacity for a subtle background
+            opacity: 0.1,
             zIndex: 0,
         },
         title: {
