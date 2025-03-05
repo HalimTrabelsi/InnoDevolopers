@@ -1,90 +1,116 @@
-import React, { useEffect, useState } from 'react';
-import * as faceapi from 'face-api.js';
-import { toast } from 'react-toastify';
+import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const FaceRecognition = ({ cloudinaryImageUrl, onFaceVerified }) => {
-  const [isModelLoaded, setIsModelLoaded] = useState(false);
-  const [video, setVideo] = useState(null);
-  
+const FaceRecon = ({ userEmail }) => {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [verificationResult, setVerificationResult] = useState(null);
+  const [error, setError] = useState("");
+  const [storedImageUrl, setStoredImageUrl] = useState("");
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const loadModels = async () => {
+    const setupCamera = async () => {
       try {
-        await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
-        await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
-        await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
-        setIsModelLoaded(true);
-      } catch (error) {
-        toast.error('Error loading face-api models');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play();
+          console.log("Camera setup successful");
+        }
+      } catch (err) {
+        console.error("Error accessing webcam:", err);
+        setError("Could not access webcam. Please allow camera access.");
       }
     };
 
-    loadModels();
+    setupCamera();
   }, []);
 
   useEffect(() => {
-    if (isModelLoaded) {
-      startVideo();
-    }
-  }, [isModelLoaded]);
+    const fetchStoredImage = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:5001/api/users/profile-image", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setStoredImageUrl(response.data.imageUrl);
+        console.log("Stored image URL:", response.data.imageUrl);
+      } catch (err) {
+        console.error("Error fetching stored image:", err.response?.data || err.message);
+        setError("Error fetching stored image. Please try again later.");
+      }
+    };
 
-  const startVideo = () => {
-    const videoElement = document.getElementById('video');
-    navigator.mediaDevices
-      .getUserMedia({ video: {} })
-      .then((stream) => {
-        videoElement.srcObject = stream;
-        setVideo(stream);
-      })
-      .catch((err) => {
-        toast.error('Error accessing webcam: ' + err);
-      });
+    fetchStoredImage();
+  }, [userEmail]);
+
+  const captureImage = () => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+    context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    
+    // Get the image as a Base64 string (remove metadata prefix)
+    return canvas.toDataURL("image/jpeg").replace(/^data:image\/jpeg;base64,/, "");
   };
 
-  const handleVideoOnPlay = async () => {
-    // Detect faces from webcam video
-    const detections = await faceapi.detectAllFaces(video)
-      .withFaceLandmarks()
-      .withFaceDescriptors();
+  const verifyFace = async () => {
+    const imageBase64 = captureImage();
+    const token = localStorage.getItem("token"); // Retrieve token from localStorage
+    console.log("Retrieved token for verification:", token);
 
-    if (detections.length > 0) {
-      // Fetch the image from Cloudinary
-      const cloudinaryImage = await fetch(cloudinaryImageUrl);
-      const cloudinaryBlob = await cloudinaryImage.blob();
-      const cloudinaryImageData = await faceapi.bufferToImage(cloudinaryBlob);
+    if (!token) {
+      setError("User not authenticated. Please log in again.");
+      return;
+    }
 
-      // Detect face descriptors from Cloudinary image
-      const detectionsFromCloudinary = await faceapi.detectSingleFace(cloudinaryImageData)
-        .withFaceLandmarks()
-        .withFaceDescriptor();
-
-      // Compare the webcam face descriptor with the Cloudinary face descriptor
-      if (detectionsFromCloudinary && detections.length > 0) {
-        const faceMatcher = new faceapi.FaceMatcher(detectionsFromCloudinary);
-        const match = faceMatcher.findBestMatch(detections[0].descriptor);
-
-        // If the match is above a certain threshold (e.g., 0.6), consider it a successful match
-        if (match && match.distance < 0.6) {
-          onFaceVerified();  // Successfully recognized face, proceed with login
-        } else {
-          toast.error('Face not recognized. Please try again.');
+    try {
+      const response = await axios.post(
+        "http://localhost:5001/api/users/compare",
+        {
+          email: userEmail,
+          imageBase64,
+          storedImageUrl,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Send token in request
+          },
         }
+      );
+
+      console.log("Face verification response:", response.data);
+
+      if (response.data.success) {
+        setVerificationResult("Face verified successfully!");
+
+        const { role } = JSON.parse(atob(token.split(".")[1]));
+        console.log("User role:", role);
+
+        navigate(role === "Admin" ? "/admin-dashboard" : "/user-dashboard");
+      } else {
+        setVerificationResult("Face verification failed. Please try again.");
       }
+    } catch (err) {
+      console.error("Error verifying face:", err.response?.data || err.message);
+      setError("Error verifying face. Please try again later.");
     }
   };
 
   return (
     <div>
-      <video
-        id="video"
-        width="720"
-        height="560"
-        onPlay={handleVideoOnPlay}
-        autoPlay
-        muted
-      />
-      {!isModelLoaded && <p>Loading face-api models...</p>}
+      <video ref={videoRef} width="300" height="300" autoPlay />
+      <canvas ref={canvasRef} width="300" height="300" style={{ display: "none" }} />
+      <div>
+        <button onClick={verifyFace}>Verify Face</button>
+      </div>
+      {verificationResult && <p>{verificationResult}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 };
 
-export default FaceRecognition;
+export default FaceRecon;

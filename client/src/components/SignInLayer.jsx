@@ -132,7 +132,7 @@ const SignInLayer = () => {
                   icon='ic:baseline-facebook'
                   className='text-primary-600 text-xl line-height-1'
                 />
-                Google
+                Facebook
               </button>
               <button
                 type='button'

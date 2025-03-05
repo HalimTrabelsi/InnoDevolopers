@@ -6,7 +6,6 @@ import { toast, ToastContainer } from 'react-toastify'; // Import Toastify
 import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import PacmanLoader from "react-spinners/PacmanLoader";
 
 const SignUpLayer = () => {
   const [formData, setFormData] = useState({
@@ -186,7 +185,7 @@ const SignUpLayer = () => {
     <section className='auth bg-base d-flex flex-wrap'>
       <div className='auth-left d-lg-block d-none'>
         <div className='d-flex align-items-center flex-column h-100 justify-content-center'>
-          <img src='/assets/images/signup.jpg' alt='Sign up illustration' />
+          <img src='/assets/images/signup.jpg' alt='Illustration of signing up' />
         </div>
       </div>
       <div className='auth-right py-32 px-24 d-flex flex-column justify-content-center'>
@@ -309,11 +308,11 @@ const SignUpLayer = () => {
                     htmlFor='condition'
                   >
                     By creating an account means you agree to the
-                    <Link to='#' className='text-primary-600 fw-semibold'>
+                    <Link to='/sign-up/terms-conditions' className='text-primary-600 fw-semibold'>
                       Terms &amp; Conditions
                     </Link>{" "}
                     and our
-                    <Link to='#' className='text-primary-600 fw-semibold'>
+                    <Link to='/sign-up/terms-conditions' className='text-primary-600 fw-semibold'>
                       Privacy Policy
                     </Link>
                   </label>
@@ -359,12 +358,7 @@ const SignUpLayer = () => {
                   Sign In
                 </Link>
               </p>
-              {loading && (
-              <div className="loader-container">
-              <PacmanLoader color="#0d6efd" size={60} />
-              <p>Sign-up successful! Redirecting to Sign In...</p>
-               </div>
-                )}
+              
 
             </div>
           </form>
