@@ -19,21 +19,17 @@ const SignInLayer = () => {
     e.preventDefault();
     try {
       const res = await axios.post('http://localhost:5001/api/users/sign-in', formData);
-      const { token, role } = res.data;
+      const { token, role,email } = res.data;
       console.log(res.data);
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
+      localStorage.setItem('email', email);
 
-      switch (role) {
-        case 'Admin':
-          navigate("/admin-dashboard");
-          break;
-        case 'Business owner':
-          navigate("/business-owner-dashboard");
-          break;
-        default:
-          navigate("/");
-      }
+      
+
+      // Redirect to FaceRecon component after signing in
+      navigate("/face-recon");
+
     } catch (error) {
       console.error('Error during sign-in:', error.response ? error.response.data : error.message);
       Swal.fire({

@@ -2,9 +2,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/user");
 const { validationResult } = require("express-validator");
+const { image } = require("../config/cloudinary");
 require("dotenv").config();
 
-// User Registration
 const registerUser = async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -20,7 +20,14 @@ const registerUser = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const imageUrl = req.file ? req.file.path : "";
+
+        // Check if the file is uploaded
+        if (!req.file) {
+            return res.status(400).json({ message: "Image file is missing" });
+        }
+
+        // Get the image URL from the uploaded file
+        const imageUrl = req.file.path; // This should now contain the Cloudinary URL
 
         const newUser = new User({
             name,
@@ -28,7 +35,7 @@ const registerUser = async (req, res) => {
             password: hashedPassword,
             phoneNumber,
             role,
-            profileImageUrl: imageUrl,
+            image: imageUrl, // Store the image URL
         });
 
         await newUser.save();
@@ -54,7 +61,7 @@ const signInUser = async (req, res) => {
         }
 
         const token = jwt.sign(
-            { userId: user._id, role: user.role },
+            { userId: user._id, role: user.role, email: user.email, image: user.image }, 
             process.env.JWT_SECRET,
             { expiresIn: "1h" }
         );
@@ -64,27 +71,13 @@ const signInUser = async (req, res) => {
             maxAge: 60 * 60 * 1000
         });
 
-        res.status(200).json({ token, role: user.role });
-    } catch (error) {
+        res.status(200).json({ token, role: user.role, image: user.image });
+        } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-const getUserProfileImage = async (req, res) => {
-    try {
-        // Using req.user from the auth middleware
-        const user = await User.findById(req.user.userId).select("image"); // Use "image" for profile image field
 
-        if (!user || !user.image) {
-            return res.status(404).json({ message: "No profile image found" });
-        }
-
-        res.json({ profileImageUrl: user.image });
-    } catch (error) {
-        console.error("Error fetching user profile image:", error);
-        res.status(500).json({ message: "Server error" });
-    }
-};
 // User Logout
 const logout = (req, res) => {
     res.cookie("token", "", { maxAge: 0 });
@@ -110,4 +103,17 @@ const checkAuth = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, signInUser, logout, checkAuth , getUserProfileImage};
+const getUserImageByEmail = async (req, res) => {
+    const { email } = req.params; // Fetch email from request parameters
+
+    try {
+        const user = await User.findOne({ email }).select('image'); // Select only the image field
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json({ imageUrl: user.image });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+module.exports = { registerUser, signInUser, logout, checkAuth,getUserImageByEmail };

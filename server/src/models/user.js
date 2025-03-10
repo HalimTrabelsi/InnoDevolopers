@@ -31,7 +31,10 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'BankAccount',
     }],
-    image: { type: String },
+    image: {
+        type: String, 
+        default: '',
+      },
 });
 
 const User = mongoose.model('User', userSchema);

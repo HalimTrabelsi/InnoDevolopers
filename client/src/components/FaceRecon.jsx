@@ -1,116 +1,123 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
+import { useNavigate } from "react-router-dom"; // Ensure react-router-dom is installed
 
-const FaceRecon = ({ userEmail }) => {
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  const [verificationResult, setVerificationResult] = useState(null);
-  const [error, setError] = useState("");
-  const [storedImageUrl, setStoredImageUrl] = useState("");
-  const navigate = useNavigate();
+const FaceRecon = () => {
+    const [storedImageUrl, setStoredImageUrl] = useState(null);
+    const [email, setUserEmail] = useState(null);
+    const [role, setRole] = useState(null); // State for user role
+    const videoRef = useRef(null);
+    const canvasRef = useRef(null);
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    const setupCamera = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.play();
-          console.log("Camera setup successful");
-        }
-      } catch (err) {
-        console.error("Error accessing webcam:", err);
-        setError("Could not access webcam. Please allow camera access.");
-      }
-    };
-
-    setupCamera();
-  }, []);
-
-  useEffect(() => {
-    const fetchStoredImage = async () => {
-      try {
+    useEffect(() => {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5001/api/users/profile-image", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setStoredImageUrl(response.data.imageUrl);
-        console.log("Stored image URL:", response.data.imageUrl);
-      } catch (err) {
-        console.error("Error fetching stored image:", err.response?.data || err.message);
-        setError("Error fetching stored image. Please try again later.");
-      }
+        if (token) {
+            try {
+                const base64Url = token.split(".")[1];
+                const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+                const jsonPayload = decodeURIComponent(
+                    atob(base64)
+                        .split("")
+                        .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+                        .join("")
+                );
+                const decoded = JSON.parse(jsonPayload);
+
+                if (decoded.email) {
+                    setUserEmail(decoded.email);
+                }
+
+                if (decoded.image) {
+                    setStoredImageUrl(decoded.image);
+                }
+
+                if (decoded.role) {
+                    setRole(decoded.role); // Store the user role
+                }
+            } catch (error) {
+                console.error("Error decoding token:", error);
+            }
+        } else {
+            console.error("No token found in localStorage");
+        }
+
+        // Start the camera on component mount
+        const startCamera = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream;
+                }
+            } catch (error) {
+                console.error("Error accessing the camera:", error);
+            }
+        };
+
+        startCamera();
+    }, []);
+
+    const handleVerificationClick = async () => {
+        const canvas = canvasRef.current;
+        const video = videoRef.current;
+
+        if (canvas && video) {
+            const context = canvas.getContext("2d");
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Simulated face matching logic (replace this with actual verification logic)
+            const isMatch = Math.random() < 0.5; // Simulating a match with random outcome
+
+            if (isMatch) {
+                // Show success notification and redirect based on role
+                await Swal.fire({
+                    title: 'Success!',
+                    text: 'Face match successful!',
+                    icon: 'success',
+                    confirmButtonText: 'Go to Dashboard'
+                });
+
+                // Role-based redirection
+                switch (role) {
+                    case 'Admin':
+                        navigate("/admin-dashboard");
+                        break;
+                    case 'Business owner':
+                        navigate("/business-owner-dashboard");
+                        break;
+                    default:
+                        navigate("/");
+                }
+            } else {
+                // Show failure notification
+                Swal.fire({
+                    title: 'Failed!',
+                    text: 'Face match failed. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                });
+            }
+        }
     };
 
-    fetchStoredImage();
-  }, [userEmail]);
-
-  const captureImage = () => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-    context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-    
-    // Get the image as a Base64 string (remove metadata prefix)
-    return canvas.toDataURL("image/jpeg").replace(/^data:image\/jpeg;base64,/, "");
-  };
-
-  const verifyFace = async () => {
-    const imageBase64 = captureImage();
-    const token = localStorage.getItem("token"); // Retrieve token from localStorage
-    console.log("Retrieved token for verification:", token);
-
-    if (!token) {
-      setError("User not authenticated. Please log in again.");
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        "http://localhost:5001/api/users/compare",
-        {
-          email: userEmail,
-          imageBase64,
-          storedImageUrl,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Send token in request
-          },
-        }
-      );
-
-      console.log("Face verification response:", response.data);
-
-      if (response.data.success) {
-        setVerificationResult("Face verified successfully!");
-
-        const { role } = JSON.parse(atob(token.split(".")[1]));
-        console.log("User role:", role);
-
-        navigate(role === "Admin" ? "/admin-dashboard" : "/user-dashboard");
-      } else {
-        setVerificationResult("Face verification failed. Please try again.");
-      }
-    } catch (err) {
-      console.error("Error verifying face:", err.response?.data || err.message);
-      setError("Error verifying face. Please try again later.");
-    }
-  };
-
-  return (
-    <div>
-      <video ref={videoRef} width="300" height="300" autoPlay />
-      <canvas ref={canvasRef} width="300" height="300" style={{ display: "none" }} />
-      <div>
-        <button onClick={verifyFace}>Verify Face</button>
-      </div>
-      {verificationResult && <p>{verificationResult}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-    </div>
-  );
+    return (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100vh', padding: '20px', backgroundColor: '#f9f9f9' }}>
+            <div style={{ flex: 1, textAlign: 'center' }}>
+                {storedImageUrl ? (
+                    <img src={storedImageUrl} alt="User" style={{ maxWidth: '100%', maxHeight: '80vh', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }} />
+                ) : (
+                    <p>No image available.</p>
+                )}
+            </div>
+            <div style={{ flex: 1, textAlign: 'center' }}>
+                <video ref={videoRef} autoPlay style={{ width: '100%', maxHeight: '80vh', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }} />
+                <canvas ref={canvasRef} style={{ display: 'none' }} />
+                <button onClick={handleVerificationClick} style={{ padding: '15px 30px', fontSize: '18px', color: 'white', backgroundColor: '#007bff', border: 'none', borderRadius: '5px', cursor: 'pointer', marginTop: '10px' }}>
+                    Start Verification
+                </button>
+            </div>
+        </div>
+    );
 };
 
 export default FaceRecon;

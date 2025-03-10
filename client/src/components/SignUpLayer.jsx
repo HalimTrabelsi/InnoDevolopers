@@ -15,7 +15,10 @@ const SignUpLayer = () => {
   const handlePhoneChange = (value) => {
     setFormData({ ...formData, phoneNumber: value });
   };
-
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]; // Get the selected file
+    setFormData(prevState => ({ ...prevState, image: file })); // Update the state with the file
+};
   const navigate = useNavigate(); // Initialize useNavigate
 
   const handleChange = (e) => {
@@ -282,8 +285,15 @@ const SignUpLayer = () => {
               </select>
             </div>
             <div className='icon-field mb-16'>
-              <UploadWithImagePreview/>
-            </div>
+    <Icon icon='mdi:image' className='icon top-50 translate-middle-y' />
+    <input
+        type='file'
+        name='image'
+        onChange={handleFileChange}
+        className='form-control h-56-px bg-neutral-50 radius-12'
+        required
+    />
+</div>
             <div className=''>
               <div className='d-flex justify-content-between gap-2'>
                 <div className='form-check style-check d-flex align-items-start'>
