@@ -6,7 +6,7 @@ import { toast, ToastContainer } from 'react-toastify'; // Import Toastify
 import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-
+import UploadWithImagePreview from "./child/UploadWithImagePreview";
 const SignUpLayer = () => {
   const [formData, setFormData] = useState({
     name: '', email: '', password: '', phoneNumber: '', role: '', image: ''
@@ -23,9 +23,7 @@ const SignUpLayer = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFileChange = (e) => {
-    setFormData({ ...formData, image: e.target.files[0] });
-  };
+ 
   const validatePhoneNumber = (phoneNumber) => {
     const digitsOnly = phoneNumber.replace(/\D/g, ""); 
     return digitsOnly.length >= 8 && digitsOnly.length <= 15; 
@@ -284,15 +282,7 @@ const SignUpLayer = () => {
               </select>
             </div>
             <div className='icon-field mb-16'>
-              <span className='icon top-50 translate-middle-y'>
-                <Icon icon='mdi:image' />
-              </span>
-              <input
-                type='file'
-                name='image'
-                onChange={handleFileChange}
-                className='form-control h-56-px bg-neutral-50 radius-12'
-              />
+              <UploadWithImagePreview/>
             </div>
             <div className=''>
               <div className='d-flex justify-content-between gap-2'>
@@ -358,8 +348,7 @@ const SignUpLayer = () => {
                   Sign In
                 </Link>
               </p>
-              
-
+             
             </div>
           </form>
         </div>

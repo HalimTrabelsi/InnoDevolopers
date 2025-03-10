@@ -4,8 +4,9 @@ import TotalSubscriberOne from './child/TotalSubscriberOne';
 import UsersOverviewOne from './child/UsersOverviewOne';
 import LatestRegisteredOne from './child/LatestRegisteredOne';
 import TopPerformerOne from './child/TopPerformerOne';
-
+import AddEditTaskModal from './child/AddEditTaskModal';
 import UnitCountOne from './child/UnitCountOne';
+import TextGeneratonLayer from './TextGeneratorLayer';
 
 const AdminDashboard = () => {
 
@@ -30,8 +31,9 @@ const AdminDashboard = () => {
 
                 {/* TopPerformerOne */}
                 <TopPerformerOne />
+                
+                <TextGeneratonLayer/>
 
-               
             </section>
         </>
 

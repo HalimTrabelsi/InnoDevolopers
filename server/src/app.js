@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const routes = require('./routes/index');
 const userRoutes = require('./routes/userRoute');
 const dbConfig = require('./config/db');
+const aiRoutes = require('./routes/aiRoutes');
+
 require('dotenv').config();
 
 const app = express();
@@ -19,6 +21,8 @@ dbConfig();
 // Routes
 app.use('/api', routes);
 app.use('/api/users', userRoutes);
+app.use('/api/ai',aiRoutes);
+
 
 // Start the server
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })

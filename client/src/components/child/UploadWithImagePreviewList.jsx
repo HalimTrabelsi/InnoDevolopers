@@ -16,16 +16,10 @@ const UploadWithImagePreviewList = () => {
     return (
         <div className="col-md-6">
             <div className="card h-100 p-0">
-                <div className="card-header border-bottom bg-base py-16 px-24">
-                    <h6 className="text-lg fw-semibold mb-0">Upload With Image Preview</h6>
-                </div>
+                
                 <div className="card-body p-24">
-                    <label
-                        htmlFor="file-upload-name"
-                        className="mb-16 border border-neutral-600 fw-medium text-secondary-light px-16 py-12 radius-12 d-inline-flex align-items-center gap-2 bg-hover-neutral-200"
-                    >
+                   
                         <Icon icon="solar:upload-linear" className="text-xl"></Icon>
-                        Click to upload
                         <input
                             type="file"
                             className="form-control w-auto mt-24 form-control-lg"
@@ -34,7 +28,6 @@ const UploadWithImagePreviewList = () => {
                             hidden
                             onChange={handleFileChange}
                         />
-                    </label>
 
                     {fileNames.length > 0 && (
                         <ul id="uploaded-img-names" className="show-uploaded-img-name">

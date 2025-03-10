@@ -28,7 +28,7 @@ const registerUser = async (req, res) => {
             password: hashedPassword,
             phoneNumber,
             role,
-            image: imageUrl,
+            profileImageUrl: imageUrl,
         });
 
         await newUser.save();
@@ -70,32 +70,44 @@ const signInUser = async (req, res) => {
     }
 };
 
+const getUserProfileImage = async (req, res) => {
+    try {
+        // Using req.user from the auth middleware
+        const user = await User.findById(req.user.userId).select("image"); // Use "image" for profile image field
+
+        if (!user || !user.image) {
+            return res.status(404).json({ message: "No profile image found" });
+        }
+
+        res.json({ profileImageUrl: user.image });
+    } catch (error) {
+        console.error("Error fetching user profile image:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 // User Logout
 const logout = (req, res) => {
     res.cookie("token", "", { maxAge: 0 });
     res.json({ message: "Logged out successfully" });
 };
 
-// Check Authentication & Get User Data
+// Check Authentication
 const checkAuth = async (req, res) => {
     try {
         if (!req.user) {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        // Fetch full user details from the database using userId
         const user = await User.findById(req.user.userId).select("-password"); // Exclude password
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        res.json({ user }); // Send full user details
+        res.json({ user });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-
-
-module.exports = { registerUser, signInUser, logout, checkAuth };
+module.exports = { registerUser, signInUser, logout, checkAuth , getUserProfileImage};
