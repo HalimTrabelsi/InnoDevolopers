@@ -6,7 +6,6 @@ import { toast, ToastContainer } from 'react-toastify'; // Import Toastify
 import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import UploadWithImagePreview from "./child/UploadWithImagePreview";
 const SignUpLayer = () => {
   const [formData, setFormData] = useState({
     name: '', email: '', password: '', phoneNumber: '', role: '', image: ''
@@ -251,20 +250,17 @@ const SignUpLayer = () => {
               Password must be at least 8 characters long, contain 1 uppercase letter and at least 3 numbers.
               </span>
             </div>
-            <div className='icon-field mb-16'>
-              
+            <div className="icon-field mb-16">
+              <span className="icon top-50 translate-middle-y">
+                <Icon icon="mdi:phone" />
+              </span>
               <PhoneInput
-                country={"tn"} // Default to Tunisia (+216)
-                name='phoneNumber' 
+                country={"tn"}
                 value={formData.phoneNumber}
                 onChange={handlePhoneChange}
-                placeholder='Phone Number'
-                enableSearch={true} // Allows searching countries
+                inputClass="form-control h-56-px bg-neutral-50 radius-12"
+                placeholder="Phone Number"
               />
-              <span className="mt-12 text-sm text-secondary-light">
-              Add a valid phone number (select your country of residence)
-            </span>
-               
             </div>
             <div className='icon-field mb-16'>
               <span className='icon top-50 translate-middle-y'>

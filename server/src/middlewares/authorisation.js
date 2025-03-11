@@ -5,9 +5,9 @@ const authMiddleware = (roles = []) => {
         let token = req.header('Authorization');
 
         if (token && token.startsWith('Bearer ')) {
-            token = token.split(' ')[1]; // Extract token from "Bearer <token>"
+            token = token.split(' ')[1]; 
         } else {
-            token = req.cookies.token; // Try to get token from cookies
+            token = req.cookies.token; 
         }
 
         if (!token) {

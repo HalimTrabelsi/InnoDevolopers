@@ -18,7 +18,6 @@ const registerUser = async (req, res) => {
         if (existingUser) {
             return res.status(400).json({ message: "User already exists" });
         }
-
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Check if the file is uploaded
@@ -61,7 +60,7 @@ const signInUser = async (req, res) => {
         }
 
         const token = jwt.sign(
-            { userId: user._id, role: user.role, email: user.email, image: user.image }, 
+            { userId: user._id, role: user.role, email: user.email, image: user.image, phoneNumber: user.phoneNumber }, 
             process.env.JWT_SECRET,
             { expiresIn: "1h" }
         );
@@ -71,7 +70,7 @@ const signInUser = async (req, res) => {
             maxAge: 60 * 60 * 1000
         });
 
-        res.status(200).json({ token, role: user.role, image: user.image });
+        res.status(200).json({ token, role: user.role, image: user.image , phoneNumber: user.phoneNumber});
         } catch (error) {
         res.status(500).json({ message: error.message });
     }
