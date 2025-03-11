@@ -9,15 +9,8 @@ const AdminDashboard = () => {
     return (
         <>
                 <UnitCountOne />
-
                 <section className="row gy-4 mt-1">
-
-            
-
                 <LatestRegisteredOne />
-
-                
-                
                 <TextGeneratonLayer/>
 
             </section>
