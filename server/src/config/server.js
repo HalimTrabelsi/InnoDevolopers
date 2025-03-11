@@ -19,7 +19,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(cookieParser());
-app.use(express.json({ limit: "5mb" })); // Allow JSON payloads for Base64 images
+app.use(express.json({ limit: "5mb" })); 
 app.use(express.urlencoded({ extended: true }));
 
 // Routes

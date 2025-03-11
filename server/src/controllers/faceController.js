@@ -11,7 +11,6 @@ const compareFaces = async (req, res) => {
             return res.status(400).json({ message: "Missing required data: storedImageUrl or imageBase64" });
         }
 
-        // Send request to Face++ API
         const response = await axios.post(
             "https://api.faceplusplus.com/facepp/v3/compare",
             new URLSearchParams({
@@ -25,7 +24,7 @@ const compareFaces = async (req, res) => {
 
         console.log("Face++ API response:", response.data);
 
-        if (response.data.confidence > 80) {
+        if (response.data.confidence > 98) {
             return res.json({ success: true, similarity: response.data.confidence });
         } else {
             return res.json({ success: false, message: "Face mismatch" });
