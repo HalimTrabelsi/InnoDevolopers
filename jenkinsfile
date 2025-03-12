@@ -55,5 +55,23 @@ pipeline {
                 }
             }
         }
+        stage('Start Server') {
+            steps {
+                script {
+                    dir('server/src/config') {  // Accéder au répertoire du serveur
+                        sh 'node server.js &'  // Démarrer le serveur en arrière-plan
+                    }
+                }
+            }
+        }
+        stage('Start Client') {
+            steps {
+                script {
+                    dir('client') {  // Accéder au répertoire client
+                        sh 'npm start &'  // Démarrer le client en arrière-plan
+                    }
+                }
+            }
+        }
     }
 }
