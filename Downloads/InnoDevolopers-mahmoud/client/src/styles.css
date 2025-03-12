@@ -1,0 +1,12 @@
+/* In your global CSS */
+@layer components {
+    .custom-list {
+      @apply pr-5 my-4;
+    }
+    .custom-list > li > ul {
+      @apply list-[circle] pr-5;
+    }
+    .custom-list > li > ul > li > ul {
+      @apply list-[square] pr-5;
+    }
+  }
