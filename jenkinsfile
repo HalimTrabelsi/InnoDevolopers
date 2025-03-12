@@ -1,24 +1,57 @@
 pipeline {
     agent any
     stages {
-        stage('Install dependencies') {
+        stage('Install dependencies - Client') {
             steps {
                 script {
-                    sh 'npm install'
+                    dir('client') {  // Accéder au répertoire client
+                        sh 'npm install'
+                    }
                 }
             }
         }
-        stage('Unit Test') {
+        stage('Install dependencies - Server') {
             steps {
                 script {
-                    sh 'npm test'
+                    dir('server') {  // Accéder au répertoire serveur
+                        sh 'npm install'
+                    }
                 }
             }
         }
-        stage('Build application') {
+        stage('Unit Test - Client') {
             steps {
                 script {
-                    sh 'npm run build-dev'
+                    dir('client') {  // Exécuter les tests dans le répertoire client
+                        sh 'npm test'
+                    }
+                }
+            }
+        }
+        stage('Unit Test - Server') {
+            steps {
+                script {
+                    dir('server') {  // Exécuter les tests dans le répertoire serveur
+                        sh 'npm test'
+                    }
+                }
+            }
+        }
+        stage('Build application - Client') {
+            steps {
+                script {
+                    dir('client') {  // Construire le client
+                        sh 'npm run build-dev'
+                    }
+                }
+            }
+        }
+        stage('Build application - Server') {
+            steps {
+                script {
+                    dir('server') {  // Construire le serveur
+                        sh 'npm run build-dev'
+                    }
                 }
             }
         }
