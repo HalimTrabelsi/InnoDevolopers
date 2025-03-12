@@ -4,7 +4,7 @@ pipeline {
         stage('Install dependencies - Client') {
             steps {
                 script {
-                    dir('client') {  // Accéder au répertoire client
+                    dir('client') {  // Access the client directory
                         sh 'npm install'
                     }
                 }
@@ -13,7 +13,7 @@ pipeline {
         stage('Install dependencies - Server') {
             steps {
                 script {
-                    dir('server') {  // Accéder au répertoire serveur
+                    dir('server') {  // Access the server directory
                         sh 'npm install'
                     }
                 }
@@ -22,8 +22,11 @@ pipeline {
         stage('Unit Test - Client') {
             steps {
                 script {
-                    dir('client') {  // Exécuter les tests dans le répertoire client
-                        sh 'npm test'
+                    dir('client') {  // Run tests in the client directory
+                        def status = sh(script: 'npm test', returnStatus: true)
+                        if (status != 0) {
+                            error "Client tests failed"
+                        }
                     }
                 }
             }
@@ -31,8 +34,11 @@ pipeline {
         stage('Unit Test - Server') {
             steps {
                 script {
-                    dir('server') {  // Exécuter les tests dans le répertoire serveur
-                        sh 'npm test'
+                    dir('server') {  // Run tests in the server directory
+                        def status = sh(script: 'npm test', returnStatus: true)
+                        if (status != 0) {
+                            error "Server tests failed"
+                        }
                     }
                 }
             }
@@ -40,7 +46,7 @@ pipeline {
         stage('Build application - Client') {
             steps {
                 script {
-                    dir('client') {  // Construire le client
+                    dir('client') {  // Build the client
                         sh 'npm run build-dev'
                     }
                 }
@@ -49,29 +55,10 @@ pipeline {
         stage('Build application - Server') {
             steps {
                 script {
-                    dir('server') {  // Construire le serveur
+                    dir('server') {  // Build the server
                         sh 'npm run build-dev'
                     }
                 }
             }
         }
-        stage('Start Server') {
-            steps {
-                script {
-                    dir('server/src/config') {  // Accéder au répertoire du serveur
-                        sh 'node server.js &'  // Démarrer le serveur en arrière-plan
-                    }
-                }
-            }
-        }
-        stage('Start Client') {
-            steps {
-                script {
-                    dir('client') {  // Accéder au répertoire client
-                        sh 'npm start &'  // Démarrer le client en arrière-plan
-                    }
-                }
-            }
-        }
-    }
-}
+       
