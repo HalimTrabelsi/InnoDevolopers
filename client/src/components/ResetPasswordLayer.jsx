@@ -33,6 +33,7 @@ const ResetPasswordLayer = () => {
 
       try {
         const response = await axios.post(`http://localhost:5001/api/password/reset-password/${userId}/${token}`, {
+
           password: resetpassword,
         });
         console.log("Response received:", response.data);
@@ -81,6 +82,7 @@ const ResetPasswordLayer = () => {
         <div className='mb-20'>
           <div className='position-relative '>
             <div className='icon-field'>
+
               <span className='icon top-50 translate-middle-y'>
                 <Icon icon='solar:lock-password-outline' />
               </span>
@@ -116,6 +118,7 @@ const ResetPasswordLayer = () => {
     </div>
   </div>
 </section>
+
   );
 };
 

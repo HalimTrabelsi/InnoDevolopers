@@ -31,6 +31,7 @@ function MainApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -141,6 +142,7 @@ function App() {
   return (
     <BrowserRouter>
       <MainApp />
+
     </BrowserRouter>
   );
 }

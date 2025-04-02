@@ -26,10 +26,12 @@ const dashboardOwnerRoutes = require('./routes/dashboardOwnerRoutes');
 const revenueRoutes = require('./routes/revenueRoutes');
 const taskRoute = require('./routes/taskRoute');
 
+
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+
 // Database connection
 dbConfig();
 require('./controllers/passport');
