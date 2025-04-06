@@ -1,14 +1,104 @@
 import React, { useEffect, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation,useNavigate } from "react-router-dom";
 import ThemeToggleButton from "../helper/ThemeToggleButton";
+import axios from "axios";
 
 const MasterLayout = ({ children }) => {
   let [sidebarActive, seSidebarActive] = useState(false);
   let [mobileMenu, setMobileMenu] = useState(false);
-  const location = useLocation(); // Hook to get the current route
+  const location = useLocation(); 
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null); 
+<<<<<<< HEAD
+<<<<<<< HEAD
+  
+  const fetchUserData = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("No token found");
+        }
 
+        console.log("Fetching user data with token:", token);
+
+        const response = await fetch("http://localhost:5001/api/users/me", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            credentials: "include", // This allows the cookie to be sent with the request
+        });
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error("Unauthorized: Invalid or expired token.");
+            } else {
+                throw new Error(`Failed to fetch user data: ${response.statusText}`);
+            }
+        }
+
+        const data = await response.json();
+        setUser(data.user); // Ensure full user object is set
+
+    } catch (error) {
+        console.error("Failed to fetch user data:", error);
+
+        // Clear token and redirect to login for unauthorized errors
+        if (error.message === "Unauthorized: Invalid or expired token.") {
+=======
+
+=======
+
+>>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
+  const fetchUserData = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("No token found");
+        }
+
+        const response = await axios.get("http://localhost:5001/api/users/me", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+        });
+
+        setUser(response.data.user); // Ensure full user object is set
+    } catch (error) {
+        console.error("Failed to fetch user data:", error);
+        if (error.response?.status === 401) {
+<<<<<<< HEAD
+>>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
+=======
+>>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
+            localStorage.removeItem("token");
+            navigate("/sign-in");
+        }
+    }
+};
+
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+=======
+>>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
+=======
+>>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:5001/api/users/logout"); // Call backend logout API
+      localStorage.removeItem("token"); // Remove JWT token from local storage
+      navigate("/sign-in"); // Redirect to login page
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
   useEffect(() => {
+
+    fetchUserData();
     const handleDropdownClick = (event) => {
       event.preventDefault();
       const clickedLink = event.currentTarget;
@@ -36,6 +126,7 @@ const MasterLayout = ({ children }) => {
           submenu.style.maxHeight = `${submenu.scrollHeight}px`; // Expand submenu
         }
       }
+      
     };
 
     // Attach click event listeners to all dropdown triggers
@@ -235,7 +326,7 @@ const MasterLayout = ({ children }) => {
                 </li>
                 <li>
                   <NavLink
-                    to='/index-10'
+                    to='/balance'
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
@@ -1873,21 +1964,36 @@ const MasterLayout = ({ children }) => {
                     type='button'
                     data-bs-toggle='dropdown'
                   >
-                    <img
-                      src='assets/images/user.png'
-                      alt='image_user'
-                      className='w-40-px h-40-px object-fit-cover rounded-circle'
-                    />
+                   <Icon icon="solar:user-linear" className="w-40-px h-40-px text-primary" />
+
                   </button>
                   <div className='dropdown-menu to-top dropdown-menu-sm'>
                     <div className='py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2'>
                       <div>
-                        <h6 className='text-lg text-primary-light fw-semibold mb-2'>
-                          Shaidul Islam
-                        </h6>
-                        <span className='text-secondary-light fw-medium text-sm'>
-                          Admin
-                        </span>
+<<<<<<< HEAD
+<<<<<<< HEAD
+                        
+                      {user ? (
+          <div>
+            
+=======
+                      {user ? (
+          <div>
+>>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
+=======
+                      {user ? (
+          <div>
+>>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
+            <h6 className="text-lg text-primary-light fw-semibold mb-2">
+              {user.name} {/* Display dynamic username */}
+            </h6>
+            <span className="text-secondary-light fw-medium text-sm">
+              {user.role} {/* Display dynamic role */}
+            </span>
+          </div>
+        ) : (
+          <div>Loading...</div>
+        )}
                       </div>
                       <button type='button' className='hover-text-danger'>
                         <Icon
@@ -1934,14 +2040,14 @@ const MasterLayout = ({ children }) => {
                         </Link>
                       </li>
                       <li>
-                        <Link
-                          className='dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3'
-                          to='#'
-                        >
-                          <Icon icon='lucide:power' className='icon text-xl' />{" "}
-                          Log Out
-                        </Link>
-                      </li>
+                      <Link
+            className="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3"
+            to="#"
+            onClick={handleLogout} // Attach logout function
+          >
+            <Icon icon="lucide:power" className="icon text-xl" /> Log Out
+          </Link>
+        </li>
                     </ul>
                   </div>
                 </div>
@@ -1958,11 +2064,9 @@ const MasterLayout = ({ children }) => {
         <footer className='d-footer'>
           <div className='row align-items-center justify-content-between'>
             <div className='col-auto'>
-              <p className='mb-0'>© 2024 WowDash. All Rights Reserved.</p>
             </div>
             <div className='col-auto'>
               <p className='mb-0'>
-                Made by <span className='text-primary-600'>wowtheme7</span>
               </p>
             </div>
           </div>

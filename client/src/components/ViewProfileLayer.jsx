@@ -21,6 +21,9 @@ const ViewProfileLayer = () => {
         phoneNumber: "",
     });
         const [error, setError] = useState(null);
+        const [nameError, setNameError] = useState('');
+        const [phoneError, setPhoneError] = useState('');
+        const [emailError, setEmailError] = useState('');
     const [loading, setLoading] = useState(true);
     const token = localStorage.getItem('token');
     const [newPassword, setNewPassword] = useState('');
@@ -89,6 +92,38 @@ const ViewProfileLayer = () => {
             console.error('User data is not available');
             return;
         }
+                // Reset errors
+                setNameError('');
+                setPhoneError('');
+                setEmailError('');
+
+                let isValid = true;
+
+                // Validate name
+                if (!updatedUser.name.trim()) {
+                    setNameError('Full Name is required.');
+                    isValid = false;
+                } else if (!/^[a-zA-Z\s]*$/.test(updatedUser.name)) {
+                    setNameError('Full Name cannot contain numbers or special characters.');
+                    isValid = false;
+                }
+                //Validate Email
+                if (!updatedUser.email.trim()) {
+                  setEmailError('Email is required.');
+                  isValid = false;
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(updatedUser.email)) {
+                  setEmailError('Invalid email format.');
+                  isValid = false;
+              }
+        
+                if (!updatedUser.phoneNumber.trim()) {
+                  setPhoneError('Phone Number is required.');
+                  isValid = false;
+              }
+
+                if (!isValid) {
+                    return;
+                }
     
         try {
             const formData = new FormData();
@@ -159,6 +194,13 @@ const ViewProfileLayer = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setUpdatedUser({ ...updatedUser, [name]: value });
+        if (name === 'name') {
+          setNameError(''); // Clear error when the input changes
+      } else if (name === 'phoneNumber') {
+          setPhoneError(''); // Clear error when the input changes
+      } else if (name === 'email') {
+        setEmailError(''); // Clear error when the input changes
+    }
     };
     
     
@@ -209,12 +251,7 @@ const ViewProfileLayer = () => {
             setError(error.response?.data?.message || "Error changing password. Please try again.");
         }
     };
-    
 
-
-
-
-    
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -222,7 +259,7 @@ const ViewProfileLayer = () => {
     return (
         <div className="row gy-4">
             <div className="col-lg-4">
-                <div className="user-grid-card position-relative border radius-16 overflow-hidden h-100" style={{ backgroundColor: 'lightblue' }}>
+                <div className="user-grid-card position-relative border radius-16 overflow-hidden h-100" style={{ backgroundColor: 'white' }}>
                     <img
                         src="assets/images/user-grid/user-grid-bg1.png"
                         value={newPassword}
@@ -358,19 +395,119 @@ const ViewProfileLayer = () => {
                                                 <Icon icon="solar:camera-outline" className="icon"></Icon>
                                             </label>
                                         </div>
-                                        <div className="avatar-preview">
+                                        <div className="avatar-preview w-120-px h-120-px position-relative rounded-circle overflow-hidden ms-8 mt-8">
                                             <div
                                                 id="imagePreview"
                                                 style={{
                                                     backgroundImage: `url(${imagePreview})`,
+                                                    width: '100%',
+                                                    height: '100%',
                                                     backgroundSize: 'cover',
-                                                    backgroundPosition: 'center'
+                                                    backgroundRepeat: 'no-repeat',
+                                                    backgroundPosition: 'center',
                                                 }}
-                                            />
+                                            ></div>
                                         </div>
                                     </div>
                                 </div>
+                                <h6 className="text-md text-primary-light mb-16">Personal Information</h6>
+                                {error && <div className="text-danger">{error}</div>}
                                 <form onSubmit={handleSubmit}>
+<<<<<<< HEAD
+                                    <div className="row">
+                                        <div className="col-md-6 mb-24">
+                                            <label className="form-label text-primary-light fw-medium mb-8">
+                                                User Name
+                                            </label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="User Name"
+                                                name="name"
+                                                value={updatedUser?.name || ''}
+                                                onChange={handleInputChange}
+                                                disabled={!editing}
+                                            />
+                                              {nameError && (
+                                              <div className="text-danger">{nameError}</div>
+                                                )}
+                                        </div>
+                                        <div className="col-md-6 mb-24">
+                                            <label className="form-label text-primary-light fw-medium mb-8">
+                                                Email Address
+                                            </label>
+                                            <input
+                                                type="email"
+                                                className="form-control"
+                                                placeholder="Email Address"
+                                                name="email"
+                                                value={updatedUser?.email || ''}
+                                                onChange={handleInputChange}
+                                                disabled={!editing}
+                                            />
+                                             {emailError && (
+                                                        <div className="text-danger">{emailError}</div>
+                                                        )}
+                                        </div>
+                                        <div className="col-md-6 mb-24">
+                                            <label className="form-label text-primary-light fw-medium mb-8">
+                                                Phone Number
+                                            </label>
+                                            <input
+                                                type="tel"
+                                                className="form-control"
+                                                placeholder="Phone Number"
+                                                name="phoneNumber"
+                                                value={updatedUser?.phoneNumber || ''}
+                                                onChange={handleInputChange}
+                                                disabled={!editing}
+                                            />
+                                              {phoneError && (
+                                                        <div className="text-danger">{phoneError}</div>
+                                                        )}
+                                        </div>
+                                        {/* <div className="col-md-6 mb-24">
+                                            <label className="form-label text-primary-light fw-medium mb-8">
+                                                Role
+                                            </label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Role"
+                                                name="role"
+                                                value={updatedUser?.role || ''}
+                                                onChange={handleInputChange}
+                                                disabled={!editing}
+                                            />
+                                        </div> */}
+                                    </div>
+                                    <div className="text-end">
+                                        {!editing ? (
+                                            <button
+                                                type="button"
+                                                className="btn btn-primary px-32"
+                                                onClick={() => setEditing(true)}
+                                            >
+                                                Edit Profile
+                                            </button>
+                                        ) : (
+                                            <div>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-secondary me-16"
+                                                    onClick={handleCancelClick}
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button type="submit" className="btn btn-primary">
+                                                    Save Changes
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </form>
+                            </div>
+=======
     <div className="row">
 
 
@@ -451,7 +588,7 @@ const ViewProfileLayer = () => {
     </div>
 
     <div className="d-flex justify-content-end mt-3">
-        <button type="submit" className="btn btn-primary px-4 py-2">
+        <button type="submit" className="btn btn-primary px-3 py-1 text-sm">
             Save Changes
         </button>
     </div>
@@ -505,14 +642,14 @@ const ViewProfileLayer = () => {
         <div className="d-flex align-items-center justify-content-center gap-3">
             <button
                 type="button"
-                className="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-56 py-11 radius-8"
+                className="border border-danger-600 bg-hover-danger-200 text-danger-600 text-sm px-3 py-1 radius-8"
                 onClick={handleCancelClick}
             >
                 Cancel
             </button>
             <button
                 type="submit"
-                className="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8"
+                className="btn btn-primary border border-primary-600 text-sm px-3 py-1 radius-8"
             >
                 Change Password
             </button>
@@ -520,52 +657,78 @@ const ViewProfileLayer = () => {
     </form>
 </div>
 
+>>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
                             <div
                                 className="tab-pane fade"
-                                id="pills-notification"
+                                id="pills-change-passwork"
                                 role="tabpanel"
-                                aria-labelledby="pills-notification-tab"
+                                aria-labelledby="pills-change-passwork-tab"
                                 tabIndex={0}
                             >
-                                <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
-                                  
-                                    <div className="d-flex align-items-center gap-3 justify-content-between">
-                                   
+                                <h6 className="text-md text-primary-light mb-16">Change Password</h6>
+                                <form onSubmit={handleChangePassword}>
+                                    <div className="row">
+                                        <div className="col-md-12 mb-24">
+                                            <label className="form-label text-primary-light fw-medium mb-8">
+                                                New Password
+                                            </label>
+                                            <div className="position-relative">
+                                                <input
+                                                    type={passwordVisible ? 'text' : 'password'}
+                                                    className="form-control"
+                                                    placeholder="Enter Your Password"
+                                                    value={newPassword}
+                                                    onChange={(e) => setNewPassword(e.target.value)}
+                                                />
+                                                <span
+                                                    className="position-absolute top-50 end-0 translate-middle-y text-secondary-400 cursor-pointer me-16"
+                                                    onClick={togglePasswordVisibility}
+                                                >
+                                                    {passwordVisible ? (
+                                                        <Icon icon="solar:eye-bold-duotone" className="icon"></Icon>
+                                                    ) : (
+                                                        <Icon icon="solar:eye-closed-bold-duotone" className="icon"></Icon>
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-12 mb-24">
+                                            <label className="form-label text-primary-light fw-medium mb-8">
+                                                Confirm Password
+                                            </label>
+                                            <div className="position-relative">
+                                                <input
+                                                    type={confirmPasswordVisible ? 'text' : 'password'}
+                                                    className="form-control"
+                                                    placeholder="Enter Your Confirm Password"
+                                                    value={confirmPassword}
+                                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                                />
+                                                <span
+                                                    className="position-absolute top-50 end-0 translate-middle-y text-secondary-400 cursor-pointer me-16"
+                                                    onClick={toggleConfirmPasswordVisibility}
+                                                >
+                                                    {confirmPasswordVisible ? (
+                                                        <Icon icon="solar:eye-bold-duotone" className="icon"></Icon>
+                                                    ) : (
+                                                        <Icon icon="solar:eye-closed-bold-duotone" className="icon"></Icon>
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
-                                
-                                    <div className="d-flex align-items-center gap-3 justify-content-between">
-                                       
-                                      
+                                    <div className="text-end">
+                                        <button type="submit" className="btn btn-primary px-32">
+                                            Change Password
+                                        </button>
                                     </div>
-                                </div>
-                                <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
-                                   
-                                    <div className="d-flex align-items-center gap-3 justify-content-between">
-                                 
-                                    </div>
-                                </div>
-                                <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
-                                 
-                                    <div className="d-flex align-items-center gap-3 justify-content-between">
-                                     
-                                   
-                                    </div>
-                                </div>
-                                <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
-                                  
-                                    <div className="d-flex align-items-center gap-3 justify-content-between">
-                                  
-                                    </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
     );
 };
 

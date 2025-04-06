@@ -1,37 +1,19 @@
 import React from 'react'
-import SalesStatisticOne from './child/SalesStatisticOne';
-import TotalSubscriberOne from './child/TotalSubscriberOne';
-import UsersOverviewOne from './child/UsersOverviewOne';
-import LatestRegisteredOne from './child/LatestRegisteredOne';
-import TopPerformerOne from './child/TopPerformerOne';
 
+import LatestRegisteredOne from './child/LatestRegisteredOne';
 import UnitCountOne from './child/UnitCountOne';
+import TextGeneratonLayer from './CompilanceLayer';
+import UsersListLayer from './UsersListLayer';
 
 const AdminDashboard = () => {
 
     return (
         <>
-            {/* UnitCountOne */}
-            <UnitCountOne />
-
-            <section className="row gy-4 mt-1">
-
-                {/* SalesStatisticOne */}
-                <SalesStatisticOne />
-
-                {/* TotalSubscriberOne */}
-                <TotalSubscriberOne />
-
-                {/* UsersOverviewOne */}
-                <UsersOverviewOne />
-
-                {/* LatestRegisteredOne */}
+                <UnitCountOne />
+                <section className="row gy-4 mt-1">
                 <LatestRegisteredOne />
-
-                {/* TopPerformerOne */}
-                <TopPerformerOne />
-
-               
+                <TextGeneratonLayer/>
+                <UsersListLayer />
             </section>
         </>
 
