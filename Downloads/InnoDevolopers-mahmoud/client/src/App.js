@@ -22,7 +22,7 @@ import CompteBancaireTable from "./components/CompteBancaire/CompteBancaireTable
 import CryptoTable from "./components/crypto/CryptoTable";
 
 function App() {
-  const userId = "67bc888c89b0c925344f8703";
+  const userId = "67cc34299384fa66108bb394";
   const [refresh, setRefresh] = useState(false);
 
   // Configuration de la reconnaissance vocale
@@ -99,9 +99,9 @@ function App() {
         <Route 
           path='/business-owner-dashboard' 
           element={
-            <PrivateRoute allowedRoles={["Business owner"]}>
+            
               <BusinessOwnerPage />
-            </PrivateRoute>
+         
           } 
         />
         <Route
