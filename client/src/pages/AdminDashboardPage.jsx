@@ -9,6 +9,7 @@ const AdminDashboardPage = () => {
         <MasterLayout>
         <Breadcrumb title="Admin Dashboard" />
         <AdminDashboard />
+        
         </MasterLayout>
     </>
   );

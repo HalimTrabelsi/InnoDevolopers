@@ -3,6 +3,7 @@ const connectDB = require('./db');
 const dotenv = require('dotenv');
 const userRoutes = require('../routes/userRoute');
 const aiRoutes = require('../routes/aiRoutes');
+const translationRoutes = require('../routes/translationRoutes');
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/translate',translationRoutes);
 
 
 
