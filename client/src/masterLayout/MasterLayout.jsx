@@ -10,8 +10,6 @@ const MasterLayout = ({ children }) => {
   const location = useLocation(); 
   const navigate = useNavigate();
   const [user, setUser] = useState(null); 
-<<<<<<< HEAD
-<<<<<<< HEAD
   
   const fetchUserData = async () => {
     try {
@@ -47,46 +45,13 @@ const MasterLayout = ({ children }) => {
 
         // Clear token and redirect to login for unauthorized errors
         if (error.message === "Unauthorized: Invalid or expired token.") {
-=======
-
-=======
-
->>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
-  const fetchUserData = async () => {
-    try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            throw new Error("No token found");
-        }
-
-        const response = await axios.get("http://localhost:5001/api/users/me", {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true,
-        });
-
-        setUser(response.data.user); // Ensure full user object is set
-    } catch (error) {
-        console.error("Failed to fetch user data:", error);
-        if (error.response?.status === 401) {
-<<<<<<< HEAD
->>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
-=======
->>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
             localStorage.removeItem("token");
             navigate("/sign-in");
         }
     }
 };
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
->>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
-=======
->>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
   const handleLogout = async () => {
     try {
       await axios.post("http://localhost:5001/api/users/logout"); // Call backend logout API
@@ -332,7 +297,7 @@ const MasterLayout = ({ children }) => {
                     }
                   >
                     <i className='ri-circle-fill circle-icon text-info-main w-auto' />{" "}
-                    POS & Inventory
+                      Financial Overview
                   </NavLink>
                 </li>
                 <li>
@@ -1970,20 +1935,10 @@ const MasterLayout = ({ children }) => {
                   <div className='dropdown-menu to-top dropdown-menu-sm'>
                     <div className='py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2'>
                       <div>
-<<<<<<< HEAD
-<<<<<<< HEAD
                         
                       {user ? (
           <div>
             
-=======
-                      {user ? (
-          <div>
->>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
-=======
-                      {user ? (
-          <div>
->>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
             <h6 className="text-lg text-primary-light fw-semibold mb-2">
               {user.name} {/* Display dynamic username */}
             </h6>

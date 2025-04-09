@@ -6,10 +6,12 @@ import AdminDashboard from "../components/AdminDashboard";
 const AdminDashboardPage = () => {
   return (
     <>
-        <MasterLayout>
+      {/* MasterLayout */}
+      <MasterLayout>
+        {/* Breadcrumb */}
         <Breadcrumb title="Admin Dashboard" />
         <AdminDashboard />
-        </MasterLayout>
+      </MasterLayout>
     </>
   );
 };
