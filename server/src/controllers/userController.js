@@ -22,29 +22,11 @@ const registerUser = async (req, res) => {
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-        // Check if the file is uploaded
->>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
-=======
-        // Check if the file is uploaded
->>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
         if (!req.file) {
             return res.status(400).json({ message: "Image file is missing" });
         }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
         const imageUrl = req.file.path; 
-=======
-        // Get the image URL from the uploaded file
-        const imageUrl = req.file.path; // This should now contain the Cloudinary URL
->>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
-=======
-        // Get the image URL from the uploaded file
-        const imageUrl = req.file.path; // This should now contain the Cloudinary URL
->>>>>>> b8a57cc2b08589c97fc2a0e3532a0cb6b33920fd
 
         const newUser = new User({
             name,
@@ -52,7 +34,7 @@ const registerUser = async (req, res) => {
             password: hashedPassword,
             phoneNumber,
             role,
-            image: imageUrl, // Store the image URL
+            image: imageUrl,
             isVerified: false, 
         });
 
