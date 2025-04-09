@@ -1,36 +1,71 @@
-import React from 'react'
-import useReactApexChart from '../../hook/useReactApexChart'
+import React, { useEffect, useState } from 'react';
+import useReactApexChart from '../../hook/useReactApexChart';
+import Chart from 'react-apexcharts';
 
 const RevenueGrowthOne = () => {
+  const [chartData, setChartData] = useState({
+    series: [],
+    options: {
+      chart: {
+        type: 'pie',
+      },
+      labels: [],
+      responsive: [{
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: 300
+          },
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }]
+    }
+  });
 
-    let { createChartTwo } = useReactApexChart()
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Simulating API response
+        const revenueData = [
+          { source: 'Online Sales', amount: 3221 },
+          { source: 'Subscription Fees', amount: 2500 },
+          { source: 'Consulting Services', amount: 1800 },
+          { source: 'Freelance Projects', amount: 3200 },
+          { source: 'Ad Revenue', amount: 6000 }
+        ];
 
-    return (
-        <div className="col-xxl-4">
-            <div className="card h-100 radius-8 border">
-                <div className="card-body p-24">
-                    <div className="d-flex align-items-center flex-wrap gap-2 justify-content-between">
-                        <div>
-                            <h6 className="mb-2 fw-bold text-lg">Revenue Growth</h6>
-                            <span className="text-sm fw-medium text-secondary-light">
-                                Weekly Report
-                            </span>
-                        </div>
-                        <div className="text-end">
-                            <h6 className="mb-2 fw-bold text-lg">$50,000.00</h6>
-                            <span className="bg-success-focus ps-12 pe-12 pt-2 pb-2 rounded-2 fw-medium text-success-main text-sm">
-                                $10k
-                            </span>
-                        </div>
-                    </div>
-                    <div id="revenue-chart" className="mt-28" >
-                        {/* Pass the color value & height here */}
-                        {createChartTwo("#487fff", 162)}
-                    </div>
-                </div>
-            </div>
+        const amounts = revenueData.map(item => item.amount);
+        const labels = revenueData.map(item => item.source);
+
+        setChartData({
+          series: amounts,
+          options: {
+            ...chartData.options,
+            labels: labels
+          }
+        });
+      } catch (error) {
+        console.error('Error fetching revenue data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <div className="col-xxl-4 col-sm-6">
+      <div className="card p-3 shadow-2 radius-8 border input-form-light h-100 bg-gradient-end-3">
+        <div className="card-body p-0">
+          <h5 className="text-center">Revenue Distribution</h5>
+          <Chart options={chartData.options} series={chartData.series} type="pie" width="100%" />
         </div>
-    )
-}
+      </div>
+    </div>
+  );
+};
 
-export default RevenueGrowthOne
+
+
+export default RevenueGrowthOne;

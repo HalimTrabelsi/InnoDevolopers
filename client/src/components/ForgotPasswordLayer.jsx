@@ -1,12 +1,12 @@
-import { Icon } from '@iconify/react/dist/iconify.js'
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import axios from 'axios'
+import { Icon } from '@iconify/react/dist/iconify.js';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const ForgotPasswordLayer = () => {
-    const [email, setEmail] = useState('')
-    const [error, setError] = useState('')  
-    const [message, setMessage] = useState('')
+    const [email, setEmail] = useState('');
+    const [error, setError] = useState('');  
+    const [message, setMessage] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -28,7 +28,7 @@ const ForgotPasswordLayer = () => {
     
             console.log("Request Headers:", JSON.stringify(config.headers, null, 2)); 
     
-            const response = await axios.post("http://localhost:5003/api/password/forgot-password", { email }, config); // Ensure this URL is correct
+            const response = await axios.post("http://localhost:5001/api/password/forgot-password", { email }, config);
             console.log("Server response:", response.data);  
     
             setMessage(response.data.message);
@@ -96,7 +96,7 @@ const ForgotPasswordLayer = () => {
                 </div>
             </section>
         </>
-    )
+    );
 }
 
-export default ForgotPasswordLayer
+export default ForgotPasswordLayer;

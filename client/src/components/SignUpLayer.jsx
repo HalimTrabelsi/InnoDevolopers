@@ -1,11 +1,44 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState , useEffect } from "react";
+import { Link,useNavigate } from "react-router-dom";
 import axios from "axios";
-import { toast, ToastContainer } from 'react-toastify'; // Import Toastify
-import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
+import { toast, ToastContainer } from 'react-toastify'; 
+import 'react-toastify/dist/ReactToastify.css'; 
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
+
+const handleGoogleSignIn = () => {
+  const googleAuthURL = "http://localhost:5001/auth/google"; // Backend OAuth URL
+  window.location.href = googleAuthURL; // Redirection vers l'URL d'authentification Google
+};
+const handleFacebookSignIn = () => {
+  const facebookAuthURL = "http://localhost:5001/auth/facebook"; // Backend OAuth URL for Facebook
+  window.location.href = facebookAuthURL; // Redirection vers l'URL d'authentification Facebook
+};
+
 
 const SignUpLayer = () => {
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [loading, setLoading ] = useState(false);
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    if (token) {
+      localStorage.setItem("token", token);
+      setSuccessMessage("Inscription réussie !");
+      setIsRegistered(true);
+      // Optionnel : redirection après un certain temps
+      setTimeout(() => {
+        window.location.href = "/dashboard"; // Redirection finale après un certain temps
+      }, 3000);
+    }
+  }, []);
+
   const [formData, setFormData] = useState({
     name: '', email: '', password: '', phoneNumber: '', role: '', image: ''
   });
@@ -19,15 +52,104 @@ const SignUpLayer = () => {
     setFormData({ ...formData, image: e.target.files[0] });
   };
 
+  const validatePhoneNumber = (phoneNumber) => {
+    const digitsOnly = phoneNumber.replace(/\D/g, ""); 
+    return digitsOnly.length >= 8 && digitsOnly.length <= 15; 
+  };
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
+
+  const validatePassword = (password) => {
+    const re = /^(?=.*[A-Z])(?=.*\d{3,}).{8,}$/;
+    return re.test(password);
+  };
+  const handlePhoneChange = (value) => {
+    setFormData({ ...formData, phoneNumber: value });
+  };
+
+  const validateForm = () => {
+    const { name, email, password, phoneNumber, role } = formData;
+    const checkbox = document.getElementById('condition').checked;
+
+    if (!name || !email || !password || !phoneNumber || !role) {
+      toast.error('Please fill in all the required fields.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return false;
+    }
+    if (!validateEmail(email)) {
+      toast.error('Please enter a valid email address.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return false;
+    }
+    if (!validatePhoneNumber(phoneNumber)) {
+      toast.error('Please enter a valid phoneNumber.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return false;
+    }
+    if (!validatePassword(password)) {
+      toast.error('Password must be at least 8 characters long, contain 1 uppercase letter and at least 3 numbers.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return false;
+    }
+    if (!checkbox) {
+      toast.error('You must agree to the Terms & Conditions and Privacy Policy.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return false;
+    }
+    return true;
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
+   
+    if (!validateForm()){
+      setLoading(false);
+      return;} 
+   
+   
     const data = new FormData();
     for (const key in formData) {
       data.append(key, formData[key]);
     }
 
     try {
-      const response = await axios.post('/api/users/register', data, {
+      const response = await axios.post('http://localhost:5001/api/users/sign-up', data, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -42,6 +164,8 @@ const SignUpLayer = () => {
         draggable: true,
         progress: undefined,
       });
+      setTimeout(() => {navigate('/sign-in'); },3000);
+
     } catch (error) {
       console.error('Error during sign-up:', error.response ? error.response.data : error.message);
     
@@ -98,9 +222,7 @@ const SignUpLayer = () => {
       <div className='auth-right py-32 px-24 d-flex flex-column justify-content-center'>
         <div className='max-w-464-px mx-auto w-100'>
           <div>
-            <Link to='/' className='mb-40 max-w-290-px'>
-              <img src='/assets/images/2.png' alt='LOGO FINOVA' />
-            </Link>
+            
             <h4 className='mb-12'>Sign Up to your Account</h4>
             <p className='mb-32 text-secondary-light text-lg'>
               Welcome back! please enter your detail
@@ -162,15 +284,18 @@ const SignUpLayer = () => {
               <span className='icon top-50 translate-middle-y'>
                 <Icon icon='mdi:phone' />
               </span>
-              <input
-                type='text'
-                name='phoneNumber'
+              <PhoneInput
+                country={"tn"} // Default to Tunisia (+216)
+                name='phoneNumber' 
                 value={formData.phoneNumber}
-                onChange={handleChange}
-                className='form-control h-56-px bg-neutral-50 radius-12'
+                onChange={handlePhoneChange}
                 placeholder='Phone Number'
+                enableSearch={true} // Allows searching countries
               />
             </div>
+            <span className="mt-12 text-sm text-secondary-light">
+              Add a valid phone number (select your country of residence)
+            </span>
             <div className='icon-field mb-16'>
               <span className='icon top-50 translate-middle-y'>
                 <Icon icon='mdi:account' />
@@ -238,6 +363,7 @@ const SignUpLayer = () => {
             <div className='mt-32 d-flex align-items-center gap-3'>
               <button
                 type='button'
+                onClick={handleFacebookSignIn}
                 className='fw-semibold text-primary-light py-16 px-24 w-50 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50'
               >
                 <Icon
@@ -248,6 +374,7 @@ const SignUpLayer = () => {
               </button>
               <button
                 type='button'
+                onClick={handleGoogleSignIn}
                 className='fw-semibold text-primary-light py-16 px-24 w-50 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50'
               >
                 <Icon
@@ -256,6 +383,12 @@ const SignUpLayer = () => {
                 />
                 Google
               </button>
+              
+              {isRegistered && (
+                     <div className="success-message" style={{ fontWeight: 'bold', fontSize: '1.5em', marginTop: '20px' }}>
+                    {successMessage}
+                     </div>
+                    )}
             </div>
             <div className='mt-32 text-center text-sm'>
               <p className='mb-0'>

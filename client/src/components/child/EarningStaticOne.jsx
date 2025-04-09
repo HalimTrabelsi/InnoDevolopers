@@ -1,76 +1,124 @@
-import React from 'react';
-import useReactApexChart from '../../hook/useReactApexChart';
-import ReactApexChart from 'react-apexcharts';
-import { Icon } from '@iconify/react/dist/iconify.js';
+import React, { useEffect, useState } from "react";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 const EarningStaticOne = () => {
+  // Revenue Data
+  const [revenueData, setRevenueData] = useState([]);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    let { barChartSeriesTwo, barChartOptionsTwo } = useReactApexChart();
-    return (
-        <div className="col-xxl-8">
-            <div className="card h-100 radius-8 border-0">
-                <div className="card-body p-24">
-                    <div className="d-flex align-items-center flex-wrap gap-2 justify-content-between">
-                        <div>
-                            <h6 className="mb-2 fw-bold text-lg">Earning Statistic</h6>
-                            <span className="text-sm fw-medium text-secondary-light">
-                                Yearly earning overview
-                            </span>
-                        </div>
-                        <div className="">
-                            <select className="form-select form-select-sm w-auto bg-base border text-secondary-light" defaultValue="">
-                                <option value="" disabled>
-                                    Select Frequency
-                                </option>
-                                <option value="Yearly">Yearly</option>
-                                <option value="Monthly">Monthly</option>
-                                <option value="Weekly">Weekly</option>
-                                <option value="Today">Today</option>
-                            </select>
-                        </div>
+  // useEffect(() => {
+  //   const fetchRevenueData = async () => {
+  //     try {
+  //       const response = await fetch("http://localhost:5001/api/ownerdashboard/ownerdashboard");
+  //       if (!response.ok) {
+  //         throw new Error("Failed to fetch revenue data");
+  //       }
+  //       const data = await response.json();
+
+  //             // Ensure the response is an array before using reduce
+  //     if (!Array.isArray(data)) {
+  //       console.error("API response is not an array:", data);
+  //       throw new Error("Unexpected response format");
+  //     }
+  //       // Calculate total revenue
+  //       const total = data.reduce((sum, revenue) => sum + revenue.amount, 0);
+
+
+
+  //       setRevenueData(data);
+
+  //       setTotalRevenue(total);
+  //     } catch (err) {
+  //       setError(err.message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchRevenueData();
+  // }, []);
+
+  useEffect(() => {
+    const fetchRevenueData = async () => {
+      try {
+        const response = await fetch("http://localhost:5001/api/ownerdashboard/ownerdashboard");
+        if (!response.ok) {
+          throw new Error("Failed to fetch revenue data");
+        }
+        const data = await response.json();
+  
+        // check if `data.revenues` exists and is an array
+        if (!Array.isArray(data.revenues)) {
+          console.error("API response is not in expected format:", data);
+          throw new Error("Unexpected response format");
+        }
+  
+        const total = data.revenues.reduce((sum, revenue) => sum + revenue.amount, 0);
+        setRevenueData(data.revenues);
+        setTotalRevenue(total);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchRevenueData();
+  }, []);
+  
+
+  if (loading) return <p>Loading revenue data...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  return (
+    <div className="col-xxl-12">
+      <div className="card p-4 shadow-2 radius-8 border input-form-light h-100">
+        <div className="card-body p-0">
+          {/* Header Section */}
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h6 className="fw-bold text-lg">
+              <Icon icon="iconamoon:discount-fill" className="me-2 text-warning" />
+              Revenue Data
+            </h6>
+            <span className="badge bg-success text-white px-3 py-2 fs-6">
+              Total:{totalRevenue.toFixed(2)}  DTN 
+            </span>
+          </div>
+
+          {/* Revenue Items */}
+          <div className="row g-3">
+            {revenueData.length > 0 ? (
+              revenueData.map((revenue) => (
+                <div key={revenue._id} className="col-md-4">
+                  <div className="card p-3 shadow-sm radius-8 border h-100">
+                    <div className="d-flex align-items-center gap-3">
+                      <Icon icon="iconamoon:money-bill-fill" className="text-success fs-2" />
+                      <div>
+                        <h6 className="fw-semibold mb-1"><Icon icon="iconamoon:money-bill-fill" className="text-success fs-2" />{revenue.amount} DTN </h6>
+                        <span className="text-muted small">
+                          {new Date(revenue.date).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
-                    <div className="mt-20 d-flex justify-content-center flex-wrap gap-3">
-                        <div className="d-inline-flex align-items-center gap-2 p-2 radius-8 border pe-36 br-hover-primary group-item">
-                            <span className="bg-neutral-100 w-44-px h-44-px text-xxl radius-8 d-flex justify-content-center align-items-center text-secondary-light group-hover:bg-primary-600 group-hover:text-white">
-                                <Icon icon="fluent:cart-16-filled" className="icon" />
-                            </span>
-                            <div>
-                                <span className="text-secondary-light text-sm fw-medium">
-                                    Sales
-                                </span>
-                                <h6 className="text-md fw-semibold mb-0">$200k</h6>
-                            </div>
-                        </div>
-                        <div className="d-inline-flex align-items-center gap-2 p-2 radius-8 border pe-36 br-hover-primary group-item">
-                            <span className="bg-neutral-100 w-44-px h-44-px text-xxl radius-8 d-flex justify-content-center align-items-center text-secondary-light group-hover:bg-primary-600 group-hover:text-white">
-                                <Icon icon="uis:chart" className="icon" />
-                            </span>
-                            <div>
-                                <span className="text-secondary-light text-sm fw-medium">
-                                    Income
-                                </span>
-                                <h6 className="text-md fw-semibold mb-0">$200k</h6>
-                            </div>
-                        </div>
-                        <div className="d-inline-flex align-items-center gap-2 p-2 radius-8 border pe-36 br-hover-primary group-item">
-                            <span className="bg-neutral-100 w-44-px h-44-px text-xxl radius-8 d-flex justify-content-center align-items-center text-secondary-light group-hover:bg-primary-600 group-hover:text-white">
-                                <Icon icon="ph:arrow-fat-up-fill" className="icon" />
-                            </span>
-                            <div>
-                                <span className="text-secondary-light text-sm fw-medium">
-                                    Profit
-                                </span>
-                                <h6 className="text-md fw-semibold mb-0">$200k</h6>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="barChart" >
-                        <ReactApexChart options={barChartOptionsTwo} series={barChartSeriesTwo} type="bar" height={310} />
-                    </div>
+                    <p className="text-sm text-secondary mt-2 mb-0">
+                      <strong>Source:</strong> {revenue.source}
+                    </p>
+                    <p className="text-sm text-secondary mb-0">
+                      <strong>Description:</strong> {revenue.description}
+                    </p>
+                  </div>
                 </div>
-            </div>
+              ))
+            ) : (
+              <div className="text-center text-muted">No revenue data available</div>
+            )}
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default EarningStaticOne;
