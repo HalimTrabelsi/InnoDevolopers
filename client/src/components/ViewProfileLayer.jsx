@@ -171,6 +171,7 @@ const ViewProfileLayer = () => {
         setPasswordVisible(!passwordVisible);
     };
 
+    // Toggle function for confirm password field
     const toggleConfirmPasswordVisibility = () => {
         setConfirmPasswordVisible(!confirmPasswordVisible);
     };
@@ -571,6 +572,139 @@ const ViewProfileLayer = () => {
                                         </button>
                                     </div>
                                 </form>
+                            </div>
+                            <div className="tab-pane fade" id="pills-change-passwork" role="tabpanel" aria-labelledby="pills-change-passwork-tab" tabIndex="0">
+                                <div className="mb-20">
+                                    <label htmlFor="your-password" className="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        New Password <span className="text-danger-600">*</span>
+                                    </label>
+                                    <div className="position-relative">
+                                        <input
+                                            type={passwordVisible ? "text" : "password"}
+                                            className="form-control radius-8"
+                                            id="your-password"
+                                            placeholder="Enter New Password*"
+                                        />
+                                        <span
+                                            className={`toggle-password ${passwordVisible ? "ri-eye-off-line" : "ri-eye-line"} cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light`}
+                                            onClick={togglePasswordVisibility}
+                                        ></span>
+                                    </div>
+                                </div>
+
+                                <div className="mb-20">
+                                    <label htmlFor="confirm-password" className="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        Confirm Password <span className="text-danger-600">*</span>
+                                    </label>
+                                    <div className="position-relative">
+                                        <input
+                                            type={confirmPasswordVisible ? "text" : "password"}
+                                            className="form-control radius-8"
+                                            id="confirm-password"
+                                            placeholder="Confirm Password*"
+                                        />
+                                        <span
+                                            className={`toggle-password ${confirmPasswordVisible ? "ri-eye-off-line" : "ri-eye-line"} cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light`}
+                                            onClick={toggleConfirmPasswordVisibility}
+                                        ></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                className="tab-pane fade"
+                                id="pills-notification"
+                                role="tabpanel"
+                                aria-labelledby="pills-notification-tab"
+                                tabIndex={0}
+                            >
+                                <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
+                                    <label
+                                        htmlFor="companzNew"
+                                        className="position-absolute w-100 h-100 start-0 top-0"
+                                    />
+                                    <div className="d-flex align-items-center gap-3 justify-content-between">
+                                        <span className="form-check-label line-height-1 fw-medium text-secondary-light">
+                                            Company News
+                                        </span>
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            role="switch"
+                                            id="companzNew"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
+                                    <label
+                                        htmlFor="pushNotifcation"
+                                        className="position-absolute w-100 h-100 start-0 top-0"
+                                    />
+                                    <div className="d-flex align-items-center gap-3 justify-content-between">
+                                        <span className="form-check-label line-height-1 fw-medium text-secondary-light">
+                                            Push Notification
+                                        </span>
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            role="switch"
+                                            id="pushNotifcation"
+                                            defaultChecked=""
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
+                                    <label
+                                        htmlFor="weeklyLetters"
+                                        className="position-absolute w-100 h-100 start-0 top-0"
+                                    />
+                                    <div className="d-flex align-items-center gap-3 justify-content-between">
+                                        <span className="form-check-label line-height-1 fw-medium text-secondary-light">
+                                            Weekly News Letters
+                                        </span>
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            role="switch"
+                                            id="weeklyLetters"
+                                            defaultChecked=""
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
+                                    <label
+                                        htmlFor="meetUp"
+                                        className="position-absolute w-100 h-100 start-0 top-0"
+                                    />
+                                    <div className="d-flex align-items-center gap-3 justify-content-between">
+                                        <span className="form-check-label line-height-1 fw-medium text-secondary-light">
+                                            Meetups Near you
+                                        </span>
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            role="switch"
+                                            id="meetUp"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
+                                    <label
+                                        htmlFor="orderNotification"
+                                        className="position-absolute w-100 h-100 start-0 top-0"
+                                    />
+                                    <div className="d-flex align-items-center gap-3 justify-content-between">
+                                        <span className="form-check-label line-height-1 fw-medium text-secondary-light">
+                                            Orders Notifications
+                                        </span>
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            role="switch"
+                                            id="orderNotification"
+                                            defaultChecked=""
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

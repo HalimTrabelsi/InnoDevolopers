@@ -7,11 +7,12 @@ const generateRoutes = require('../routes/generateRoute');
 const bodyParser = require('body-parser');
 const cors = require("cors");
 const upload = require('../middlewares/uploadImage');
+const aiRoutes = require('../routes/aiRoutes');
+const translationRoutes = require('../routes/translationRoutes');
+
 require('dotenv').config();
 const tranRoutes = require('../routes/tranRoute');
-const revenueRoute = require('../routes/revenueRoute'); // Import the revenue route
-const mongoose = require('mongoose');
-const dbConfig = require('./db');
+const revenueRoute = require('../routes/revenueRoute'); // Import the revenue routes
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -35,6 +36,7 @@ app.use('/api/transactions', tranRoutes);
 app.use('/api/revenue', revenueRoute); 
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/sms', smsRoutes);
+app.use('/api/ai', aiRoutes);
 
 
 

@@ -1,13 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import loadingGif from "../images/face.gif";
+import backgroundImage from "../images/3409297.jpg";
+import { FaCamera } from "react-icons/fa";
 
 const FaceRecon = () => {
     const [storedImageUrl, setStoredImageUrl] = useState(null);
     const [email, setUserEmail] = useState(null);
     const [role, setRole] = useState(null);
     const [loading, setLoading] = useState(false);
-
+    const [loadingImage, setLoadingImage] = useState(true);
+    
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const navigate = useNavigate();
@@ -36,27 +40,31 @@ const FaceRecon = () => {
             console.error("No token found in localStorage");
         }
 
-        // Start Camera
-        const startCamera = async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                if (videoRef.current) {
-                    videoRef.current.srcObject = stream;
-                }
-            } catch (error) {
-                console.error("Error accessing the camera:", error);
-                Swal.fire({
-                    title: "Camera Access Denied",
-                    text: "Please allow camera access to use this feature.",
-                    icon: "error",
-                    confirmButtonText: "OK"
-                });
-            }
-        };
-        startCamera();
+        const loadingTimer = setTimeout(() => {
+            setLoadingImage(false);
+            startCamera();
+        }, 3000);
+
+        return () => clearTimeout(loadingTimer);
     }, []);
 
-    // Capture Image & Send to API
+    const startCamera = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+            }
+        } catch (error) {
+            console.error("Error accessing the camera:", error);
+            Swal.fire({
+                title: "Camera Access Denied",
+                text: "Please allow camera access to use this feature.",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+        }
+    };
+
     const handleVerificationClick = async () => {
         const canvas = canvasRef.current;
         const video = videoRef.current;
@@ -66,7 +74,7 @@ const FaceRecon = () => {
         const context = canvas.getContext("2d");
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        const imageBase64 = canvas.toDataURL("image/jpeg").split(",")[1]; 
+        const imageBase64 = canvas.toDataURL("image/jpeg").split(",")[1];
 
         if (!storedImageUrl) {
             Swal.fire({
@@ -94,7 +102,7 @@ const FaceRecon = () => {
                 }),
             });
 
-            const responseData = await response.json(); // Parse response as JSON
+            const responseData = await response.json();
 
             if (responseData.success) {
                 await Swal.fire({
@@ -104,7 +112,6 @@ const FaceRecon = () => {
                     confirmButtonText: "Go to Dashboard"
                 });
 
-                // Role-based redirection
                 switch (role) {
                     case "Admin":
                         navigate("/admin-dashboard");
@@ -138,35 +145,45 @@ const FaceRecon = () => {
     };
 
     return (
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", height: "100vh", padding: "20px", backgroundColor: "#f9f9f9" }}>
-            <div style={{ flex: 1, textAlign: "center" }}>
-                {storedImageUrl ? (
-                    <img src={storedImageUrl} alt="User" style={{ maxWidth: "100%", maxHeight: "80vh", borderRadius: "10px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)" }} />
-                ) : (
-                    <p>No image available.</p>
-                )}
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100vh",
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundSize: "cover",
+            backdropFilter: "blur(8px)",
+            padding: "20px",
+            color: "white"
+        }}>
+            <h1 style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+                <FaCamera style={{ marginRight: "10px" }} /> Face Recognition
+            </h1>
+            <div style={{ display: "flex", gap: "30px", alignItems: "center" }}>
+                {storedImageUrl && <img src={storedImageUrl} alt="User" style={{ width: "250px", height: "250px", borderRadius: "15px", border: "3px solid white" }} />}
+                <div style={{ position: "relative" }}>
+                    {loadingImage ? (
+                        <img src={loadingGif} alt="Loading..." style={{ width: "250px", height: "250px", borderRadius: "15px" }} />
+                    ) : (
+                        <video ref={videoRef} autoPlay style={{ width: "250px", height: "250px", borderRadius: "15px", border: "3px solid white" }} />
+                    )}
+                    <canvas ref={canvasRef} width="640" height="480" style={{ display: "none" }} />
+                </div>
             </div>
-            <div style={{ flex: 1, textAlign: "center" }}>
-                <video ref={videoRef} autoPlay style={{ width: "100%", maxHeight: "80vh", borderRadius: "10px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)" }} />
-                <canvas ref={canvasRef} width="640" height="480" style={{ display: "none" }} />
-                
-                <button 
-                    onClick={handleVerificationClick} 
-                    style={{ 
-                        padding: "15px 30px", 
-                        fontSize: "18px", 
-                        color: "white", 
-                        backgroundColor: loading ? "#6c757d" : "#007bff", 
-                        border: "none", 
-                        borderRadius: "5px", 
-                        cursor: loading ? "not-allowed" : "pointer", 
-                        marginTop: "10px"
-                    }}
-                    disabled={loading}
-                >
-                    {loading ? "Verifying..." : "Start Verification"}
-                </button>
-            </div>
+            <button onClick={handleVerificationClick} style={{
+                marginTop: "20px",
+                padding: "15px 30px",
+                fontSize: "18px",
+                color: "white",
+                background: "linear-gradient(135deg, #007bff, #0056b3)",
+                border: "none",
+                borderRadius: "30px",
+                cursor: loading ? "not-allowed" : "pointer",
+                boxShadow: "0 4px 8px rgba(0, 123, 255, 0.3)"
+            }}>
+                {loading ? "Verifying..." : "Start Verification"}
+            </button>
         </div>
     );
 };

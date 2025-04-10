@@ -51,7 +51,6 @@ const MasterLayout = ({ children }) => {
     }
 };
 
-
   const handleLogout = async () => {
     try {
       await axios.post("http://localhost:5001/api/users/logout"); // Call backend logout API
