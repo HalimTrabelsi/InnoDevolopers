@@ -14,6 +14,7 @@ import ViewProfilePage from "./pages/ViewProfilePage.jsx";
 import UsersListPage from "./pages/UsersListPage.jsx"; // Ensure this page exists
 
 import UsersListPage from "./pages/UsersListPage.jsx";
+import ChatboltRoute from "./chatbolt/ChatbotFinance"
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route exact path='/face-recon' element={<FaceReconPage />} />
         <Route exact path='/sign-up/terms-conditions' element={<TermsAndConditions />} />
         <Route exact path='/view-profile' element={<ViewProfilePage />} />
+        <Route path="/chatbot" element={<ChatboltRoute />} />
 
         <Route exact path='/users-list' element={<UsersListPage />} />
 

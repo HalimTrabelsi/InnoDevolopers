@@ -20,6 +20,8 @@ import TradingRoute from "./components/crypto/trading";
 import CompteBancaireForm from "./components/CompteBancaire/CompteBancaireForm";
 import CompteBancaireTable from "./components/CompteBancaire/CompteBancaireTable";
 import CryptoTable from "./components/crypto/CryptoTable";
+import NewsRoute from "./components/News/News";
+import ChatboltRoute from "./chatbolt/ChatbotFinance"
 
 function App() {
   const userId = "67cc34299384fa66108bb394";
@@ -86,7 +88,8 @@ function App() {
         <Route path='/add-transaction' element={<AddTransaction />} />
         <Route path='/transactions' element={<TransactionList />} />
         <Route path='/trading' element={<TradingRoute />} />
-        
+        <Route path="/chatbot" element={<ChatboltRoute />} />
+
         {/* Private Routes for role-based access */}
         <Route 
           path='/admin-dashboard' 
@@ -116,6 +119,8 @@ function App() {
             </div>
           }
         />
+                  <Route path="/news" element={<NewsRoute />} />
+
       </Routes>
     </BrowserRouter>
   );
