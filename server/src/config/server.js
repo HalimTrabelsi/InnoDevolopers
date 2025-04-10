@@ -5,13 +5,54 @@ const userRoutes = require('../routes/userRoute');
 const profileRoutes = require('../routes/profileRoute');
 const bodyParser = require('body-parser');
 const cors = require("cors");
+const session = require("express-session");
+const passport = require("passport");
+const http = require("http");
+const { Server } = require("socket.io");
+const multer = require("multer");
+const mongoose = require("mongoose");
+const authRoutes = require("../routes/authRoutes");
+const userStatsRoutes = require("../routes/userStats");
+const cashflowRoutes = require("../routes/cashflow");
+const accountsRoutes = require("../routes/accounts");
+const transactionsRoutes = require("../routes/transactions");
+const authRoute = require("../routes/refresh");
+const Transaction = require("../models/Transaction");
+const notificationRoutes = require("../routes/notificationRoutes");
+const approvalRoutes = require("../routes/approvalRoutes");
 const upload = require('../middlewares/uploadImage');
+
 require('dotenv').config();
 
 dotenv.config();
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 5001;
-
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/");
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + "-" + file.originalname);
+    },
+});
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET || "default_secret",
+        resave: false,
+        saveUninitialized: true,
+    })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+        credentials: true,
+    },
+});
 // Connect to MongoDB
 connectDB();
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
@@ -22,7 +63,51 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/profile', profileRoutes);
-
+app.use("/auth", authRoutes);
+app.use("/api/accounts", accountsRoutes);
+app.use("/api/transactions", transactionsRoutes);
+app.use("/", cashflowRoutes.router);
+app.use("/api/auth", authRoute); 
+app.use("/api/approvals", approvalRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/userstats", userStatsRoutes);
+require("../controllers/passport");
+mongoose
+    .connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        dbName: process.env.DATABASE_NAME,
+    })
+    .then(() => {
+        console.log(`Connecté à MongoDB Atlas - Base: ${process.env.DATABASE_NAME}`);
+        const db = mongoose.connection;
+        db.once("open", () => {
+            console.log(`Base actuellement utilisée: ${db.name}`);
+            const transactionsCollection = db.collection("transactions");
+            cashflowRoutes.setTransactionsCollection(transactionsCollection);
+            console.log('Collection "transactions" prête');
+        });
+    })
+    .catch((err) => console.error("Erreur de connexion MongoDB:", err));
+    io.on("connection", (socket) => {
+        console.log("Client connecté via Socket.IO:", socket.id);
+        const emitInitialTransactions = async () => {
+            try {
+                console.log("Envoi des transactions initiales...");
+                const transactions = await FinancialTransaction.find().sort({ date: -1 });
+                socket.emit("initialTransactions", transactions);
+            } catch (error) {
+                console.error("Erreur lors de l'émission des transactions initiales:", error);
+            }
+        };
+        emitInitialTransactions();
+    
+        socket.on("disconnect", () => {
+            console.log("Client déconnecté:", socket.id);
+        });
+    });
+    
+    app.set("io", io);
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
