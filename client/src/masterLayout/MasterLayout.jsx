@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Link, NavLink, useLocation ,useNavigate} from "react-router-dom";
+import { Link, NavLink, useLocation,useNavigate } from "react-router-dom";
 import ThemeToggleButton from "../helper/ThemeToggleButton";
 import axios from "axios";
 
 const MasterLayout = ({ children }) => {
   let [sidebarActive, seSidebarActive] = useState(false);
   let [mobileMenu, setMobileMenu] = useState(false);
-  const location = useLocation(); // Hook to get the current route
+  const location = useLocation(); 
   const navigate = useNavigate();
   const [user, setUser] = useState(null); 
-
-
-
+  
   const fetchUserData = async () => {
     try {
         const token = localStorage.getItem("token");
@@ -20,17 +18,33 @@ const MasterLayout = ({ children }) => {
             throw new Error("No token found");
         }
 
-        const response = await axios.get("http://localhost:5001/api/users/me", {
+        console.log("Fetching user data with token:", token);
+
+        const response = await fetch("http://localhost:5001/api/users/me", {
+            method: "GET",
             headers: {
-                Authorization: `Bearer ${token}`,
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
             },
-            withCredentials: true,
+            credentials: "include", // This allows the cookie to be sent with the request
         });
 
-        setUser(response.data.user); // Ensure full user object is set
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error("Unauthorized: Invalid or expired token.");
+            } else {
+                throw new Error(`Failed to fetch user data: ${response.statusText}`);
+            }
+        }
+
+        const data = await response.json();
+        setUser(data.user); // Ensure full user object is set
+
     } catch (error) {
         console.error("Failed to fetch user data:", error);
-        if (error.response?.status === 401) {
+
+        // Clear token and redirect to login for unauthorized errors
+        if (error.message === "Unauthorized: Invalid or expired token.") {
             localStorage.removeItem("token");
             navigate("/sign-in");
         }
@@ -46,10 +60,9 @@ const MasterLayout = ({ children }) => {
       console.error("Logout failed:", error);
     }
   };
-
   useEffect(() => {
-    fetchUserData();
 
+    fetchUserData();
     const handleDropdownClick = (event) => {
       event.preventDefault();
       const clickedLink = event.currentTarget;
@@ -77,8 +90,9 @@ const MasterLayout = ({ children }) => {
           submenu.style.maxHeight = `${submenu.scrollHeight}px`; // Expand submenu
         }
       }
+      
     };
-    
+
     // Attach click event listeners to all dropdown triggers
     const dropdownTriggers = document.querySelectorAll(
       ".sidebar-menu .dropdown > a, .sidebar-menu .dropdown > Link"
@@ -276,7 +290,7 @@ const MasterLayout = ({ children }) => {
                 </li>
                 <li>
                   <NavLink
-                    to='/index-10'
+                    to='/balance'
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
@@ -1914,17 +1928,16 @@ const MasterLayout = ({ children }) => {
                     type='button'
                     data-bs-toggle='dropdown'
                   >
-                    <img
-                      src='assets/images/user.png'
-                      alt='image_user'
-                      className='w-40-px h-40-px object-fit-cover rounded-circle'
-                    />
+                   <Icon icon="solar:user-linear" className="w-40-px h-40-px text-primary" />
+
                   </button>
                   <div className='dropdown-menu to-top dropdown-menu-sm'>
                     <div className='py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2'>
-                    <div>
+                      <div>
+                        
                       {user ? (
           <div>
+            
             <h6 className="text-lg text-primary-light fw-semibold mb-2">
               {user.name} {/* Display dynamic username */}
             </h6>
@@ -2005,11 +2018,9 @@ const MasterLayout = ({ children }) => {
         <footer className='d-footer'>
           <div className='row align-items-center justify-content-between'>
             <div className='col-auto'>
-              <p className='mb-0'>© 2024 WowDash. All Rights Reserved.</p>
             </div>
             <div className='col-auto'>
               <p className='mb-0'>
-                Made by <span className='text-primary-600'>wowtheme7</span>
               </p>
             </div>
           </div>

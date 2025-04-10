@@ -4,6 +4,9 @@ import DataTable from 'react-data-table-component';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './TransactionList.css';
+import { FaEye, FaTimes } from 'react-icons/fa';
+import QRCode from 'react-qr-code';
 
 // Initialisation de Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -13,99 +16,12 @@ const TransactionsTable = ({ userId }) => {
   const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [accounts, setAccounts] = useState({});
   const [view, setView] = useState('table');
-  const [aiQuery, setAiQuery] = useState('');
-  const [loadingAI, setLoadingAI] = useState(false);
-  const [recognition, setRecognition] = useState(null); 
-  const [isListening, setIsListening] = useState(false); 
-
-  // Fonction pour analyser la commande vocale et appliquer des filtres combinés
-  const processVoiceCommand = (query) => {
-    const lowerQuery = query.toLowerCase();
-    const filters = {};
-    let sort = {};
-
-    // Détecter les filtres de type
-    if (lowerQuery.includes('débit')) filters.type = 'debit';
-    if (lowerQuery.includes('crédit')) filters.type = 'credit';
-    if (lowerQuery.includes('anomalie')) filters.anomalie = true;
-
-    // Détecter les montants
-    const amountMatch = lowerQuery.match(/(supérieur|plus) à (\d+)/);
-    if (amountMatch) filters.amount = { gt: parseFloat(amountMatch[2]) };
-
-    // Détecter les dates
-    const dateMatch = lowerQuery.match(/après le (\d{1,2}\/\d{1,2}\/\d{4})/);
-    if (dateMatch) filters.date = { gt: new Date(dateMatch[1]) };
-
-    // Détecter le tri
-    if (lowerQuery.includes('trier par date')) {
-      sort.key = 'date';
-      sort.direction = lowerQuery.includes('récent') ? 'desc' : 'asc';
-    }
-
-    return { filters, sort };
-  };
-
-  // Appliquer les filtres combinés sur les transactions
-  const applyFilters = ({ filters, sort }) => {
-    let result = [...transactions];
-
-    if (filters) {
-      // Appliquer les filtres
-      if (filters.type) result = result.filter(t => t.type === filters.type);
-      if (filters.anomalie) result = result.filter(t => t.anomalie);
-      if (filters.amount?.gt) result = result.filter(t => t.amount > filters.amount.gt);
-      if (filters.date?.gt) result = result.filter(t => new Date(t.date) > filters.date.gt);
-    }
-
-    if (sort?.key) {
-      result.sort((a, b) => {
-        if (sort.key === 'date') {
-          return new Date(a.date) - new Date(b.date);
-        }
-        return a[sort.key] - b[sort.key];
-      });
-      if (sort.direction === 'desc') result.reverse();
-    }
-
-    setFilteredTransactions(result);
-  };
-
-  // Démarrer la reconnaissance vocale
-  const startVoiceRecognition = () => {
-    const recognitionInstance = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognitionInstance.lang = 'fr-FR';
-    recognitionInstance.interimResults = false;
-    recognitionInstance.maxAlternatives = 1;
-
-    recognitionInstance.start();
-    setRecognition(recognitionInstance);
-
-    recognitionInstance.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setAiQuery(transcript);
-      const { filters, sort } = processVoiceCommand(transcript);
-      applyFilters({ filters, sort });
-    };
-
-    recognitionInstance.onerror = (event) => {
-      console.error('Erreur de reconnaissance vocale', event.error);
-    };
-
-    setIsListening(true); 
-  };
-
-  // Arrêter la reconnaissance vocale
-  const stopVoiceRecognition = () => {
-    if (recognition) {
-      recognition.stop();
-    }
-    setIsListening(false);
-  };
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   // Charger les transactions depuis l'API
   useEffect(() => {
-    axios.get(`http://localhost:5001/transaction/transactions/67bc888c89b0c925344f8703`)
+    axios.get(`http://localhost:5001/transaction/transactions/67ce6e61e991a44fb4bfe596`)
       .then(response => {
         setTransactions(response.data);
         setFilteredTransactions(response.data);
@@ -118,16 +34,38 @@ const TransactionsTable = ({ userId }) => {
     setView(view === 'table' ? 'stat' : 'table');
   };
 
+  // Ouvrir le modal avec les détails de la transaction
+  const openTransactionDetails = (transaction) => {
+    setSelectedTransaction(transaction);
+    setShowModal(true);
+  };
+
+  // Fermer le modal
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
   const columns = [
     { name: 'Montant', selector: row => `${row.amount} TND`, sortable: true },
     { name: 'Description', selector: row => row.description, sortable: true },
     { name: 'Type', selector: row => row.type === 'debit' ? 'Débit 💸' : 'Crédit 💰', sortable: true },
     { name: 'Date', selector: row => new Date(row.date).toLocaleDateString(), sortable: true },
     { name: 'Anomalie', selector: row => row.anomalie ? 'Oui' : 'Non', sortable: true },
-    { name: 'Commentaire Anomalie', selector: row => row.commentaireAnomalie || '-', sortable: false },
-    { name: 'Destinataire', selector: row => accounts[row.recipient]?.name || 'Chargement...', sortable: true },
-    { name: 'Location', selector: row => row.location, sortable: true },
-    { name: 'Numéro de Compte', selector: row => accounts[row.compteBancaire]?.numeroCompte || 'Chargement...', sortable: true },
+    {
+      name: 'Actions',
+      cell: row => (
+        <button 
+          className="details-btn"
+          onClick={() => openTransactionDetails(row)}
+          title="Voir détails"
+        >
+          <FaEye />
+        </button>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
   ];
 
   const chartData = {
@@ -144,26 +82,8 @@ const TransactionsTable = ({ userId }) => {
   };
 
   return (
-    <div className="container mt-4">
-      <div className="mb-4">
-        <div className="input-group">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Commande vocale activée (ex: 'Afficher les crédits supérieurs à 100€')"
-            value={aiQuery}
-            onChange={(e) => setAiQuery(e.target.value)}
-          />
-          <button 
-            className="btn btn-warning" 
-            onClick={isListening ? stopVoiceRecognition : startVoiceRecognition}
-          >
-            {isListening ? 'Arrêter la reconnaissance vocale' : 'Démarrer la reconnaissance vocale'}
-          </button>
-        </div>
-      </div>
-
-      <button onClick={toggleView} className="btn btn-primary mb-3">
+    <div className="transaction-container">
+      <button onClick={toggleView} className="view-toggle-btn">
         {view === 'table' ? 'Afficher les statistiques' : 'Afficher le tableau'}
       </button>
 
@@ -177,6 +97,7 @@ const TransactionsTable = ({ userId }) => {
           responsive
           defaultSortFieldId="date"
           defaultSortAsc={false}
+          className="transaction-table"
         />
       ) : (
         <div>
@@ -184,8 +105,112 @@ const TransactionsTable = ({ userId }) => {
           <Line data={chartData} />
         </div>
       )}
+
+      {/* Modal de détails de transaction */}
+      {showModal && selectedTransaction && (
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <div className="modal-header">
+        <h3 className="modal-title">Détails de la Transaction</h3>
+        <button className="close-btn" onClick={closeModal}>
+          <FaTimes />
+        </button>
+      </div>
+      
+      <div className="modal-body">
+        <div className="transaction-info">
+          <div className="transaction-details">
+            <div className="detail-item">
+              <div className="detail-label">ID Transaction</div>
+              <div className="detail-value">{selectedTransaction._id}</div>
+            </div>
+            
+            <div className="detail-item">
+              <div className="detail-label">Montant</div>
+              <div className="detail-value">{selectedTransaction.amount} TND</div>
+            </div>
+            
+            <div className="detail-item">
+              <div className="detail-label">Type</div>
+              <div className="detail-value">
+                {selectedTransaction.type === 'debit' ? 'Débit' : 'Crédit'}
+              </div>
+            </div>
+            
+            <div className="detail-item">
+              <div className="detail-label">Date</div>
+              <div className="detail-value">
+                {new Date(selectedTransaction.date).toLocaleString()}
+              </div>
+            </div>
+            
+            <div className="detail-item">
+              <div className="detail-label">Description</div>
+              <div className="detail-value">{selectedTransaction.description}</div>
+            </div>
+            
+            <div className="detail-item">
+              <div className="detail-label">Anomalie</div>
+              <div className={`detail-value ${selectedTransaction.anomalie ? 'anomalie-true' : 'anomalie-false'}`}>
+                {selectedTransaction.anomalie ? 'Oui' : 'Non'}
+              </div>
+            </div>
+            
+            {selectedTransaction.anomalie && (
+              <div className="detail-item">
+                <div className="detail-label">Commentaire Anomalie</div>
+                <div className="detail-value">
+                  {selectedTransaction.commentaireAnomalie || 'Aucun commentaire'}
+                </div>
+              </div>
+            )}
+            
+            <div className="detail-item">
+              <div className="detail-label">Compte Source</div>
+              <div className="detail-value">
+                {accounts[selectedTransaction.compteBancaire]?.numeroCompte || 'Inconnu'}
+              </div>
+            </div>
+            
+            <div className="detail-item">
+              <div className="detail-label">Destinataire</div>
+              <div className="detail-value">
+                {accounts[selectedTransaction.recipient]?.name || 'Inconnu'}
+              </div>
+            </div>
+            
+            <div className="detail-item">
+              <div className="detail-label">Localisation</div>
+              <div className="detail-value">
+                {selectedTransaction.location || 'Non spécifiée'}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="qr-sidebar">
+          <h4 className="qr-title">QR Code de Transaction</h4>
+          <div className="qr-container">
+            <QRCode 
+              value={JSON.stringify({
+                id: selectedTransaction._id,
+                amount: selectedTransaction.amount,
+                date: selectedTransaction.date,
+                type: selectedTransaction.type,
+                from: accounts[selectedTransaction.compteBancaire]?.numeroCompte,
+                to: accounts[selectedTransaction.recipient]?.name
+              })}
+              size={200}
+            />
+          </div>
+          <p>Scannez ce code pour vérifier la transaction</p>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };
 
-export default TransactionsTable;
+export default TransactionsTable; 

@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { User } = require('../models/user');
-const { Activity } = require('../models/activity');
+const { Activity } = require('../models/Activity');
 require('dotenv').config();
 const upload = require('../middlewares/uploadImage');
 const nodemailer = require('nodemailer');

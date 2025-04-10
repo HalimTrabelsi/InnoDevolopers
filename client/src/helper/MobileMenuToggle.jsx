@@ -15,11 +15,23 @@ const MobileMenuToggle = () => {
             </button>
 
             <div className={`sidebar ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
                 {/* Sidebar content */}
             </div>
 
             <div className={isSidebarOpen ? 'overlay-active' : ''}>
                 {/* Your overlay content */}
+<<<<<<< HEAD
+=======
+=======
+            </div>
+
+            <div className={isSidebarOpen ? 'overlay-active' : ''}>
+>>>>>>> origin/Sayyyf
+>>>>>>> main
             </div>
         </>
     );
