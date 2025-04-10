@@ -10,13 +10,10 @@ require('dotenv').config();
 const generateRoutes = require('./routes/generateRoute'); 
 const tranRoutes = require('./routes/tranRoute');
 
-const dbConfig = require('./config/db');
 const aiRoutes = require('./routes/aiRoutes');
-const profileRoutes = require('./routes/profileRoute');
 
 
 
-require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;

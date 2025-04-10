@@ -3,7 +3,6 @@
 
     "@iconify/icons-carbon": "^1.2.20",
     "@iconify/react": "^5.2.0",
-    "axios": "^1.7.9",
     "chart.js": "^4.4.8",
     "exceljs": "^4.4.0",
     "jspdf": "^3.0.0",

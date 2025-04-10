@@ -8,10 +8,6 @@ const authMiddleware = require('../middlewares/authorization'); // Import the mi
 const { compareFaces } = require("../controllers/faceController");
 
 
-const { registerUser, signInUser, logout, checkAuth,getUserImageByEmail, verifyEmail , resendVerificationEmail ,fetchUsersByFilters  } = require('../controllers/userController');
-const authMiddleware = require('../middlewares/authorisation');
-const { compareFaces } = require("../controllers/faceController");
-const upload = require('../middlewares/uploadImage');
 // 🔹 User Authentication Routes
 router.post('/sign-up', upload.single('image'), registerUser);
 router.post('/sign-in', signInUser);
