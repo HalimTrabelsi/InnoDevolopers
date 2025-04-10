@@ -1,6 +1,6 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate , useLocation } from "react-router-dom";
 import Swal from "sweetalert2"; // Import SweetAlert2
 import axios from "axios";
 
@@ -9,9 +9,16 @@ const SignInLayer = () => {
     email: '',
     password: '',
   });
-
+  const [verificationMessage, setVerificationMessage] = useState('');
   const navigate = useNavigate();
   const { email, password } = formData;
+  const location = useLocation(); 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('verified') === 'true') {
+      setVerificationMessage("You have successfully verified your email!");
+    }
+  }, [location.search]);
 
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 

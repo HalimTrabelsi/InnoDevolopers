@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/user");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 const { validationResult } = require("express-validator");
 const { image } = require("../config/cloudinary");
 require("dotenv").config();
@@ -20,13 +22,11 @@ const registerUser = async (req, res) => {
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Check if the file is uploaded
         if (!req.file) {
             return res.status(400).json({ message: "Image file is missing" });
         }
 
-        // Get the image URL from the uploaded file
-        const imageUrl = req.file.path; // This should now contain the Cloudinary URL
+        const imageUrl = req.file.path; 
 
         const newUser = new User({
             name,
@@ -34,11 +34,37 @@ const registerUser = async (req, res) => {
             password: hashedPassword,
             phoneNumber,
             role,
-            image: imageUrl, // Store the image URL
+            image: imageUrl,
+            isVerified: false, 
         });
 
+        const verificationToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
+            expiresIn: '1h',
+        });
+
+        newUser.verificationToken = verificationToken;
         await newUser.save();
-        res.status(201).json({ message: "User registered successfully", user: newUser });
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+        });
+
+        const verificationUrl = `http://localhost:5001/api/users/verify-email/${verificationToken}?email=${newUser.email}&redirect=sign-in`;
+
+        const mailOptions = {
+            to: newUser.email,
+            from: process.env.EMAIL_USER,
+            subject: "Email Verification",
+            text: `Please click the link below to verify your email address:\n\n${verificationUrl}`,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.status(201).json({ message: "User registered successfully. Please check your email to verify your account", user: newUser });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -115,4 +141,117 @@ const getUserImageByEmail = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-module.exports = { registerUser, signInUser, logout, checkAuth,getUserImageByEmail };
+
+
+const verifyEmail = async (req, res) => {
+    const { verificationToken } = req.params;
+    const { email, redirect } = req.query; 
+
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        jwt.verify(verificationToken, process.env.JWT_SECRET, async (err, decoded) => {
+            if (err) {
+                return res.status(400).json({ message: "Invalid or expired verification token" });
+            }
+
+            if (decoded.userId !== user._id.toString()) {
+                return res.status(400).json({ message: "Token mismatch" });
+            }
+
+            user.isVerified = true;
+            user.verificationToken = verificationToken; 
+            await user.save();
+
+            res.redirect(`http://localhost:3000/${redirect}?verified=true`);
+        });
+    } catch (error) {
+        console.error("Error during email verification:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+
+const resendVerificationEmail = async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({ message: "Email already verified" });
+        }
+
+        const verificationToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+            expiresIn: '1h',
+        });
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+        });
+
+        const verificationUrl = `http://localhost:5001/api/users/verify-email/${verificationToken}?email=${user.email}&redirect=sign-in`;
+        const mailOptions = {
+            to: email,
+            from: process.env.EMAIL_USER,
+            subject: "Email Verification",
+            text: `Please click the link to verify your email address: ${verificationUrl}`,
+        };
+
+
+
+        await transporter.sendMail(mailOptions);
+        user.verificationToken = verificationToken;
+        await user.save();
+        res.status(200).json({ message: "Verification email resent!" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+};
+
+
+
+const fetchUsersByFilters = async (req, res) => {
+    const { username, email, phoneNumber, role } = req.query;
+
+    try {
+        const query = {};
+
+        if (username) {
+            query.name = { $regex: username, $options: 'i' };
+        }
+
+        if (email) {
+            query.email = { $regex: email, $options: 'i' };
+        }
+
+        if (phoneNumber) {
+            query.phoneNumber = { $regex: phoneNumber, $options: 'i' };
+        }
+
+        if (role) {
+            query.role = role;
+        }
+
+        const users = await User.find(query);
+
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+};
+
+
+
+
+module.exports = { registerUser, signInUser, logout, checkAuth,getUserImageByEmail , verifyEmail  , resendVerificationEmail , fetchUsersByFilters};

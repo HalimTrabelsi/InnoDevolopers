@@ -9,6 +9,8 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import FaceReconPage from "./pages/FaceRecoPage.jsx";
 import TermsAndConditions from "./pages/TermsAndConditions.jsx";
+import ViewProfilePage from "./pages/ViewProfilePage.jsx";
+import UsersListPage from "./pages/UsersListPage.jsx"; // Ensure this page exists
 function App() {
   return (
     <BrowserRouter>
@@ -20,7 +22,8 @@ function App() {
         <Route exact path='/reset-password/:token' element={<ResetPasswordPage />} />
         <Route exact path='/face-recon' element={<FaceReconPage />} />
         <Route exact path='/sign-up/terms-conditions' element={<TermsAndConditions />} />
-
+        <Route exact path='/view-profile' element={<ViewProfilePage />} />
+        <Route exact path='/users-list' element={<UsersListPage />} />
         {/* Private Routes for role-based access */}
         <Route 
           path="/admin-dashboard" 

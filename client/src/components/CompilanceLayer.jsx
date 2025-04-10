@@ -24,9 +24,9 @@ const ComplianceLayer = () => {
                                     🤖
                                 </span>
                             </div>  
-                            <h1 className="text-xxl mb-0 text-line-2">
+                            <h6 className="text-lg mb-0 text-line-1">
                                 Analyze your financial reports here
-                            </h1>
+                            </h6>
                         </div>
                     </div>
                     <div className="chat-message-list max-h-612-px min-h-612-px">
