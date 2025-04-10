@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Link, NavLink, useLocation ,useNavigate} from "react-router-dom";
+import { Link, NavLink, useLocation,useNavigate } from "react-router-dom";
 import ThemeToggleButton from "../helper/ThemeToggleButton";
 import axios from "axios";
 import io from 'socket.io-client';
+
+
 const socket = io('http://localhost:5001', { withCredentials: true });
 
 const MasterLayout = ({ children }) => {
-  let [sidebarActive, seSidebarActive] = useState(false);
-  let [mobileMenu, setMobileMenu] = useState(false);
-  const location = useLocation(); 
-  const navigate = useNavigate();
-  const [user, setUser] = useState(null); 
-  const [notifications, setNotifications] = useState([]);
+  
+  
+  const [notifications, setNotifications] = useState(() => {
+    const saved = localStorage.getItem('notifications');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   useEffect(() => {
-    // Vérifier la connexion
     socket.on('connect', () => {
       console.log('Connected to Socket.IO server');
     });
@@ -24,19 +25,16 @@ const MasterLayout = ({ children }) => {
       console.log('Disconnected from Socket.IO server');
     });
 
-    // Écouter les nouvelles demandes
     socket.on('newApproval', (message) => {
       console.log('Received newApproval:', message);
       setNotifications((prev) => [...prev, message]);
     });
 
-    // Écouter les changements de statut (approbation/refus)
     socket.on('approvalStatus', (message) => {
       console.log('Received approvalStatus:', message);
       setNotifications((prev) => [...prev, message]);
     });
 
-    // Nettoyer les listeners à la fermeture
     return () => {
       socket.off('connect');
       socket.off('disconnect');
@@ -45,6 +43,12 @@ const MasterLayout = ({ children }) => {
     };
   }, []);
   
+  let [sidebarActive, seSidebarActive] = useState(false);
+  let [mobileMenu, setMobileMenu] = useState(false);
+  const location = useLocation(); 
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null); 
+
   const fetchUserData = async () => {
     try {
         const token = localStorage.getItem("token");
@@ -78,10 +82,9 @@ const MasterLayout = ({ children }) => {
       console.error("Logout failed:", error);
     }
   };
-
   useEffect(() => {
-    fetchUserData();
 
+    fetchUserData();
     const handleDropdownClick = (event) => {
       event.preventDefault();
       const clickedLink = event.currentTarget;
@@ -109,8 +112,9 @@ const MasterLayout = ({ children }) => {
           submenu.style.maxHeight = `${submenu.scrollHeight}px`; // Expand submenu
         }
       }
+      
     };
-    
+
     // Attach click event listeners to all dropdown triggers
     const dropdownTriggers = document.querySelectorAll(
       ".sidebar-menu .dropdown > a, .sidebar-menu .dropdown > Link"
@@ -1283,7 +1287,28 @@ const MasterLayout = ({ children }) => {
                     Company
                   </NavLink>
                 </li>
-               
+                <li>
+                  <NavLink
+                    to='/notification'
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className='ri-circle-fill circle-icon text-warning-main w-auto' />{" "}
+                    Notification
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to='/notification-alert'
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className='ri-circle-fill circle-icon text-info-main w-auto' />{" "}
+                    Notification Alert
+                  </NavLink>
+                </li>
                 <li>
                   <NavLink
                     to='/theme'
@@ -1758,7 +1783,14 @@ const MasterLayout = ({ children }) => {
                         </div>
                       </Link>
                     </div>
-                   
+                    <div className='text-center py-12 px-16'>
+                      <Link
+                        to='#'
+                        className='text-primary-600 fw-semibold text-md'
+                      >
+                        See All Message
+                      </Link>
+                    </div>
                   </div>
                 </div>
                 {/* Message dropdown end */}
@@ -1773,114 +1805,66 @@ const MasterLayout = ({ children }) => {
                       className='text-primary-light text-xl'
                     />
                   </button>
-                  <div>
-      
+                  <div className='dropdown-menu to-top dropdown-menu-lg p-0'>
+  <div className='m-16 py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2'>
+    <div>
+      <h6 className='text-lg text-primary-light fw-semibold mb-0'>Notifications</h6>
+    </div>
+    <span className='text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center'>
+      {notifications.length}
+    </span>
+  </div>
 
-                  <div className="dropdown-menu p-0">
-      
-
-                  <div className="dropdown">
-      {/* Icône de notification avec badge */}
-      <button className="btn dropdown-toggle position-relative" data-bs-toggle="dropdown" aria-expanded="false">
-        <i className="bi bi-bell"></i> {/* Utilisation de Bootstrap Icons, assurez-vous de l'avoir inclus */}
-        {notifications.length > 0 && (
-          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-            {notifications.length}
-          </span>
-        )}
-      </button>
-
-      {/* Liste déroulante des notifications */}
-      <div className="dropdown">
-      {/* Icône de notification avec badge à l'extérieur */}
-      
-
-      {/* Liste déroulante des notifications */}
-      <div className="dropdown-menu p-0">
-      <div className="dropdown">
-      {/* Icône de notification avec badge personnalisé */}
-      <div
-        style={{
-          position: 'relative',
-          display: 'inline-block',
-          cursor: 'pointer',
-        }}
-        onClick={(e) => {
-          const dropdown = e.currentTarget.nextSibling;
-          dropdown.classList.toggle('show');
-        }}
-      >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#6c757d"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{ verticalAlign: 'middle' }}
+  <div className='max-h-400-px overflow-y-auto scroll-sm pe-4'>
+    {notifications.length === 0 ? (
+      <div className='text-center text-secondary-light py-16'>Aucune notification</div>
+    ) : (
+      notifications.map((notif, index) => (
+        <Link
+          to='#'
+          key={index}
+          className={`px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between ${index % 2 === 1 ? 'bg-neutral-50' : ''}`}
         >
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-        </svg>
-        {notifications.length > 0 && (
-          <span
-            style={{
-              position: 'absolute',
-              top: '-5px',
-              right: '-5px',
-              backgroundColor: '#ff0000',
-              color: '#fff',
-              borderRadius: '50%',
-              width: '18px',
-              height: '18px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '12px',
-              fontWeight: 'bold',
-            }}
-          >
-            {notifications.length}
+          <div className='text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3'>
+            <span className='w-44-px h-44-px bg-success-subtle text-success-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0'>
+              <Icon icon='mdi:bell-outline' className='icon text-xxl' />
+            </span>
+            <div>
+              
+              <p className='mb-0 text-sm text-secondary-light text-w-200-px'>
+                {notif.message || notif}
+              </p>
+            </div>
+          </div>
+          <span className='text-sm text-secondary-light flex-shrink-0'>
+            {notif.time || 'Maintenant'}
           </span>
-        )}
-      </div>
+        </Link>
+      ))
+    )}
+  </div>
 
-      {/* Liste déroulante des notifications */}
-      <div className="dropdown-menu p-0" style={{ display: 'none', position: 'absolute', right: 0, minWidth: '300px' }}>
-        <div className="m-16 py-12 px-16">
-          <h6 className="text-lg fw-semibold mb-0">Notifications</h6>
-        </div>
+  <div className='text-center py-12 px-16'>
+    <Link to='#' className='text-primary-600 fw-semibold text-md'>
+      See All notifications
+    </Link>
+  </div>
 
-        <div className="notifications-list" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-          {notifications.length > 0 ? (
-            notifications.map((notification, index) => (
-              <div key={index} className="p-2 border-bottom">
-                {notification}
-              </div>
-            ))
-          ) : (
-            <div className="p-2">No notifications.</div>
-          )}
-        </div>
 
-        <div className="text-center p-2">
-          <a href="#" style={{ color: '#007bff', textDecoration: 'none' }}>
-            See All Messages
-          </a>
-        </div>
-      </div>
-    </div>
-    </div>
-    </div>
-    </div>
+                  
+  <div className='text-center py-12 px-16'>
 
-      <div className="text-center p-2">
-        <a href="#">See All Messages</a>
-      </div>
-    </div>
-    </div>
+
+  
+
+</div>
+
+
+ 
+
+  
+</div>
+
                 </div>
                 {/* Notification dropdown end */}
                 <div className='dropdown'>
@@ -1889,15 +1873,12 @@ const MasterLayout = ({ children }) => {
                     type='button'
                     data-bs-toggle='dropdown'
                   >
-                    <img
-                      src='assets/images/user.png'
-                      alt='image_user'
-                      className='w-40-px h-40-px object-fit-cover rounded-circle'
-                    />
+                   <Icon icon="solar:user-linear" className="w-40-px h-40-px text-primary" />
+
                   </button>
                   <div className='dropdown-menu to-top dropdown-menu-sm'>
                     <div className='py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2'>
-                    <div>
+                      <div>
                       {user ? (
           <div>
             <h6 className="text-lg text-primary-light fw-semibold mb-2">

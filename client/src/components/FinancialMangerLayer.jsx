@@ -9,18 +9,20 @@ const socket = io('http://localhost:5001', { withCredentials: true });
 const FinancialMangerLayer = () => {
   const [notification, setNotification] = useState('');
 
-  useEffect(() => {
-    // Écouter les changements de statut (approbation/refus)
-    socket.on('approvalStatus', (message) => {
-      console.log('FinancialManger received approvalStatus:', message);
-      setNotification(message);
-      // Pas de setTimeout, mais pas d'affichage direct non plus
-    });
-
-    return () => {
-      socket.off('approvalStatus');
-    };
-  }, []);
+  
+   
+     useEffect(() => {
+         // Écouter les changements de statut (approbation/refus)
+         socket.on('approvalStatus', (message) => {
+           console.log('FinancialManger received approvalStatus:', message);
+           setNotification(message);
+           // Pas de setTimeout, mais pas d'affichage direct non plus
+         });
+     
+         return () => {
+           socket.off('approvalStatus');
+         };
+       }, []);
 
   return (
     <section className="row gy-4">
