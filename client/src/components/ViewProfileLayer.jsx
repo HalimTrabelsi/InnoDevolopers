@@ -21,9 +21,6 @@ const ViewProfileLayer = () => {
         phoneNumber: "",
     });
         const [error, setError] = useState(null);
-        const [nameError, setNameError] = useState('');
-        const [phoneError, setPhoneError] = useState('');
-        const [emailError, setEmailError] = useState('');
     const [loading, setLoading] = useState(true);
     const token = localStorage.getItem('token');
     const [newPassword, setNewPassword] = useState('');
@@ -92,38 +89,6 @@ const ViewProfileLayer = () => {
             console.error('User data is not available');
             return;
         }
-                // Reset errors
-                setNameError('');
-                setPhoneError('');
-                setEmailError('');
-
-                let isValid = true;
-
-                // Validate name
-                if (!updatedUser.name.trim()) {
-                    setNameError('Full Name is required.');
-                    isValid = false;
-                } else if (!/^[a-zA-Z\s]*$/.test(updatedUser.name)) {
-                    setNameError('Full Name cannot contain numbers or special characters.');
-                    isValid = false;
-                }
-                //Validate Email
-                if (!updatedUser.email.trim()) {
-                  setEmailError('Email is required.');
-                  isValid = false;
-                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(updatedUser.email)) {
-                  setEmailError('Invalid email format.');
-                  isValid = false;
-              }
-        
-                if (!updatedUser.phoneNumber.trim()) {
-                  setPhoneError('Phone Number is required.');
-                  isValid = false;
-              }
-
-                if (!isValid) {
-                    return;
-                }
     
         try {
             const formData = new FormData();
@@ -171,7 +136,6 @@ const ViewProfileLayer = () => {
         setPasswordVisible(!passwordVisible);
     };
 
-    // Toggle function for confirm password field
     const toggleConfirmPasswordVisibility = () => {
         setConfirmPasswordVisible(!confirmPasswordVisible);
     };
@@ -195,13 +159,6 @@ const ViewProfileLayer = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setUpdatedUser({ ...updatedUser, [name]: value });
-        if (name === 'name') {
-          setNameError(''); // Clear error when the input changes
-      } else if (name === 'phoneNumber') {
-          setPhoneError(''); // Clear error when the input changes
-      } else if (name === 'email') {
-        setEmailError(''); // Clear error when the input changes
-    }
     };
     
     
@@ -252,7 +209,12 @@ const ViewProfileLayer = () => {
             setError(error.response?.data?.message || "Error changing password. Please try again.");
         }
     };
+    
 
+
+
+
+    
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -396,220 +358,168 @@ const ViewProfileLayer = () => {
                                                 <Icon icon="solar:camera-outline" className="icon"></Icon>
                                             </label>
                                         </div>
-                                        <div className="avatar-preview w-120-px h-120-px position-relative rounded-circle overflow-hidden ms-8 mt-8">
+                                        <div className="avatar-preview">
                                             <div
                                                 id="imagePreview"
                                                 style={{
                                                     backgroundImage: `url(${imagePreview})`,
-                                                    width: '100%',
-                                                    height: '100%',
                                                     backgroundSize: 'cover',
-                                                    backgroundRepeat: 'no-repeat',
-                                                    backgroundPosition: 'center',
+                                                    backgroundPosition: 'center'
                                                 }}
-                                            ></div>
+                                            />
                                         </div>
                                     </div>
                                 </div>
-                                <h6 className="text-md text-primary-light mb-16">Personal Information</h6>
-                                {error && <div className="text-danger">{error}</div>}
                                 <form onSubmit={handleSubmit}>
-                                    <div className="row">
-                                        <div className="col-md-6 mb-24">
-                                            <label className="form-label text-primary-light fw-medium mb-8">
-                                                User Name
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                placeholder="User Name"
-                                                name="name"
-                                                value={updatedUser?.name || ''}
-                                                onChange={handleInputChange}
-                                                disabled={!editing}
-                                            />
-                                              {nameError && (
-                                              <div className="text-danger">{nameError}</div>
-                                                )}
-                                        </div>
-                                        <div className="col-md-6 mb-24">
-                                            <label className="form-label text-primary-light fw-medium mb-8">
-                                                Email Address
-                                            </label>
-                                            <input
-                                                type="email"
-                                                className="form-control"
-                                                placeholder="Email Address"
-                                                name="email"
-                                                value={updatedUser?.email || ''}
-                                                onChange={handleInputChange}
-                                                disabled={!editing}
-                                            />
-                                             {emailError && (
-                                                        <div className="text-danger">{emailError}</div>
-                                                        )}
-                                        </div>
-                                        <div className="col-md-6 mb-24">
-                                            <label className="form-label text-primary-light fw-medium mb-8">
-                                                Phone Number
-                                            </label>
-                                            <input
-                                                type="tel"
-                                                className="form-control"
-                                                placeholder="Phone Number"
-                                                name="phoneNumber"
-                                                value={updatedUser?.phoneNumber || ''}
-                                                onChange={handleInputChange}
-                                                disabled={!editing}
-                                            />
-                                              {phoneError && (
-                                                        <div className="text-danger">{phoneError}</div>
-                                                        )}
-                                        </div>
-                                        {/* <div className="col-md-6 mb-24">
-                                            <label className="form-label text-primary-light fw-medium mb-8">
-                                                Role
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                placeholder="Role"
-                                                name="role"
-                                                value={updatedUser?.role || ''}
-                                                onChange={handleInputChange}
-                                                disabled={!editing}
-                                            />
-                                        </div> */}
-                                    </div>
-                                    <div className="text-end">
-                                        {!editing ? (
-                                            <button
-                                                type="button"
-                                                className="btn btn-primary px-32"
-                                                onClick={() => setEditing(true)}
-                                            >
-                                                Edit Profile
-                                            </button>
-                                        ) : (
-                                            <div>
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-secondary me-16"
-                                                    onClick={handleCancelClick}
-                                                >
-                                                    Cancel
-                                                </button>
-                                                <button type="submit" className="btn btn-primary">
-                                                    Save Changes
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </form>
-                            </div>
-                            <div
-                                className="tab-pane fade"
-                                id="pills-change-passwork"
-                                role="tabpanel"
-                                aria-labelledby="pills-change-passwork-tab"
-                                tabIndex={0}
-                            >
-                                <h6 className="text-md text-primary-light mb-16">Change Password</h6>
-                                <form onSubmit={handleChangePassword}>
-                                    <div className="row">
-                                        <div className="col-md-12 mb-24">
-                                            <label className="form-label text-primary-light fw-medium mb-8">
-                                                New Password
-                                            </label>
-                                            <div className="position-relative">
-                                                <input
-                                                    type={passwordVisible ? 'text' : 'password'}
-                                                    className="form-control"
-                                                    placeholder="Enter Your Password"
-                                                    value={newPassword}
-                                                    onChange={(e) => setNewPassword(e.target.value)}
-                                                />
-                                                <span
-                                                    className="position-absolute top-50 end-0 translate-middle-y text-secondary-400 cursor-pointer me-16"
-                                                    onClick={togglePasswordVisibility}
-                                                >
-                                                    {passwordVisible ? (
-                                                        <Icon icon="solar:eye-bold-duotone" className="icon"></Icon>
-                                                    ) : (
-                                                        <Icon icon="solar:eye-closed-bold-duotone" className="icon"></Icon>
-                                                    )}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-12 mb-24">
-                                            <label className="form-label text-primary-light fw-medium mb-8">
-                                                Confirm Password
-                                            </label>
-                                            <div className="position-relative">
-                                                <input
-                                                    type={confirmPasswordVisible ? 'text' : 'password'}
-                                                    className="form-control"
-                                                    placeholder="Enter Your Confirm Password"
-                                                    value={confirmPassword}
-                                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                                />
-                                                <span
-                                                    className="position-absolute top-50 end-0 translate-middle-y text-secondary-400 cursor-pointer me-16"
-                                                    onClick={toggleConfirmPasswordVisibility}
-                                                >
-                                                    {confirmPasswordVisible ? (
-                                                        <Icon icon="solar:eye-bold-duotone" className="icon"></Icon>
-                                                    ) : (
-                                                        <Icon icon="solar:eye-closed-bold-duotone" className="icon"></Icon>
-                                                    )}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="text-end">
-                                        <button type="submit" className="btn btn-primary px-32">
-                                            Change Password
-                                        </button>
-                                    </div>
-                                </form>
+    <div className="row">
+
+
+        <div className="col-sm-6">
+            <div className="mb-20">
+                <label htmlFor="name" className="form-label fw-semibold text-primary-light text-sm mb-8">
+                    Full Name <span className="text-danger-600">*</span>
+                </label>
+                <input
+                    type="text"
+                    className="form-control radius-8"
+                    id="name"
+                    name="name"
+                    value={updatedUser?.name || ""}
+                    onChange={handleInputChange}
+                    placeholder="Enter Full Name"
+                    required
+                />
+            </div>
+        </div>
+
+        <div className="col-sm-6">
+            <div className="mb-20">
+                <label htmlFor="email" className="form-label fw-semibold text-primary-light text-sm mb-8">
+                    Email <span className="text-danger-600">*</span>
+                </label>
+                <input
+                    type="email"
+                    className="form-control radius-8"
+                    id="email"
+                    name="email"
+                    value={updatedUser?.email || ""}
+                    onChange={handleInputChange}
+                    placeholder="Enter Your Email"
+                    required
+                />
+            </div>
+        </div>
+
+        <div className="col-sm-6">
+            <div className="mb-20">
+                <label htmlFor="phoneNumber" className="form-label fw-semibold text-primary-light text-sm mb-8">
+                    Phone Number
+                </label>
+                <input
+                    type="text"
+                    className="form-control radius-8"
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    value={updatedUser?.phoneNumber || ""}
+                    onChange={handleInputChange}
+                    placeholder="Enter Phone Number"
+                />
+            </div>
+        </div>
+
+        <div className="col-sm-6">
+            <div className="mb-20">
+                <label htmlFor="role" className="form-label fw-semibold text-primary-light text-sm mb-8">
+                    Role <span className="text-danger-600">*</span>
+                </label>
+                <select
+                    className="form-control radius-8 form-select"
+                    id="role"
+                    name="role"
+                    value={updatedUser?.role || ""}
+                    onChange={handleInputChange}
+                    required
+                >
+                    <option value="" disabled>Select Role Title</option>
+                    <option value="Business owner">Business owner</option>
+                    <option value="Financial manager">Financial manager</option>
+                    <option value="Accountant">Accountant</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div className="d-flex justify-content-end mt-3">
+        <button type="submit" className="btn btn-primary px-3 py-1 text-sm">
+            Save Changes
+        </button>
+    </div>
+</form>
+
                             </div>
                             <div className="tab-pane fade" id="pills-change-passwork" role="tabpanel" aria-labelledby="pills-change-passwork-tab" tabIndex="0">
-                                <div className="mb-20">
-                                    <label htmlFor="your-password" className="form-label fw-semibold text-primary-light text-sm mb-8">
-                                        New Password <span className="text-danger-600">*</span>
-                                    </label>
-                                    <div className="position-relative">
-                                        <input
-                                            type={passwordVisible ? "text" : "password"}
-                                            className="form-control radius-8"
-                                            id="your-password"
-                                            placeholder="Enter New Password*"
-                                        />
-                                        <span
-                                            className={`toggle-password ${passwordVisible ? "ri-eye-off-line" : "ri-eye-line"} cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light`}
-                                            onClick={togglePasswordVisibility}
-                                        ></span>
-                                    </div>
-                                </div>
+    <form onSubmit={handleChangePassword}>
+        <div className="mb-20">
+            <label htmlFor="your-password" className="form-label fw-semibold text-primary-light text-sm mb-8">
+                New Password <span className="text-danger-600">*</span>
+            </label>
+            <div className="position-relative">
+                <input
+                    type={passwordVisible ? "text" : "password"}
+                    className="form-control radius-8"
+                    id="your-password"
+                    placeholder="Enter New Password*"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                />
+                <span
+                    className={`toggle-password ${passwordVisible ? "ri-eye-off-line" : "ri-eye-line"} cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light`}
+                    onClick={togglePasswordVisibility}
+                ></span>
+            </div>
+        </div>
 
-                                <div className="mb-20">
-                                    <label htmlFor="confirm-password" className="form-label fw-semibold text-primary-light text-sm mb-8">
-                                        Confirm Password <span className="text-danger-600">*</span>
-                                    </label>
-                                    <div className="position-relative">
-                                        <input
-                                            type={confirmPasswordVisible ? "text" : "password"}
-                                            className="form-control radius-8"
-                                            id="confirm-password"
-                                            placeholder="Confirm Password*"
-                                        />
-                                        <span
-                                            className={`toggle-password ${confirmPasswordVisible ? "ri-eye-off-line" : "ri-eye-line"} cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light`}
-                                            onClick={toggleConfirmPasswordVisibility}
-                                        ></span>
-                                    </div>
-                                </div>
-                            </div>
+        <div className="mb-20">
+            <label htmlFor="confirm-password" className="form-label fw-semibold text-primary-light text-sm mb-8">
+                Confirm Password <span className="text-danger-600">*</span>
+            </label>
+            <div className="position-relative">
+                <input
+                    type={confirmPasswordVisible ? "text" : "password"}
+                    className="form-control radius-8"
+                    id="confirm-password"
+                    placeholder="Confirm Password*"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+                <span
+                    className={`toggle-password ${confirmPasswordVisible ? "ri-eye-off-line" : "ri-eye-line"} cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light`}
+                    onClick={toggleConfirmPasswordVisibility}
+                ></span>
+            </div>
+        </div>
+
+        {error && <p className="text-danger">{error}</p>}
+
+        <div className="d-flex align-items-center justify-content-center gap-3">
+            <button
+                type="button"
+                className="border border-danger-600 bg-hover-danger-200 text-danger-600 text-sm px-3 py-1 radius-8"
+                onClick={handleCancelClick}
+            >
+                Cancel
+            </button>
+            <button
+                type="submit"
+                className="btn btn-primary border border-primary-600 text-sm px-3 py-1 radius-8"
+            >
+                Change Password
+            </button>
+        </div>
+    </form>
+</div>
+
                             <div
                                 className="tab-pane fade"
                                 id="pills-notification"
@@ -618,91 +528,35 @@ const ViewProfileLayer = () => {
                                 tabIndex={0}
                             >
                                 <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
-                                    <label
-                                        htmlFor="companzNew"
-                                        className="position-absolute w-100 h-100 start-0 top-0"
-                                    />
+                                  
                                     <div className="d-flex align-items-center gap-3 justify-content-between">
-                                        <span className="form-check-label line-height-1 fw-medium text-secondary-light">
-                                            Company News
-                                        </span>
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            role="switch"
-                                            id="companzNew"
-                                        />
+                                   
                                     </div>
                                 </div>
                                 <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
-                                    <label
-                                        htmlFor="pushNotifcation"
-                                        className="position-absolute w-100 h-100 start-0 top-0"
-                                    />
+                                
                                     <div className="d-flex align-items-center gap-3 justify-content-between">
-                                        <span className="form-check-label line-height-1 fw-medium text-secondary-light">
-                                            Push Notification
-                                        </span>
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            role="switch"
-                                            id="pushNotifcation"
-                                            defaultChecked=""
-                                        />
+                                       
+                                      
                                     </div>
                                 </div>
                                 <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
-                                    <label
-                                        htmlFor="weeklyLetters"
-                                        className="position-absolute w-100 h-100 start-0 top-0"
-                                    />
+                                   
                                     <div className="d-flex align-items-center gap-3 justify-content-between">
-                                        <span className="form-check-label line-height-1 fw-medium text-secondary-light">
-                                            Weekly News Letters
-                                        </span>
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            role="switch"
-                                            id="weeklyLetters"
-                                            defaultChecked=""
-                                        />
+                                 
                                     </div>
                                 </div>
                                 <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
-                                    <label
-                                        htmlFor="meetUp"
-                                        className="position-absolute w-100 h-100 start-0 top-0"
-                                    />
+                                 
                                     <div className="d-flex align-items-center gap-3 justify-content-between">
-                                        <span className="form-check-label line-height-1 fw-medium text-secondary-light">
-                                            Meetups Near you
-                                        </span>
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            role="switch"
-                                            id="meetUp"
-                                        />
+                                     
+                                   
                                     </div>
                                 </div>
                                 <div className="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
-                                    <label
-                                        htmlFor="orderNotification"
-                                        className="position-absolute w-100 h-100 start-0 top-0"
-                                    />
+                                  
                                     <div className="d-flex align-items-center gap-3 justify-content-between">
-                                        <span className="form-check-label line-height-1 fw-medium text-secondary-light">
-                                            Orders Notifications
-                                        </span>
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            role="switch"
-                                            id="orderNotification"
-                                            defaultChecked=""
-                                        />
+                                  
                                     </div>
                                 </div>
                             </div>
@@ -711,6 +565,7 @@ const ViewProfileLayer = () => {
                 </div>
             </div>
         </div>
+
     );
 };
 

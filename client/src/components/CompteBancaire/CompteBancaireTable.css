@@ -1,0 +1,458 @@
+/* CompteBancaireTable.css - Design Clair avec Animations */
+
+/* Variables CSS pour les couleurs */
+:root {
+  --primary-gradient: linear-gradient(135deg, #4f6aea 0%, #6a4ba2 100%);
+  --secondary-gradient: linear-gradient(to right, #2ecc71 0%, #1abc9c 100%);
+  --dark-blue: #34495e;
+  --electric-blue: #3498db;
+  --vibrant-green: #2ecc71;
+  --vibrant-pink: #e74c3c;
+  --light-bg: #ffffff;
+  --card-bg: #f8f9fa;
+  --text-dark: #2c3e50;
+  --text-muted: #7f8c8d;
+  --border-color: #dfe6e9;
+}
+
+/* Base Styles */
+.app-container {
+  background-color: var(--light-bg);
+  min-height: 100vh;
+  color: var(--text-dark);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.main-content {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Titre Principal */
+.compte-bancaire-title {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  position: relative;
+  animation: titleGlow 2s infinite alternate;
+}
+
+@keyframes titleGlow {
+  from {
+    text-shadow: 0 0 10px rgba(79, 106, 234, 0.3);
+  }
+  to {
+    text-shadow: 0 0 20px rgba(106, 75, 162, 0.4);
+  }
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  background: rgba(236, 240, 241, 0.8);
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+  flex-grow: 1;
+  max-width: 400px;
+  border: 1px solid var(--border-color);
+}
+
+.filter-container:hover {
+  background: rgba(236, 240, 241, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.filter-icon {
+  color: var(--electric-blue);
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.filter-container input {
+  background: transparent;
+  border: none;
+  color: var(--text-dark);
+  outline: none;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.filter-container input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Boutons */
+.btn {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.btn-success {
+  background: var(--secondary-gradient);
+  color: white;
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+}
+
+.btn-success:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+}
+
+.view-toggle-button {
+  background: rgba(52, 152, 219, 0.1);
+  color: var(--electric-blue);
+  border: 1px solid var(--electric-blue);
+  padding: 0.7rem 1.5rem;
+}
+
+.view-toggle-button:hover {
+  background: rgba(52, 152, 219, 0.2);
+  transform: translateY(-2px);
+}
+
+.view-icon {
+  font-size: 1.2rem;
+}
+
+/* Tableau */
+.DataTable {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  background: white;
+  transition: transform 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+
+.DataTable:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Cartes */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: var(--primary-gradient);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.wallet-icon {
+  font-size: 1.8rem;
+  color: var(--electric-blue);
+  margin-right: 1rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.card-title {
+  font-size: 1.3rem;
+  margin: 0;
+  color: var(--dark-blue);
+}
+
+.card-balance {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 1rem 0;
+  color: var(--vibrant-green);
+}
+
+.card-date {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+  justify-content: flex-end;
+}
+
+/* Boutons d'action */
+.actions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.delete-button, .transfer-button, .qr-button, .print-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 1rem;
+}
+
+.delete-button {
+  background-color: var(--vibrant-pink);
+}
+
+.delete-button:hover {
+  background-color: #c0392b;
+  transform: rotate(15deg) scale(1.1);
+}
+
+.transfer-button {
+  background-color: var(--electric-blue);
+}
+
+.transfer-button:hover {
+  background-color: #2980b9;
+  transform: rotate(360deg) scale(1.1);
+  transition: all 0.6s ease;
+}
+
+.qr-button {
+  background-color: var(--vibrant-green);
+}
+
+.qr-button:hover {
+  background-color: #27ae60;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
+}
+
+.print-button {
+  background-color: #f39c12;
+}
+
+.print-button:hover {
+  background-color: #e67e22;
+  animation: printShake 0.5s ease;
+}
+
+@keyframes printShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  position: relative;
+  animation: modalSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalSlideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--electric-blue);
+  font-size: 1.5rem;
+}
+
+.qr-code-container {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: rgba(236, 240, 241, 0.5);
+  border-radius: 10px;
+  border: 1px dashed var(--border-color);
+}
+
+.modal-info {
+  margin: 1.5rem 0;
+}
+
+.modal-info p {
+  margin: 0.8rem 0;
+  font-size: 1.1rem;
+  color: var(--text-dark);
+}
+
+.modal-info strong {
+  color: var(--electric-blue);
+}
+
+.close-button {
+  background: var(--vibrant-pink);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.close-button:hover {
+  background: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+}
+
+/* Messages */
+.loading-message, .no-data-message {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: var(--text-muted);
+}
+
+.loading-message {
+  position: relative;
+}
+
+.loading-message::after {
+  content: '...';
+  position: absolute;
+  animation: dots 1.5s infinite steps(3, end);
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cards-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-container {
+    max-width: 100%;
+  }
+}
+
+/* Animation spéciale pour le tableau */
+.DataTable .rdt_TableRow {
+  transition: all 0.3s ease;
+}
+
+.DataTable .rdt_TableRow:hover {
+  background: rgba(52, 152, 219, 0.05) !important;
+}
+
+.DataTable .rdt_TableCell {
+  padding: 1rem 0.5rem;
+}
+
+/* Effet de vague sur les cartes */
+.card:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, 
+    var(--electric-blue), 
+    var(--vibrant-green), 
+    var(--vibrant-pink));
+  background-size: 200% 100%;
+  animation: wave 2s linear infinite;
+}
+
+@keyframes wave {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
