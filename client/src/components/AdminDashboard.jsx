@@ -1,27 +1,20 @@
 import React from 'react'
-import SalesStatisticOne from './child/SalesStatisticOne';
-import TotalSubscriberOne from './child/TotalSubscriberOne';
-import UsersOverviewOne from './child/UsersOverviewOne';
-import LatestRegisteredOne from './child/LatestRegisteredOne';
-import TopPerformerOne from './child/TopPerformerOne';
 
+import LatestRegisteredOne from './child/LatestRegisteredOne';
 import UnitCountOne from './child/UnitCountOne';
-import CompteBancaireTable from './CompteBancaire/CompteBancaireTable';
-import trading from './crypto/trading';
+import TextGeneratonLayer from './CompilanceLayer';
+import FileTranslator from './FileTranslator';
 
 const AdminDashboard = () => {
 
     return (
         <>
-            {/* UnitCountOne */}
-                         <trading/>
+                <UnitCountOne />
+                <section className="row gy-4 mt-1">
+                <LatestRegisteredOne />
+                <TextGeneratonLayer/>
+                <FileTranslator/>
 
-
-            <section className="row gy-4 mt-1">
-
-                {/* SalesStatisticOne */} 
-
-               
             </section>
         </>
 
