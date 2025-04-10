@@ -39,7 +39,10 @@ const AddTransaction = () => {
         description: '',
         recipient: ''
       });
+<<<<<<< HEAD
       window.location.href = `/comptes-bancaires`;
+=======
+>>>>>>> origin/Sayyyf
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message;
       setError(`❌ Échec de la transaction : ${errorMessage}`);

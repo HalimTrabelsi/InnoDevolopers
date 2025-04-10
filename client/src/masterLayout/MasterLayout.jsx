@@ -1,14 +1,63 @@
 import React, { useEffect, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
+<<<<<<< HEAD
 import { Link, NavLink, useLocation } from "react-router-dom";
 import ThemeToggleButton from "../helper/ThemeToggleButton";
+=======
+import { Link, NavLink, useLocation,useNavigate } from "react-router-dom";
+import ThemeToggleButton from "../helper/ThemeToggleButton";
+import axios from "axios";
+>>>>>>> origin/Sayyyf
 
 const MasterLayout = ({ children }) => {
   let [sidebarActive, seSidebarActive] = useState(false);
   let [mobileMenu, setMobileMenu] = useState(false);
+<<<<<<< HEAD
   const location = useLocation(); // Hook to get the current route
 
   useEffect(() => {
+=======
+  const location = useLocation(); 
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null); 
+
+  const fetchUserData = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("No token found");
+        }
+
+        const response = await axios.get("http://localhost:5001/api/users/me", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+        });
+
+        setUser(response.data.user); // Ensure full user object is set
+    } catch (error) {
+        console.error("Failed to fetch user data:", error);
+        if (error.response?.status === 401) {
+            localStorage.removeItem("token");
+            navigate("/sign-in");
+        }
+    }
+};
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:5001/api/users/logout"); // Call backend logout API
+      localStorage.removeItem("token"); // Remove JWT token from local storage
+      navigate("/sign-in"); // Redirect to login page
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+  useEffect(() => {
+
+    fetchUserData();
+>>>>>>> origin/Sayyyf
     const handleDropdownClick = (event) => {
       event.preventDefault();
       const clickedLink = event.currentTarget;
@@ -36,6 +85,10 @@ const MasterLayout = ({ children }) => {
           submenu.style.maxHeight = `${submenu.scrollHeight}px`; // Expand submenu
         }
       }
+<<<<<<< HEAD
+=======
+      
+>>>>>>> origin/Sayyyf
     };
 
     // Attach click event listeners to all dropdown triggers
@@ -261,11 +314,19 @@ const MasterLayout = ({ children }) => {
             <li className='sidebar-menu-group-title'>Application</li>
             <li>
               <NavLink
+<<<<<<< HEAD
                 to='/email'
                 className={(navData) => (navData.isActive ? "active-page" : "")}
               >
                 <Icon icon='mage:email' className='menu-icon' />
                 <span>Email</span>
+=======
+                to='/comptes-bancaires'
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+                <Icon icon='mage:email' className='menu-icon' />
+                <span>Trading</span>
+>>>>>>> origin/Sayyyf
               </NavLink>
             </li>
             <li>
@@ -1873,21 +1934,41 @@ const MasterLayout = ({ children }) => {
                     type='button'
                     data-bs-toggle='dropdown'
                   >
+<<<<<<< HEAD
                     <img
                       src='assets/images/user.png'
                       alt='image_user'
                       className='w-40-px h-40-px object-fit-cover rounded-circle'
                     />
+=======
+                   <Icon icon="solar:user-linear" className="w-40-px h-40-px text-primary" />
+
+>>>>>>> origin/Sayyyf
                   </button>
                   <div className='dropdown-menu to-top dropdown-menu-sm'>
                     <div className='py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2'>
                       <div>
+<<<<<<< HEAD
                         <h6 className='text-lg text-primary-light fw-semibold mb-2'>
                           Shaidul Islam
                         </h6>
                         <span className='text-secondary-light fw-medium text-sm'>
                           Admin
                         </span>
+=======
+                      {user ? (
+          <div>
+            <h6 className="text-lg text-primary-light fw-semibold mb-2">
+              {user.name} {/* Display dynamic username */}
+            </h6>
+            <span className="text-secondary-light fw-medium text-sm">
+              {user.role} {/* Display dynamic role */}
+            </span>
+          </div>
+        ) : (
+          <div>Loading...</div>
+        )}
+>>>>>>> origin/Sayyyf
                       </div>
                       <button type='button' className='hover-text-danger'>
                         <Icon
@@ -1934,6 +2015,7 @@ const MasterLayout = ({ children }) => {
                         </Link>
                       </li>
                       <li>
+<<<<<<< HEAD
                         <Link
                           className='dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3'
                           to='#'
@@ -1942,6 +2024,16 @@ const MasterLayout = ({ children }) => {
                           Log Out
                         </Link>
                       </li>
+=======
+                      <Link
+            className="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3"
+            to="#"
+            onClick={handleLogout} // Attach logout function
+          >
+            <Icon icon="lucide:power" className="icon text-xl" /> Log Out
+          </Link>
+        </li>
+>>>>>>> origin/Sayyyf
                     </ul>
                   </div>
                 </div>

@@ -14,16 +14,34 @@ require('dotenv').config();
 const tranRoutes = require('../routes/tranRoute');
 const revenueRoute = require('../routes/revenueRoute'); // Import the revenue routes
 dotenv.config();
-const app = express();
-const PORT = process.env.PORT || 5001;
+
 const expenseRoutes = require('../routes/expenseRoutes');
 const smsRoutes = require('../routes/smsRoute'); // Adjust the path if needed
+
+const aiRoutes = require('../routes/aiRoutes');
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const cryptoRoutes = require('../routes/crypto');
+const compteBanciareRoutes=require('../routes/compteBancaireRoutes')
+
+const transactionRoutes = require('../routes/transactionRoutes');
+const FinancialTransaction = require('../models/FinancialTransaction');
+const aiService = require('../services/aiService');
+const User = require('../models/user');
+const Transaction = require('../models/transaction');
+const CoinGeckoService=require('../services/CoinGeckoService')
+dotenv.config();
+const app = express();
+require('dotenv').config();
+const PORT = process.env.PORT || 5001;
+
 // Connect to MongoDB
 connectDB();
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // generate
+
 app.use(cors({
   origin: "http://localhost:3000",
   credentials: true
@@ -43,7 +61,22 @@ app.use('/api/ai', aiRoutes);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+app.use(cookieParser());
+app.use(express.json({ limit: "5mb" })); 
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.use('/api/users', userRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/stripe', require('../routes/stripe'));
+app.use('/transaction', transactionRoutes); // Transaction Routes
+app.use('/crypto', cryptoRoutes); // Transaction Routes
+app.use('/compteBancaire', compteBanciareRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
+

@@ -1,5 +1,6 @@
 import React from "react";
 import SignInLayer from "../components/SignInLayer";
+<<<<<<< HEAD
 
 const SignInPage = () => {
   return (
@@ -8,6 +9,12 @@ const SignInPage = () => {
       {/* SignInLayer */}
       <SignInLayer />
 
+=======
+const SignInPage = () => {
+  return (
+    <>
+      <SignInLayer />
+>>>>>>> origin/Sayyyf
     </>
   );
 };

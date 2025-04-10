@@ -1,4 +1,8 @@
+
 const User = require('../models/user'); // Assuming you have a User model
+
+const User = require('../models/User'); // Assuming you have a User model
+
 
 // Create a new user
 exports.createUser = async (req, res) => {
