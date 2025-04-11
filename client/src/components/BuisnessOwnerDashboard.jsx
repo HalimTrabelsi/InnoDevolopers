@@ -9,6 +9,10 @@ import TopPerformanceOne from './child/TopperformanceOne'
 import LatestPerformanceOne from './child/LatestPerformanceOne'
 import LastTransactionOne from './child/LastTransactionOne'
 
+import Trading from './crypto/trading'
+import Transaction from '../components/transaction/TransactionList'
+
+
 const BuisnessOwnerDashboard = () => {
   return (
     <section className="row gy-4">
@@ -17,7 +21,7 @@ const BuisnessOwnerDashboard = () => {
       <UnitCountTwo />
 
       {/* RevenueGrowthOne */}
-      <RevenueGrowthOne />
+      
 
       {/* EarningStaticOne */}
       <EarningStaticOne />
@@ -39,6 +43,13 @@ const BuisnessOwnerDashboard = () => {
 
       {/* LastTransactionOne */}
       <LastTransactionOne />
+      
+      <Trading></Trading>
+      <Transaction></Transaction>
+      <UnitCountTwo></UnitCountTwo>
+      <RevenueGrowthOne></RevenueGrowthOne>
+      <EarningStaticOne></EarningStaticOne>
+     
     </section>
 
   )

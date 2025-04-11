@@ -48,7 +48,6 @@ const MasterLayout = ({ children }) => {
   const location = useLocation(); 
   const navigate = useNavigate();
   const [user, setUser] = useState(null); 
-
   const fetchUserData = async () => {
     try {
         const token = localStorage.getItem("token");

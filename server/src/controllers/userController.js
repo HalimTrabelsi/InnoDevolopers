@@ -1,7 +1,10 @@
+
+
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const { User } = require("../models/user");
 const { validationResult } = require("express-validator");
 require("dotenv").config();
 
@@ -28,9 +31,18 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ message: "User already exists" });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        
         const imageUrl = req.file ? req.file.path : "";
         const verificationToken = crypto.randomBytes(32).toString("hex");
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+
+        if (!req.file) {
+            return res.status(400).json({ message: "Image file is missing" });
+        }
+
+       
+
 
         const newUser = new User({
             name,
@@ -39,25 +51,40 @@ const registerUser = async (req, res) => {
             phoneNumber,
             role,
             image: imageUrl,
-            verificationToken,
-            estActif: false,
+
+            image: imageUrl, // Store the image URL
+            isVerified: false, 
         });
 
+        newUser.verificationToken = verificationToken;
         await newUser.save();
 
-        const verificationUrl = `http://localhost:5001/api/users/verify/${verificationToken}`;
-        await transporter.sendMail({
-            to: email,
-            subject: "Vérifiez votre email (Optionnel)",
-            html: `Cliquez sur ce lien pour vérifier votre email et activer votre compte : <a href="${verificationUrl}">${verificationUrl}</a><br>Vous pouvez vous connecter sans vérification.`,
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
         });
 
-        res.status(201).json({ message: "User registered successfully. Check your email for verification (optional).", userId: newUser._id });
+        const verificationUrl = `http://localhost:5001/api/users/verify-email/${verificationToken}?email=${newUser.email}&redirect=sign-in`;
+
+        const mailOptions = {
+            to: newUser.email,
+            from: process.env.EMAIL_USER,
+            subject: "Email Verification",
+            text: `Please click the link below to verify your email address:\n\n${verificationUrl}`,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.status(201).json({ message: "User registered successfully. Please check your email to verify your account", user: newUser });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
+// User Sign-In
 const signInUser = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -72,18 +99,19 @@ const signInUser = async (req, res) => {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        // Pas d'obligation de vérification : générer le token même si estActif est false
         const token = jwt.sign(
-            { id: user._id, email: user.email, role: user.role },
+            { userId: user._id, role: user.role, email: user.email, image: user.image, phoneNumber: user.phoneNumber }, 
             process.env.JWT_SECRET,
-            { expiresIn: "4h" }
+            { expiresIn: "1h" }
         );
-
-        res.status(200).json({
-            token,
-            user: { id: user._id, name: user.name, email: user.email, role: user.role, estActif: user.estActif },
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 60 * 60 * 1000
         });
-    } catch (error) {
+
+        res.status(200).json({ token, role: user.role, image: user.image , phoneNumber: user.phoneNumber});
+        } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
@@ -128,7 +156,6 @@ const requestPasswordReset = async (req, res) => {
 };
 
 
-// Reset Password
 
 const resetPassword = async (req, res) => {
     const { token } = req.params;
@@ -289,6 +316,22 @@ const checkAuth = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+const getUserImageByEmail = async (req, res) => {
+    const { email } = req.params; // Fetch email from request parameters
+
+    try {
+        const user = await User.findOne({ email }).select('image'); // Select only the image field
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json({ imageUrl: user.image });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
 module.exports = { 
     registerUser, 
     signInUser, 
@@ -299,4 +342,5 @@ module.exports = {
     fetchUsersByFilters,
     logout,
     checkAuth,
+    getUserImageByEmail
 };

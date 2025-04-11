@@ -1,38 +1,22 @@
 const express = require('express');
-const { registerUser, signInUser, verifyEmail, resendVerificationEmail, fetchUsersByFilters, logout, checkAuth } = require('../controllers/userController');
+
 const upload = require('../middlewares/uploadImage');
-const router = express.Router();
 const { User } = require('../models/user');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
-
+const { registerUser , signInUser , verifyEmail , resendVerificationEmail , fetchUsersByFilters ,   checkAuth,
+    logout , getUserImageByEmail } = require('../controllers/userController');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
     tls: { rejectUnauthorized: false },
 });
 
-router.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    next();
-});
 
-const authMiddleware = (req, res, next) => {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    console.log("Token reçu:", token);
-    if (!token) return res.status(401).json({ message: 'Aucun token fourni' });
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
-        console.log("Token décodé:", decoded);
-        req.user = { id: decoded.userId, role: decoded.role }; 
-        next();
-    } catch (error) {
-        console.error("Erreur de vérification du token:", error);
-        res.status(401).json({ message: 'Token invalide' });
-    }
-};
+
+
 
 const checkActive = async (req, res, next) => {
     try {
@@ -63,6 +47,9 @@ const isAdmin = async (req, res, next) => {
         res.status(500).json({ message: "Erreur lors de la vérification admin" });
     }
 };
+const router = express.Router();
+const authMiddleware = require('../middlewares/authorization'); // Import the middleware
+const { compareFaces } = require("../controllers/faceController");
 
 router.post('/sign-up', upload.single('image'), registerUser);
 router.post('/sign-in', signInUser);
@@ -119,3 +106,14 @@ router.delete("/delete/:id", authMiddleware, checkActive, isAdmin, async (req, r
 
 module.exports = router;
 
+router.get('/view-users', fetchUsersByFilters); 
+router.post('/logout', logout);
+router.get('/me', authMiddleware(), checkAuth);
+router.post("/compare-faces", authMiddleware(),compareFaces);
+router.get('/profile-image/:email', authMiddleware(), getUserImageByEmail);
+
+router.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
+module.exports = router;

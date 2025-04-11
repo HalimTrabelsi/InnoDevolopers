@@ -1,6 +1,6 @@
 const express = require('express');
 const { User } = require('../models/user');
-const { Activity } = require('../models/activity');
+const { Activity } = require('../models/Activity');
 const router = express.Router();
 const moment = require('moment');
 

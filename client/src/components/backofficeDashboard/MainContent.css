@@ -1,0 +1,21 @@
+/* Conteneur principal */
+.app-container {
+    display: flex;
+    min-height: 100vh; /* Prend toute la hauteur de la page */
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 250px; /* Largeur de la sidebar */
+    background: #f4f4f4; /* Couleur de fond */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Ombre légère */
+    padding: 20px;
+  }
+  
+  /* Contenu principal */
+  .main-content {
+    flex: 1; /* Prend tout l'espace restant */
+    padding: 20px;
+    background: #fff; /* Couleur de fond */
+    overflow-y: auto; /* Ajoute un défilement si le contenu est trop long */
+  }

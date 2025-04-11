@@ -1,24 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
-import Swal from "sweetalert2";
 
 const VerifyEmail = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const email = new URLSearchParams(location.search).get("email");
     const verificationToken = new URLSearchParams(location.search).get("token");
-    const userId = new URLSearchParams(location.search).get("userId");
-    const provider = new URLSearchParams(location.search).get("provider"); // Récupérer provider
-    const [countdown, setCountdown] = useState(20);
-    const [verified, setVerified] = useState(false);
+    const [countdown, setCountdown] = useState(20); // Changement de 10 à 20 secondes
 
     useEffect(() => {
         const timer = setInterval(() => {
             setCountdown((prev) => {
                 if (prev <= 1) {
                     clearInterval(timer);
-                    setTimeout(() => navigate("/sign-in"), 0);
+                    navigate("/sign-in");
                     return 0;
                 }
                 return prev - 1;
@@ -28,35 +23,8 @@ const VerifyEmail = () => {
         return () => clearInterval(timer);
     }, [navigate]);
 
-    const handleVerifyClick = async () => {
-        if (!verificationToken) {
-            Swal.fire("Erreur", "Token manquant", "error");
-            return;
-        }
-
-        console.log("Envoi de la requête de vérification avec token:", verificationToken);
-        console.log("Provider détecté:", provider); // Log pour vérifier provider
-        try {
-            const response = await axios.post(
-                "http://localhost:5001/auth/verify-token",
-                { token: verificationToken },
-                { withCredentials: true }
-            );
-            console.log("Réponse de la vérification:", response.data);
-            setVerified(true);
-            Swal.fire("Succès", response.data.message, "success");
-            setTimeout(() => {
-                // Transmettre provider dans l’URL de redirection
-                navigate(`/complete-profile?userId=${response.data.userId}&provider=${provider || ''}`);
-            }, 1000);
-        } catch (error) {
-            console.error("Erreur lors de la vérification:", error.response || error);
-            Swal.fire(
-                "Erreur",
-                error.response?.data?.message || "Erreur inconnue lors de la vérification",
-                "error"
-            );
-        }
+    const handleVerifyClick = () => {
+        window.location.href = `http://localhost:5001/api/users/verify/${verificationToken}`;
     };
 
     const containerStyle = {
@@ -155,7 +123,7 @@ const VerifyEmail = () => {
     const progressFillStyle = {
         height: "100%",
         background: "linear-gradient(90deg, #00d4ff, #ff007a)",
-        width: `${(countdown / 20) * 100}%`,
+        width: `${(countdown / 20) * 100}%`, // Ajusté pour 20 secondes
         transition: "width 1s linear",
     };
 
@@ -163,22 +131,21 @@ const VerifyEmail = () => {
         <div style={containerStyle}>
             <style>
                 {`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          @keyframes pulse {
-            0% { text-shadow: 0 0 10px #00d4ff; }
-            50% { text-shadow: 0 0 20px #00d4ff, 0 0 30px #ff007a; }
-            100% { text-shadow: 0 0 10px #00d4ff; }
-          }
-        `}
+                    @keyframes fadeIn {
+                        from { opacity: 0; transform: translateY(-20px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                    @keyframes pulse {
+                        0% { text-shadow: 0 0 10px #00d4ff; }
+                        50% { text-shadow: 0 0 20px #00d4ff, 0 0 30px #ff007a; }
+                        100% { text-shadow: 0 0 10px #00d4ff; }
+                    }
+                `}
             </style>
             <div style={cardStyle}>
                 <h1 style={titleStyle}>Vérification email</h1>
                 <p style={messageStyle}>
-                    Un email a été envoyé à{" "}
-                    <span style={emailHighlightStyle}>{email || "votre adresse email"}</span>.
+                    Un email a été envoyé à <span style={emailHighlightStyle}>{email || "votre adresse email"}</span>.
                 </p>
                 <div>
                     <p style={instructionStyle}>
@@ -189,9 +156,8 @@ const VerifyEmail = () => {
                         onClick={handleVerifyClick}
                         onMouseEnter={(e) => Object.assign(e.target.style, buttonHoverStyle)}
                         onMouseLeave={(e) => Object.assign(e.target.style, buttonStyle)}
-                        disabled={verified}
                     >
-                        {verified ? "Vérifié" : "Vérifier Maintenant"}
+                        Vérifier Maintenant
                     </button>
                 </div>
                 <div style={countdownStyle}>

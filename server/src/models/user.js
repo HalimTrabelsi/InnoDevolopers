@@ -67,8 +67,6 @@ const userSchema = new mongoose.Schema(
     },
     lastLogin: { type: Date },
     widgets: { type: [String], default: ["totalBalance", "recentTransactions"] }
-    
-
   },
   { timestamps: true }
 

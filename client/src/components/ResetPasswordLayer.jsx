@@ -2,8 +2,6 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import '../App.css'
-//import '/assets/css/auth.css'
 const ResetPasswordLayer = () => {
     const [resetpassword, setResetPassword] = useState("");
     const [passwordconfirm, setPasswordConfirm] = useState("");
@@ -54,7 +52,7 @@ const ResetPasswordLayer = () => {
 <section className='auth bg-base d-flex flex-wrap'>
   <div className='auth-left d-lg-block d-none'>
     <div className='d-flex align-items-center flex-column h-100 justify-content-center'>
-      <img src="assets/images/auth/f2.jpg" alt='Forgot Password' className='auth-image' />
+      <img src="/assets/images/auth/f2.jpg" alt='Forgot Password' className='auth-image' />
     </div>
   </div>
   <div className='auth-right py-32 px-24 d-flex flex-column justify-content-center'>
@@ -78,9 +76,11 @@ const ResetPasswordLayer = () => {
             required
           />
         </div>
+        <br></br>
         <div className='mb-20'>
           <div className='position-relative '>
             <div className='icon-field'>
+
               <span className='icon top-50 translate-middle-y'>
                 <Icon icon='solar:lock-password-outline' />
               </span>
@@ -100,10 +100,12 @@ const ResetPasswordLayer = () => {
               data-toggle='#your-password'
             />
           </div>
+          <br></br>
           <span className='mt-12 text-sm text-secondary-light'>
             Your password must have at least 8 characters
           </span>
         </div>
+        <br></br>
         <button
           type='submit'
           className='btn btn-primary text-sm btn-sm px-12 py-16 w-100 radius-12 mt-32'
