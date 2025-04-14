@@ -2,9 +2,19 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import DataTable from 'react-data-table-component';
 import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { 
+  Chart as ChartJS, 
+  CategoryScale, 
+  LinearScale, 
+  PointElement, 
+  LineElement, 
+  Title, 
+  Tooltip, 
+  Legend 
+} from 'chart.js';
 import { FaEye, FaTimes } from 'react-icons/fa';
 import QRCode from 'react-qr-code';
+import './TransactionList.css'
 
 // Initialisation de Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -44,16 +54,36 @@ const TransactionsTable = ({ userId }) => {
   };
 
   const columns = [
-    { name: 'Montant', selector: row => `${row.amount} TND`, sortable: true },
-    { name: 'Description', selector: row => row.description, sortable: true },
-    { name: 'Type', selector: row => row.type === 'debit' ? 'Débit 💸' : 'Crédit 💰', sortable: true },
-    { name: 'Date', selector: row => new Date(row.date).toLocaleDateString(), sortable: true },
-    { name: 'Anomalie', selector: row => row.anomalie ? 'Oui' : 'Non', sortable: true },
+    { 
+      name: 'Montant', 
+      selector: row => `${row.amount} TND`, 
+      sortable: true 
+    },
+    { 
+      name: 'Description', 
+      selector: row => row.description, 
+      sortable: true 
+    },
+    { 
+      name: 'Type', 
+      selector: row => row.type === 'debit' ? 'Débit 💸' : 'Crédit 💰', 
+      sortable: true 
+    },
+    { 
+      name: 'Date', 
+      selector: row => new Date(row.date).toLocaleDateString(), 
+      sortable: true 
+    },
+    { 
+      name: 'Anomalie', 
+      selector: row => row.anomalie ? 'Oui' : 'Non', 
+      sortable: true 
+    },
     {
       name: 'Actions',
       cell: row => (
         <button 
-          className="details-btn"
+          className="saif-details-btn"
           onClick={() => openTransactionDetails(row)}
           title="Voir détails"
         >
@@ -80,14 +110,14 @@ const TransactionsTable = ({ userId }) => {
   };
 
   return (
-    <div className="transaction-container">
-      <button onClick={toggleView} className="view-toggle-btn">
+    <div className="saif-transaction-container">
+      <button onClick={toggleView} className="saif-view-toggle-btn">
         {view === 'table' ? 'Afficher les statistiques' : 'Afficher le tableau'}
       </button>
 
       {view === 'table' ? (
         <DataTable
-          title="Transactions de l'utilisateur"
+          title="Historique des Transactions"
           columns={columns}
           data={filteredTransactions}
           pagination
@@ -95,10 +125,10 @@ const TransactionsTable = ({ userId }) => {
           responsive
           defaultSortFieldId="date"
           defaultSortAsc={false}
-          className="transaction-table"
+          className="saif-transaction-table"
         />
       ) : (
-        <div>
+        <div className="saif-stats-container">
           <h2>Statistiques des Transactions</h2>
           <Line data={chartData} />
         </div>
@@ -106,109 +136,109 @@ const TransactionsTable = ({ userId }) => {
 
       {/* Modal de détails de transaction */}
       {showModal && selectedTransaction && (
-  <div className="modal-overlay">
-    <div className="modal-content">
-      <div className="modal-header">
-        <h3 className="modal-title">Détails de la Transaction</h3>
-        <button className="close-btn" onClick={closeModal}>
-          <FaTimes />
-        </button>
-      </div>
-      
-      <div className="modal-body">
-        <div className="transaction-info">
-          <div className="transaction-details">
-            <div className="detail-item">
-              <div className="detail-label">ID Transaction</div>
-              <div className="detail-value">{selectedTransaction._id}</div>
+        <div className="saif-modal-overlay">
+          <div className="saif-modal-content">
+            <div className="saif-modal-header">
+              <h3 className="saif-modal-title">Détails de la Transaction</h3>
+              <button className="saif-close-btn" onClick={closeModal}>
+                <FaTimes />
+              </button>
             </div>
             
-            <div className="detail-item">
-              <div className="detail-label">Montant</div>
-              <div className="detail-value">{selectedTransaction.amount} TND</div>
-            </div>
-            
-            <div className="detail-item">
-              <div className="detail-label">Type</div>
-              <div className="detail-value">
-                {selectedTransaction.type === 'debit' ? 'Débit' : 'Crédit'}
-              </div>
-            </div>
-            
-            <div className="detail-item">
-              <div className="detail-label">Date</div>
-              <div className="detail-value">
-                {new Date(selectedTransaction.date).toLocaleString()}
-              </div>
-            </div>
-            
-            <div className="detail-item">
-              <div className="detail-label">Description</div>
-              <div className="detail-value">{selectedTransaction.description}</div>
-            </div>
-            
-            <div className="detail-item">
-              <div className="detail-label">Anomalie</div>
-              <div className={`detail-value ${selectedTransaction.anomalie ? 'anomalie-true' : 'anomalie-false'}`}>
-                {selectedTransaction.anomalie ? 'Oui' : 'Non'}
-              </div>
-            </div>
-            
-            {selectedTransaction.anomalie && (
-              <div className="detail-item">
-                <div className="detail-label">Commentaire Anomalie</div>
-                <div className="detail-value">
-                  {selectedTransaction.commentaireAnomalie || 'Aucun commentaire'}
+            <div className="saif-modal-body">
+              <div className="saif-transaction-info">
+                <div className="saif-transaction-details">
+                  <div className="saif-detail-item">
+                    <div className="saif-detail-label">ID Transaction</div>
+                    <div className="saif-detail-value">{selectedTransaction._id}</div>
+                  </div>
+                  
+                  <div className="saif-detail-item">
+                    <div className="saif-detail-label">Montant</div>
+                    <div className="saif-detail-value">{selectedTransaction.amount} TND</div>
+                  </div>
+                  
+                  <div className="saif-detail-item">
+                    <div className="saif-detail-label">Type</div>
+                    <div className="saif-detail-value">
+                      {selectedTransaction.type === 'debit' ? 'Débit' : 'Crédit'}
+                    </div>
+                  </div>
+                  
+                  <div className="saif-detail-item">
+                    <div className="saif-detail-label">Date</div>
+                    <div className="saif-detail-value">
+                      {new Date(selectedTransaction.date).toLocaleString()}
+                    </div>
+                  </div>
+                  
+                  <div className="saif-detail-item">
+                    <div className="saif-detail-label">Description</div>
+                    <div className="saif-detail-value">{selectedTransaction.description}</div>
+                  </div>
+                  
+                  <div className="saif-detail-item">
+                    <div className="saif-detail-label">Anomalie</div>
+                    <div className={`saif-detail-value ${selectedTransaction.anomalie ? 'saif-anomalie-true' : 'saif-anomalie-false'}`}>
+                      {selectedTransaction.anomalie ? 'Oui' : 'Non'}
+                    </div>
+                  </div>
+                  
+                  {selectedTransaction.anomalie && (
+                    <div className="saif-detail-item">
+                      <div className="saif-detail-label">Commentaire Anomalie</div>
+                      <div className="saif-detail-value">
+                        {selectedTransaction.commentaireAnomalie || 'Aucun commentaire'}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="saif-detail-item">
+                    <div className="saif-detail-label">Compte Source</div>
+                    <div className="saif-detail-value">
+                      {accounts[selectedTransaction.compteBancaire]?.numeroCompte || 'Inconnu'}
+                    </div>
+                  </div>
+                  
+                  <div className="saif-detail-item">
+                    <div className="saif-detail-label">Destinataire</div>
+                    <div className="saif-detail-value">
+                      {accounts[selectedTransaction.recipient]?.name || 'Inconnu'}
+                    </div>
+                  </div>
+                  
+                  <div className="saif-detail-item">
+                    <div className="saif-detail-label">Localisation</div>
+                    <div className="saif-detail-value">
+                      {selectedTransaction.location || 'Non spécifiée'}
+                    </div>
+                  </div>
                 </div>
               </div>
-            )}
-            
-            <div className="detail-item">
-              <div className="detail-label">Compte Source</div>
-              <div className="detail-value">
-                {accounts[selectedTransaction.compteBancaire]?.numeroCompte || 'Inconnu'}
-              </div>
-            </div>
-            
-            <div className="detail-item">
-              <div className="detail-label">Destinataire</div>
-              <div className="detail-value">
-                {accounts[selectedTransaction.recipient]?.name || 'Inconnu'}
-              </div>
-            </div>
-            
-            <div className="detail-item">
-              <div className="detail-label">Localisation</div>
-              <div className="detail-value">
-                {selectedTransaction.location || 'Non spécifiée'}
+              
+              <div className="saif-qr-sidebar">
+                <h4 className="saif-qr-title">QR Code de Transaction</h4>
+                <div className="saif-qr-container">
+                  <QRCode 
+                    value={JSON.stringify({
+                      id: selectedTransaction._id,
+                      amount: selectedTransaction.amount,
+                      date: selectedTransaction.date,
+                      type: selectedTransaction.type,
+                      from: accounts[selectedTransaction.compteBancaire]?.numeroCompte,
+                      to: accounts[selectedTransaction.recipient]?.name
+                    })}
+                    size={200}
+                  />
+                </div>
+                <p>Scannez ce code pour vérifier la transaction</p>
               </div>
             </div>
           </div>
         </div>
-        
-        <div className="qr-sidebar">
-          <h4 className="qr-title">QR Code de Transaction</h4>
-          <div className="qr-container">
-            <QRCode 
-              value={JSON.stringify({
-                id: selectedTransaction._id,
-                amount: selectedTransaction.amount,
-                date: selectedTransaction.date,
-                type: selectedTransaction.type,
-                from: accounts[selectedTransaction.compteBancaire]?.numeroCompte,
-                to: accounts[selectedTransaction.recipient]?.name
-              })}
-              size={200}
-            />
-          </div>
-          <p>Scannez ce code pour vérifier la transaction</p>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
+      )}
     </div>
   );
 };
 
-export default TransactionsTable; 
+export default TransactionsTable;

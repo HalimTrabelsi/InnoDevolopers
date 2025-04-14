@@ -10,9 +10,9 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import QRCodeGenerator from "qrcode";
 import { QRCode } from "react-qr-code";
-import PaymentModal from "../stripe/PaymentFromExpress"; // Importer le composant PaymentModa
+import PaymentModal from "../stripe/PaymentFromExpress"; // Importer le composant PaymentModal
+import "./CompteBancaireTable.css";
 import { Dialog } from '@mui/material';
-import Modal from '@mui/material/Modal';
 
 
 const CompteBancaireTable = ({ userId, refresh, onRefresh }) => {
