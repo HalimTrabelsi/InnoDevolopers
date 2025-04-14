@@ -34,6 +34,10 @@ import ChatboltRoute from "./components/chatbolt/ChatbotFinance";
 import AccountantDashboardPage from "./pages/AccountantDashboardPage.jsx";
 import FinancialManagerPage from "./pages/FinancialManagerPage.jsx";
 import VoiceCommand from "./components/Voccal/VoiceCommand";
+import AuthCallback from "./pages/AuthCallbackPage.jsx";
+import Confirmation from "./pages/ConfirmationLayer.jsx";
+import CompleteProfile from "./pages/CompleteProfileLayer.jsx";
+import AdminPanel from "./pages/AdminPanel.jsx";
 
 function App() {
   const userId = "67cc34299384fa66108bb394";
@@ -112,6 +116,11 @@ function App() {
         <Route path="/transactions" element={<TransactionList />} />
         <Route path="/trading" element={<TradingRoute />} />
         <Route path="/chatbot" element={<ChatboltRoute />} />
+        <Route exact path="/complete-profile" element={<CompleteProfile />} />
+        <Route path="/auth-callback" element={<AuthCallback />} />
+        <Route path="/confirmation" element={<Confirmation />} />
+        <Route path="/deleteUsers" element={<AdminPanel/>} />
+
 
         <Route 
           path='/admin-dashboard' 
