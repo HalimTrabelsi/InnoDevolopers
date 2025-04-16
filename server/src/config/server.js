@@ -21,13 +21,21 @@ const Transaction = require("../models/Transaction");
 const notificationRoutes = require("../routes/notificationRoutes");
 const approvalRoutes = require("../routes/approvalRoutes");
 const upload = require('../middlewares/uploadImage');
-
-require('dotenv').config();
-
-dotenv.config();
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 5001;
+const generateRoutes = require('../routes/generateRoute');
+const translationRoutes = require('../routes/translationRoutes');
+const tranRoutes = require('../routes/tranRoute');
+const revenueRoute = require('../routes/revenueRoute'); // Import the revenue routes
+const expenseRoutes = require('../routes/expenseRoutes');
+const smsRoutes = require('../routes/smsRoute'); // Adjust the path if needed
+const aiRoutes = require('../routes/aiRoutes');
+const cookieParser = require("cookie-parser");
+const cryptoRoutes = require('../routes/crypto');
+const compteBanciareRoutes=require('../routes/compteBancaireRoutes');
+const summarizationRoutes = require('./routes/summarizationRoutes');
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "uploads/");
@@ -36,6 +44,7 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + "-" + file.originalname);
     },
 });
+dotenv.config();
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(
     session({
@@ -44,6 +53,7 @@ app.use(
         saveUninitialized: true,
     })
 );
+require("../controllers/passport");
 app.use(passport.initialize());
 app.use(passport.session());
 const io = new Server(server, {
@@ -53,6 +63,8 @@ const io = new Server(server, {
         credentials: true,
     },
 });
+
+require('../services/scheduler');
 // Connect to MongoDB
 connectDB();
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
@@ -71,7 +83,9 @@ app.use("/api/auth", authRoute);
 app.use("/api/approvals", approvalRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/userstats", userStatsRoutes);
-require("../controllers/passport");
+app.use('/api/translate', translationRoutes);
+app.use('/api/summarize', summarizationRoutes);
+
 mongoose
     .connect(process.env.MONGO_URI, {
         useNewUrlParser: true,
@@ -109,24 +123,6 @@ mongoose
     
     app.set("io", io);
 
-const generateRoutes = require('../routes/generateRoute');
-
-
-const translationRoutes = require('../routes/translationRoutes');
-const tranRoutes = require('../routes/tranRoute');
-const revenueRoute = require('../routes/revenueRoute'); // Import the revenue routes
-dotenv.config();
-const expenseRoutes = require('../routes/expenseRoutes');
-const smsRoutes = require('../routes/smsRoute'); // Adjust the path if needed
-const aiRoutes = require('../routes/aiRoutes');
-
-const cookieParser = require("cookie-parser");
-const cryptoRoutes = require('../routes/crypto');
-const compteBanciareRoutes=require('../routes/compteBancaireRoutes')
-
-require('dotenv').config();
-
-
 connectDB();
 
 // Middleware
@@ -147,7 +143,6 @@ app.use('/api/sms', smsRoutes);
 app.use('/api/ai', aiRoutes);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
 app.use(cookieParser());
 app.use(express.json({ limit: "5mb" })); 
 app.use(express.urlencoded({ extended: true }));

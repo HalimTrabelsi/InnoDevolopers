@@ -6,9 +6,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Fab,
 } from "@mui/material";
-import { FaRobot } from "react-icons/fa";
 
 import AdminDashboardPage from "./pages/AdminDashboardPage.jsx";
 import SignInPage from "./pages/SignInPage.jsx";
@@ -24,9 +22,7 @@ import ViewProfilePage from "./pages/ViewProfilePage.jsx";
 import UsersListPage from "./pages/UsersListPage.jsx";
 import AddTransaction from "./components/transaction/AddTransaction";
 import TransactionList from "./components/transaction/TransactionList";
-import StripeRoute from "./components/stripe/PaymentFromExpress";
 import TradingRoute from "./components/crypto/trading";
-import CompteBancaireForm from "./components/CompteBancaire/CompteBancaireForm";
 import CompteBancaireTable from "./components/CompteBancaire/CompteBancaireTable";
 import CryptoTable from "./components/crypto/CryptoTable";
 import NewsRoute from "./components/News/News";
@@ -38,7 +34,8 @@ import AuthCallback from "./pages/AuthCallbackPage.jsx";
 import Confirmation from "./pages/ConfirmationLayer.jsx";
 import CompleteProfile from "./pages/CompleteProfileLayer.jsx";
 import AdminPanel from "./pages/AdminPanel.jsx";
-
+import ExpensePage from "./pages/ExpensePage.jsx";
+import InvoicePreviewPage from "./pages/InvoicePreviewPage";
 function App() {
   const userId = "67cc34299384fa66108bb394";
   const [refresh, setRefresh] = useState(false);
@@ -120,7 +117,9 @@ function App() {
         <Route path="/auth-callback" element={<AuthCallback />} />
         <Route path="/confirmation" element={<Confirmation />} />
         <Route path="/deleteUsers" element={<AdminPanel/>} />
-
+        <Route exact path='/index-11' element={<ExpensePage />} />
+        <Route exact path='/invoice-preview' element={<InvoicePreviewPage />} />
+        <Route path="/news" element={<NewsRoute />} />
 
         <Route 
           path='/admin-dashboard' 
@@ -133,9 +132,7 @@ function App() {
         <Route 
           path='/business-owner-dashboard' 
           element={
-            
               <BusinessOwnerPage />
-         
           } 
         />
         <Route
@@ -165,7 +162,6 @@ function App() {
           }
         />
 
-        <Route path="/news" element={<NewsRoute />} />
       </Routes>
     </BrowserRouter>
   );

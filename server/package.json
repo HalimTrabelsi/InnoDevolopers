@@ -8,6 +8,7 @@
     "dev": "nodemon src/app.js"
   },
   "dependencies": {
+    "@huggingface/inference": "^3.8.0",
     "@nlpjs/nlu": "^5.0.0-alpha.5",
     "@tensorflow/tfjs": "^4.22.0",
     "axios": "^1.8.2",
