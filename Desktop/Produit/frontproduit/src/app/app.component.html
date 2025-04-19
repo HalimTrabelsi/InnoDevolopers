@@ -1,0 +1,18 @@
+<div class="app-layout pp" [class.logged-in]="isLoggedIn" [class.logged-out]="!isLoggedIn">
+  <!-- Sidebar visible seulement quand connecté -->
+  <app-sidebar *ngIf="isLoggedIn" class="sidebar pp"></app-sidebar>
+
+    <router-outlet></router-outlet>
+
+  <div class="main-container pp">
+    <div class="main-content pp">
+      <!-- Chat visible seulement quand connecté -->
+      <app-chat-search *ngIf="isLoggedIn" class="chat-search pp"></app-chat-search>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay de login quand déconnecté -->
+<div *ngIf="!isLoggedIn" class="login-overlay pp">
+  <!-- Your login content here -->
+</div>

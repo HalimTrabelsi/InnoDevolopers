@@ -1,0 +1,24 @@
+<div>
+    <h1>Articles de News</h1>
+    
+    <div>
+      <button (click)="changeCategory('technology')">Technologie</button>
+      <button (click)="changeCategory('business')">Business</button>
+      <button (click)="changeCategory('sports')">Sports</button>
+      <!-- Ajoute d'autres catégories si nécessaire -->
+    </div>
+    
+    <div *ngIf="articles.length > 0">
+      <div *ngFor="let article of articles">
+        <h2>{{ article.title }}</h2>
+        <p>{{ article.description }}</p>
+        <a [href]="article.url" target="_blank">Lire plus</a>
+        <p><small>Publié le {{ article.publishedAt }}</small></p>
+      </div>
+    </div>
+  
+    <div *ngIf="articles.length === 0">
+      <p>Aucun article trouvé pour cette catégorie.</p>
+    </div>
+  </div>
+  
