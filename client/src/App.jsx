@@ -38,6 +38,7 @@ import Confirmation from "./pages/ConfirmationLayer.jsx";
 import CompleteProfile from "./pages/CompleteProfileLayer.jsx";
 import AdminPanel from "./pages/AdminPanel.jsx";
 import ChatIaRoute from "./components/gemini-chatbot/GeminiChat";
+import HomePageTen from "./pages/HomePageTen.jsx";
 
 function App() {
   const userId = "67cc34299384fa66108bb394";
@@ -113,6 +114,7 @@ function App() {
         <Route path="/auth-callback" element={<AuthCallback />} />
         <Route path="/confirmation" element={<Confirmation />} />
         <Route path="/deleteUsers" element={<AdminPanel />} />
+        <Route path='/financialoverview' element={<HomePageTen />} />
 
         <Route 
           path="/admin-dashboard"
