@@ -9,7 +9,7 @@ import TopPerformanceOne from './child/TopperformanceOne'
 import LatestPerformanceOne from './child/LatestPerformanceOne'
 import LastTransactionOne from './child/LastTransactionOne'
 import CompteBancaireTable from './CompteBancaire/CompteBancaireTable'
-
+import News from '../components/News/News'
 import Trading from './crypto/trading'
 import Transaction from '../components/transaction/TransactionList'
 import ChatBot from './chatbolt/ChatbotFinance'
@@ -55,7 +55,8 @@ const BuisnessOwnerDashboard = () => {
       <Transaction></Transaction>
       <RevenueGrowthOne></RevenueGrowthOne>
       <EarningStaticOne></EarningStaticOne>
-     
+      <News></News>
+
     </section>
 
   )
