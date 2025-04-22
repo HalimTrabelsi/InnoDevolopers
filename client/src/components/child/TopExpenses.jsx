@@ -1,114 +1,158 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import axios from "axios";
+  import React, { useEffect, useState } from "react";
+  import axios from "axios";
+  import { speak } from "../utils/textToSpeech"; // Adjust path if needed
 
-const TopExpenses = () => {
-  const [topExpenses, setTopExpenses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const TopExpenses = () => {
+    const [topExpenses, setTopExpenses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
-  useEffect(() => {
-    // Fetching top expenses from the API
-    const fetchTopExpenses = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setError("Not authenticated. Please log in.");
-          setLoading(false);
-          return;
-        }
-
-        const response = await axios.get(
-          "http://localhost:5001/api/expenses/top-expenses",
-          {
-            headers: { Authorization: `Bearer ${token}` },
+    useEffect(() => {
+      const fetchTopExpenses = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          if (!token) {
+            setError("Not authenticated. Please log in.");
+            setLoading(false);
+            return;
           }
-        );
 
-        if (response.status === 200) {
-          setTopExpenses(response.data.data);
-        } else {
-          setError("Failed to fetch top expenses.");
+          const response = await axios.get(
+            "http://localhost:5001/api/expenses/top-expenses",
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          if (response.status === 200) {
+            setTopExpenses(response.data.data);
+          } else {
+            setError("Failed to fetch top expenses.");
+          }
+        } catch (error) {
+          setError("An error occurred while fetching top expenses.");
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error("Error fetching top expenses:", error);
-        setError("An error occurred while fetching top expenses.");
-      } finally {
-        setLoading(false);
+      };
+
+      fetchTopExpenses();
+    }, []);
+
+    const handleReadDetailedExpenses = () => {
+      // Filter for expenses greater than or equal to 400 dinars
+      const importantExpenses = topExpenses.filter(
+        (expense) => expense.amount >= 400
+      );
+
+      if (importantExpenses.length === 0) {
+        speak("No important expenses recorded in the current period.");
+        return;
       }
+
+      // Professional reading
+      const readText = importantExpenses
+        .map((expense, index) => {
+          const position = ["first", "second", "third", "fourth", "fifth"][index] || `${index + 1}th`;
+          return `The ${position} most significant expense is in the category of ${expense.category}, amounting to ${expense.amount} dinars, recorded on ${new Date(
+            expense.date
+          ).toLocaleDateString()}.`;
+        })
+        .join(" ");
+
+      speak(
+        `Overview of the most important expenses for the current reporting period: ${readText} These are the key expenses that stand out.`
+      );
     };
 
-    fetchTopExpenses();
-  }, []);
-
-  return (
-    <div className="col-xxl-4 col-md-6">
-      <div className="card h-100">
-        <div className="card-header">
-          <div className="d-flex align-items-center flex-wrap gap-2 justify-content-between">
-            <h6 className="mb-2 fw-bold text-lg mb-0">Top Expenses</h6>
-            <Link
-              to="/expenses" // assuming you have an 'expenses' page to show all expenses
-              className="text-primary-600 hover-text-primary d-flex align-items-center gap-1"
-            >
-              <iconify-icon
-                icon="solar:alt-arrow-right-linear"
-                className="icon"
-              />
-            </Link>
+    return (
+      <div className="row justify-content-between mt-4">
+        <div className="col-xxl-6 col-lg-6 col-md-6 mb-4">
+          <div className="card shadow-sm border-0">
+            <div className="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+              <h6 className="fw-bold mb-0">📊 Top Expenses</h6>
+            </div>
+            <div className="card-body p-3">
+              {loading ? (
+                <div className="text-center text-muted">Loading expenses...</div>
+              ) : error ? (
+                <div className="alert alert-danger" role="alert">
+                  {error}
+                </div>
+              ) : topExpenses.length === 0 ? (
+                <div className="text-muted text-center">No expenses available.</div>
+              ) : (
+                <ul className="list-group list-group-flush">
+                  {topExpenses
+                    .sort((a, b) => b.amount - a.amount)
+                    .slice(0, 3)
+                    .map((expense) => (
+                      <li
+                        className="list-group-item d-flex justify-content-between align-items-center"
+                        key={expense._id}
+                      >
+                        <span className="fw-bold">{expense.category}</span>
+                        <span>{expense.amount.toFixed(2)} DT</span>
+                      </li>
+                    ))}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
-        <div className="card-body p-24">
-          {loading ? (
-            <p>Loading...</p>
-          ) : error ? (
-            <p>{error}</p>
-          ) : (
-            <div className="table-responsive scroll-sm">
-              <table className="table bordered-table mb-0">
-                <thead>
-                  <tr>
-                    <th scope="col">Category</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {topExpenses.length > 0 ? (
-                    topExpenses.map((expense) => (
-                      <tr key={expense._id}>
-                        <td>
-                          <span className="text-secondary-light">
-                            {expense.category || "N/A"}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="text-secondary-light">
-                            {expense.amount?.toFixed(2) || "0.00"}
-                          </span>
-                        </td>                        
-                        <td>
-                          <span className="text-secondary-light">
-                            {new Date(expense.date).toLocaleDateString()}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="3" className="text-center">
-                        No top expenses found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+
+        <div className="col-xxl-6 col-lg-6 col-md-6 mb-4">
+          <div className="card shadow-sm border-0 h-100">
+            <div className="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+              <h6 className="fw-bold mb-0">📅 Detailed Expenses</h6>
+              {/* Read aloud button with speaker icon */}
+              <button
+  className="btn btn-sm rounded-circle bg-light"
+  onClick={handleReadDetailedExpenses}
+  title="Read important expenses aloud"
+  style={{ color: "#0d6efd", padding: "0.5rem", fontSize: "1.5rem" }}
+>
+  🔊
+</button>
+
+
             </div>
-          )}
+            <div className="card-body p-3">
+              {loading ? (
+                <div className="text-center text-muted">Loading detailed expenses...</div>
+              ) : error ? (
+                <div className="alert alert-danger" role="alert">
+                  {error}
+                </div>
+              ) : topExpenses.length === 0 ? (
+                <div className="text-muted text-center">No detailed expenses available.</div>
+              ) : (
+                <div className="table-responsive">
+                  <table className="table table-striped table-hover align-middle">
+                    <thead className="table-light">
+                      <tr>
+                        <th style={{ width: "40%" }}>Category</th>
+                        <th style={{ width: "30%" }}>Amount (DT)</th>
+                        <th style={{ width: "30%" }}>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {topExpenses.map((expense) => (
+                        <tr key={expense._id}>
+                          <td>{expense.category}</td>
+                          <td>{expense.amount.toFixed(2)}</td>
+                          <td>{new Date(expense.date).toLocaleDateString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
-export default TopExpenses;
+  export default TopExpenses;
