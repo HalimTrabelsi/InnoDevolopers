@@ -119,6 +119,12 @@ const FaceRecon = () => {
                     case "Business owner":
                         navigate("/business-owner-dashboard");
                         break;
+                        case "Accountant":
+                        navigate("/accountant-dashboard");
+                        break;
+                    case "Financial manager":
+                        navigate("/Financial-manager-dashboard");
+                        break;
                     default:
                         navigate("/");
                 }
