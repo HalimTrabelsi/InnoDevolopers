@@ -1,18 +1,36 @@
+// summarizationController.js
+const fs = require('fs');
+const path = require('path');
+const pdfParse = require('pdf-parse');
 const { HfInference } = require('@huggingface/inference');
 
-const hf = new HfInference('YOUR_HUGGINGFACE_API_KEY'); // Replace with your Hugging Face API key
+const hf = new HfInference('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'); // make sure this is set
 
-exports.summarizeText = async (req, res) => {
-    const { text } = req.body;
-
+exports.summarizePdf = async (req, res) => {
     try {
-        const summary = await hf.summarization({
+        const pdfPath = req.file.path;
+        const dataBuffer = fs.readFileSync(pdfPath);
+        const data = await pdfParse(dataBuffer);
+        const text = data.text;
+
+        if (!text || text.trim().length === 0) {
+            return res.json({ summary: 'No summary could be generated.' });
+        }
+
+        const result = await hf.summarization({
             model: 'facebook/bart-large-cnn',
-            inputs: text,
+            inputs: text.slice(0, 3000), // truncate if needed
         });
-        res.json(summary);
+
+        console.log("🧠 Hugging Face response:", result);
+
+        if (result.summary_text && result.summary_text.trim() !== '') {
+            res.json({ summary: result.summary_text }); // ✅ send the real summary
+        } else {
+            res.json({ summary: 'No summary could be generated.' });
+        }
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to summarize text' });
+        console.error("❌ Error summarizing PDF:", error);
+        res.status(500).json({ summary: 'No summary could be generated.' });
     }
 };

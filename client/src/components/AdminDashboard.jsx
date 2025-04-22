@@ -9,6 +9,8 @@ import UsersOverviewOne from './child/UsersOverviewOne';
 import StatStatisticOne from './child/StatStatisticOne';
 import SalesStatisticOne from './child/SalesStatisticOne';
 import PdfSummarizer  from './PdfSummarize';
+import InputFormWithA from './child/InputFormWithAdmin';
+
 
 const AdminDashboard = () => {
 
@@ -23,6 +25,8 @@ const AdminDashboard = () => {
                 <UsersOverviewOne />
                 <SalesStatisticOne />
                 <PdfSummarizer/>
+                <InputFormWithA/>
+                
             </section>
         </>
 

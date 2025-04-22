@@ -15,7 +15,7 @@ const FinancialOverview = () => {
     Monthly: { income: 2580.52, expense: 1247.19 },
     Weekly: { income: 645.13, expense: 311.79 },
     Today: { income: 92.16, expense: 45.38 },
-    Yearly: { income: 30966.24, expense: 14966.28 }, // Calculated yearly from monthly x12
+    Yearly: { income: 30966.24, expense: 14966.28 }, 
   };
 
   const updateChartData = (rev, exp) => {
