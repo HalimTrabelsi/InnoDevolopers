@@ -260,12 +260,15 @@ const ViewProfileLayer = () => {
         <div className="row gy-4">
             <div className="col-lg-4">
                 <div className="user-grid-card position-relative border radius-16 overflow-hidden h-100" style={{ backgroundColor: 'white' }}>
-                    <img
-                        src="assets/images/user-grid/user-grid-bg1.png"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        className="w-100 object-fit-cover"
-                    />
+                              <div
+    style={{
+        backgroundColor: 'grey',
+        width: '100%',
+        height: '200px', 
+        objectFit: 'cover'
+    }}
+    className="w-100"
+></div>
                     <div className="pb-24 ms-16 mb-24 me-16 mt--100">
                         <div className="text-center border border-top-0 border-start-0 border-end-0">
                             <img

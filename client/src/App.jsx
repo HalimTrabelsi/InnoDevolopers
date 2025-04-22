@@ -1,6 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { useSpeechRecognition } from "react-speech-recognition";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Fab,
+} from "@mui/material";
+import { FaRobot } from "react-icons/fa";
+import { ToastContainer } from 'react-toastify';
 import AdminDashboardPage from "./pages/AdminDashboardPage.jsx";
 import SignInPage from "./pages/SignInPage.jsx";
 import SignUpPage from "./pages/SignUpPage.jsx";
@@ -13,40 +22,29 @@ import FaceReconPage from "./pages/FaceRecoPage";
 import TermsAndConditions from "./pages/TermsAndConditions.jsx";
 import ViewProfilePage from "./pages/ViewProfilePage.jsx";
 import UsersListPage from "./pages/UsersListPage.jsx";
+import AddTransaction from "./components/transaction/AddTransaction";
+import TransactionList from "./components/transaction/TransactionList";
+import StripeRoute from "./components/stripe/PaymentFromExpress";
+import TradingRoute from "./components/crypto/trading";
+import CompteBancaireForm from "./components/CompteBancaire/CompteBancaireForm";
 import CompteBancaireTable from "./components/CompteBancaire/CompteBancaireTable";
-
+import CryptoTable from "./components/crypto/CryptoTable";
 import NewsRoute from "./components/News/News";
-import ChatboltRoute from "./chatbolt/ChatbotFinance";
+import AccountantDashboardPage from "./pages/AccountantDashboardPage.jsx";
+import FinancialManagerPage from "./pages/FinancialManagerPage.jsx";
+import VoiceCommand from "./components/Voccal/VoiceCommand";
 import AuthCallback from "./pages/AuthCallbackPage.jsx";
 import Confirmation from "./pages/ConfirmationLayer.jsx";
 import CompleteProfile from "./pages/CompleteProfileLayer.jsx";
 import AdminPanel from "./pages/AdminPanel.jsx";
-import AccountantDashboardPage from "./pages/AccountantDashboardPage.jsx";
-import FinancialManagerPage from "./pages/FinancialManagerPage.jsx";
-
-
-
-
-
-
-
-
+import ChatIaRoute from "./components/gemini-chatbot/GeminiChat";
+import HomePageTen from "./pages/HomePageTen.jsx";
 
 function App() {
   const userId = "67cc34299384fa66108bb394";
   const [refresh, setRefresh] = useState(false);
+  const [chatbotOpen, setChatbotOpen] = useState(false);
 
-  // Configuration de la reconnaissance vocale
-  const { transcript, listening, resetTranscript } = useSpeechRecognition();
-
-  useEffect(() => {
-    if (!listening && transcript) {
-      handleVoiceCommand(transcript.toLowerCase());
-      resetTranscript();
-    }
-  }, [transcript, listening, resetTranscript]);
-
-  // Fonction de traitement des commandes vocales
   const handleVoiceCommand = (command) => {
     console.log("Commande vocale reçue :", command);
 
@@ -80,77 +78,79 @@ function App() {
     }
   };
 
+  const toggleChatbot = () => setChatbotOpen(!chatbotOpen);
+
   return (
     <BrowserRouter>
+      {/* Bouton Flottant pour ouvrir le chatbot */}
+          <ChatIaRoute />
+
+        <FaRobot />
+   
+        <ToastContainer />
+      {/* Modal Chatbot avec Material UI */}
+      
+   
+
+      {/* Composant de reconnaissance vocale */}
+      <VoiceCommand onCommand={handleVoiceCommand} />
+
       <Routes>
-        <Route path='/' element={<SignInPage />} />
-        <Route path='/sign-in' element={<SignInPage />} />
-        <Route path='/sign-up' element={<SignUpPage />} />
-        <Route path='/forgot-password' element={<ForgotPasswordPage />} />
-        <Route path='/reset-password/:token' element={<ResetPasswordPage />} />
-        <Route path='/face-recon' element={<FaceReconPage />} />
-        <Route path='/sign-up/terms-conditions' element={<TermsAndConditions />} />
-        <Route path='/view-profile' element={<ViewProfilePage />} />
-        <Route path='/view-users' element={<UsersListPage />} />
-        <Route path='/access-denied' element={<AccessDeniedPage />} />
-        
-        
-        
-        <Route path="/chatbot" element={<ChatboltRoute />} />
-        <Route exact path="/complete-profile" element={<CompleteProfile />} />
+        <Route path="/" element={<SignInPage />} />
+        <Route path="/sign-in" element={<SignInPage />} />
+        <Route path="/sign-up" element={<SignUpPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Route path="/face-recon" element={<FaceReconPage />} />
+        <Route path="/sign-up/terms-conditions" element={<TermsAndConditions />} />
+        <Route path="/view-profile" element={<ViewProfilePage />} />
+        <Route path="/view-users" element={<UsersListPage />} />
+        <Route path="/access-denied" element={<AccessDeniedPage />} />
+        <Route path="/crypto" element={<CryptoTable />} />
+        <Route path="/add-transaction" element={<AddTransaction />} />
+        <Route path="/transactions" element={<TransactionList />} />
+        <Route path="/trading" element={<TradingRoute />} />
+        <Route path="/complete-profile" element={<CompleteProfile />} />
         <Route path="/auth-callback" element={<AuthCallback />} />
         <Route path="/confirmation" element={<Confirmation />} />
-        <Route path="/deleteUsers" element={<AdminPanel/>} />
+        <Route path="/deleteUsers" element={<AdminPanel />} />
+        <Route path='/financialoverview' element={<HomePageTen />} />
 
-
-        {/* Private Routes for role-based access */}
         <Route 
-          path='/admin-dashboard' 
+          path="/admin-dashboard"
           element={
-            <PrivateRoute allowedRoles={["Admin"]}>
               <AdminDashboardPage />
-            </PrivateRoute>
-          } 
-        />
-        <Route 
-          path='/business-owner-dashboard' 
-          element={
-            
-              <BusinessOwnerPage />
-         
-          } 
-        />
-        <Route
-            path="/Financial-manager-dashboard"
-            element={
-              <PrivateRoute allowedRoles={["Financial manager"]}>
-                <FinancialManagerPage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/accountant-dashboard"
-            element={
-              <PrivateRoute allowedRoles={["Accountant"]}>
-                <AccountantDashboardPage />
-              </PrivateRoute>
-            }
-          />
-
-        <Route
-          path='/comptes-bancaires'
-          element={
-            <div>
-              <CompteBancaireTable 
-                userId={userId} 
-                refresh={refresh} 
-                onRefresh={() => setRefresh(!refresh)} 
-              />
-            </div>
           }
         />
-                  <Route path="/news" element={<NewsRoute />} />
-
+        <Route path="/business-owner-dashboard" element={<BusinessOwnerPage />} />
+        <Route
+          path="/Financial-manager-dashboard"
+          element={
+            <PrivateRoute allowedRoles={["Financial manager"]}>
+              <FinancialManagerPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/accountant-dashboard"
+          element={
+            <PrivateRoute allowedRoles={["Accountant"]}>
+              <AccountantDashboardPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/comptes-bancaires"
+          element={
+            <CompteBancaireTable
+              userId={userId}
+              refresh={refresh}
+              onRefresh={() => setRefresh(!refresh)}
+            />
+          }
+        />
+        <Route path="/news" element={<NewsRoute />} />
+        <Route path="/ge" element={<ChatIaRoute />} />
       </Routes>
     </BrowserRouter>
   );

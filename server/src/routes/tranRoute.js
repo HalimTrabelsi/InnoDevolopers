@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { viewTransaction, triggerSMSNotification } = require('../controllers/transactionController');
+const { viewTransaction, triggerSMSNotification } = require('../controllers/TransactionController');
 
 // Route to fetch all transactions
 router.get('/viewTransaction', viewTransaction);

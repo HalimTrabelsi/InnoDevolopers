@@ -1,7 +1,6 @@
 const twilio = require('twilio');
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER } = process.env;
 
-// Function to send SMS using Twilio
 
 const sendSMS = async (to, message) => {
   const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);

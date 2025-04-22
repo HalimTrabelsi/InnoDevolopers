@@ -3,6 +3,20 @@ const router = express.Router();
 const Transaction = require("../models/FinancialTransaction");
 const authMiddleware = require("../middlewares/authorization");
 
+router.get("/", authMiddleware(['Accountant']), async (req, res) => {
+  console.log("Received request for /api/transactions, fetching transactions for user:", req.user.userId);
+  try {
+    const transactions = await Transaction.find({ user: req.user.userId })
+      .sort({ date: -1 })
+      .select("description amount type date _id category taxType isTaxValidated");
+    console.log("Transactions found for user:", transactions);
+    res.json(transactions);
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 router.get("/recent", authMiddleware(), async (req, res) => {
   console.log("Received request for /api/transactions/recent, fetching 5 latest transactions");
   try {

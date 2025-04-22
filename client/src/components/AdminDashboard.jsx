@@ -9,6 +9,7 @@ import TopPerformer from './child/TopPerformerOne';
 import UsersOverviewOne from './child/UsersOverviewOne';
 import StatStatisticOne from './child/StatStatisticOne';
 import SalesStatisticOne from './child/SalesStatisticOne';
+import InputFormWithA from './child/InputFormWithAdmin';
 
 
 const AdminDashboard = () => {
@@ -25,6 +26,7 @@ const AdminDashboard = () => {
                 <TopPerformer/>
                 <UsersOverviewOne />
                 <SalesStatisticOne />
+                <InputFormWithA/>
                 
             </section>
         </>
