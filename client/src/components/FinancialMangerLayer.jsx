@@ -4,6 +4,7 @@ import InputFormWithF from './child/InputFormWithF';
 import UnitCountTwo from './child/UnitCountTwo';
 import LastTransactionAcc from './child/LastTransactionAcc';
 import Tax from './Tax.jsx' ;
+import FinancialTrends from './FinancialTrends';
 
 
 const socket = io('http://localhost:5001', { withCredentials: true });
@@ -33,6 +34,7 @@ const FinancialMangerLayer = () => {
       <UnitCountTwo />
       <LastTransactionAcc showActions={false} title="Approval History" setNotification={setNotification} />
       <Tax />
+      <FinancialTrends />
       {/* Affichage de la notification si nécessaire */}
     </section>
   );

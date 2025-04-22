@@ -9,6 +9,7 @@ import TopPerformanceOne from './child/TopperformanceOne'
 import LatestPerformanceOne from './child/LatestPerformanceOne'
 import LastTransactionOne from './child/LastTransactionOne'
 import CompteBancaireTable from './CompteBancaire/CompteBancaireTable'
+import FinancialT  from './FinancialTrends'
 
 import Trading from './crypto/trading'
 import Transaction from '../components/transaction/TransactionList'
@@ -48,6 +49,8 @@ const BuisnessOwnerDashboard = () => {
 
       {/* LastTransactionOne */}
       <LastTransactionOne />
+
+      <FinancialT  />
       
       <CompteBancaireTable userId={userId} />      
       <Trading></Trading>
