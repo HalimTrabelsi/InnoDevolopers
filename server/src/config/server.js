@@ -22,7 +22,7 @@ const upload = require('../middlewares/uploadImage');
 const ListRoutes = require("../routes/listRoutes");
 const taxRulesRoutes = require('../routes/taxRules');
 const socket = require('../socket'); 
-
+const gptRoute = require("../routes/gptSummary");
 dotenv.config();
 
 const app = express();
@@ -74,7 +74,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/userstats", userStatsRoutes);
 app.use("/api/list", ListRoutes);
 app.use('/api/taxRules', taxRulesRoutes);
-
+app.use("/api/gpt", gptRoute);
 require("../controllers/passport");
 mongoose
     .connect(process.env.MONGO_URI, {
