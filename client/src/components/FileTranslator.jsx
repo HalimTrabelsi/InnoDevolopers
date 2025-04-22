@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 
 const FileTranslator = () => {
     const fileInputRefs = {
-        fr: useRef(null),
+        zh: useRef(null),
         en: useRef(null),
         ar: useRef(null)
     };
@@ -31,16 +31,14 @@ const FileTranslator = () => {
                         "Content-Type": "application/json"
                     }
                 });
-                
+
                 console.log("Translation success:", res.data);
                 setLogs(prevLogs => [...prevLogs, "Translation success: " + res.data.translatedText]);
 
-                // Create a blob and set the download link
                 const blob = new Blob([res.data.translatedText], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
                 setDownloadLink(url);
 
-                // Show SweetAlert with options
                 Swal.fire({
                     title: 'Translation Successful!',
                     text: 'Your file has been translated.',
@@ -50,13 +48,11 @@ const FileTranslator = () => {
                     cancelButtonText: 'Download the File'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // User clicked "Proceed"
                         console.log("User chose to proceed.");
                     } else if (result.isDismissed) {
-                        // User clicked "Download the File"
                         const a = document.createElement('a');
                         a.href = url;
-                        a.download = 'translated_text.txt'; // Set the filename
+                        a.download = 'translated_text.txt';
                         document.body.appendChild(a);
                         a.click();
                         document.body.removeChild(a);
@@ -68,8 +64,8 @@ const FileTranslator = () => {
                 setLogs(prevLogs => [...prevLogs, "Translation failed: " + (err.response?.data || err.message)]);
             }
         };
-        
-        reader.readAsText(file); // Read the file as text
+
+        reader.readAsText(file);
     };
 
     const triggerFileInput = (lang) => {
@@ -81,7 +77,7 @@ const FileTranslator = () => {
             <h6 className="mb-24">Translate Your Files</h6>
             <div className="row gy-4">
                 {[
-                    { lang: "fr", label: "Français", desc: "Traduisez vos fichiers texte ici", icon: "twemoji:flag-france", bg: "bg-gradient-purple", btnColor: "text-purple-600", text: "Traduire" },
+                    { lang: "zh", label: "中文", desc: "在此翻译您的文本文件", icon: "twemoji:flag-china", bg: "bg-gradient-purple", btnColor: "text-purple-600", text: "翻译" },
                     { lang: "en", label: "English", desc: "Translate your text files here", icon: "twemoji:flag-united-states", bg: "bg-gradient-primary", btnColor: "text-primary-600", text: "Translate" },
                     { lang: "ar", label: "العربية", desc: "ترجم ملفات النص الخاصة بك هنا", icon: "twemoji:flag-saudi-arabia", bg: "bg-gradient-success", btnColor: "text-success-600", text: "ترجمة" },
                 ].map(({ lang, label, desc, icon, bg, btnColor, text }) => (
@@ -106,7 +102,7 @@ const FileTranslator = () => {
                                     type="file"
                                     ref={fileInputRefs[lang]}
                                     style={{ display: "none" }}
-                                    accept=".txt" // Only allow .txt files
+                                    accept=".txt"
                                     onChange={(e) => handleFileChange(e, lang)}
                                 />
                             </div>
@@ -114,8 +110,6 @@ const FileTranslator = () => {
                     </div>
                 ))}
             </div>
-
-          
         </div>
     );
 };

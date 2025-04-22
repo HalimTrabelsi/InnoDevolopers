@@ -8,7 +8,6 @@ import CountryStatusOne from './child/CountryStatusOne'
 import TopPerformanceOne from './child/TopperformanceOne'
 import LatestPerformanceOne from './child/LatestPerformanceOne'
 import LastTransactionOne from './child/LastTransactionOne'
-
 import Trading from './crypto/trading'
 import Transaction from '../components/transaction/TransactionList'
 import ChatBot from './chatbolt/ChatbotFinance'
@@ -48,7 +47,6 @@ const BuisnessOwnerDashboard = () => {
       <Trading></Trading>
       <ChatBot></ChatBot>
       <Transaction></Transaction>
-      <UnitCountTwo></UnitCountTwo>
       <RevenueGrowthOne></RevenueGrowthOne>
       <EarningStaticOne></EarningStaticOne>
      

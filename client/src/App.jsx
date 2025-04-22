@@ -33,7 +33,6 @@ import VoiceCommand from "./components/Voccal/VoiceCommand";
 import AuthCallback from "./pages/AuthCallbackPage.jsx";
 import Confirmation from "./pages/ConfirmationLayer.jsx";
 import CompleteProfile from "./pages/CompleteProfileLayer.jsx";
-import AdminPanel from "./pages/AdminPanel.jsx";
 import ExpensePage from "./pages/ExpensePage.jsx";
 import InvoicePreviewPage from "./pages/InvoicePreviewPage";
 function App() {
@@ -116,7 +115,6 @@ function App() {
         <Route exact path="/complete-profile" element={<CompleteProfile />} />
         <Route path="/auth-callback" element={<AuthCallback />} />
         <Route path="/confirmation" element={<Confirmation />} />
-        <Route path="/deleteUsers" element={<AdminPanel/>} />
         <Route exact path='/index-11' element={<ExpensePage />} />
         <Route exact path='/invoice-preview' element={<InvoicePreviewPage />} />
         <Route path="/news" element={<NewsRoute />} />
