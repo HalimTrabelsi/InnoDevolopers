@@ -34,8 +34,8 @@ const aiRoutes = require('../routes/aiRoutes');
 const cookieParser = require("cookie-parser");
 const cryptoRoutes = require('../routes/crypto');
 const compteBanciareRoutes=require('../routes/compteBancaireRoutes');
-const summarizationRoutes = require('./routes/summarizationRoutes');
-
+const summarizationRoutes = require('../routes/summarizationRoutes');
+const ownerDashboardRoutes = require('../routes/dashboardOwnerRoutes');
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "uploads/");
@@ -84,8 +84,8 @@ app.use("/api/approvals", approvalRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/userstats", userStatsRoutes);
 app.use('/api/translate', translationRoutes);
-app.use('/api/summarize', summarizationRoutes);
-
+app.use('/api/summarize-pdf', summarizationRoutes);
+app.use('/api/ownerdashboard', ownerDashboardRoutes);
 mongoose
     .connect(process.env.MONGO_URI, {
         useNewUrlParser: true,
