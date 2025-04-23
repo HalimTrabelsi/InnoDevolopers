@@ -17,7 +17,7 @@ const Investment = () => {
       <div className='card-body py-20'>
         <p className='text-center text-secondary-light d-flex align-items-center gap-8 justify-content-center'>
           Total Investment:{" "}
-          <span className='fw-semibold text-primary-light'>$500</span>{" "}
+          <span className='fw-semibold text-primary-light'>500 TND</span>{" "}
         </p>
         <div className='mt-40 mb-24 text-center pe-110 position-relative max-w-288-px mx-auto'>
           <div className='w-170-px h-170-px rounded-circle z-1 position-relative d-inline-flex justify-content-center align-items-center border border-white border-width-2-px'>
@@ -50,24 +50,24 @@ const Investment = () => {
             <div className='d-flex align-items-center gap-2'>
               <span className='w-12-px h-12-px rounded-pill bg-primary-600' />
               <span className='text-secondary-light text-sm fw-normal'>
-                Net Income
+                Product Development
               </span>
             </div>
             <h6 className='text-primary-light fw-semibold mb-0 mt-4 text-lg'>
-              $50,000
+              6000 TND
             </h6>
           </div>
           <div className='d-flex flex-column align-items-start'>
             <div className='d-flex align-items-center gap-2'>
               <span className='w-12-px h-12-px rounded-pill bg-purple' />
               <span className='text-secondary-light text-sm fw-normal'>
-                Real State
+                Digital marketing
               </span>
             </div>
             <h6 className='text-primary-light fw-semibold mb-0 mt-4 text-lg'>
-              $150
+              4500 TND
             </h6>
-          </div>
+          </div><br></br>
           <div className='d-flex flex-column align-items-start'>
             <div className='d-flex align-items-center gap-2'>
               <span className='w-12-px h-12-px rounded-pill bg-success-600' />
@@ -76,7 +76,7 @@ const Investment = () => {
               </span>
             </div>
             <h6 className='text-primary-light fw-semibold mb-0 mt-4 text-lg'>
-              $100
+              5000 TND
             </h6>
           </div>
         </div>

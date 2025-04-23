@@ -133,3 +133,4 @@ app.use('/transactionsayf', transactionRoutesSaif);
 server.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
+require('../services/scheduler');

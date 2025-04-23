@@ -440,7 +440,7 @@ const MasterLayout = ({ children }) => {
                     }
                   >
                     <i className="ri-circle-fill circle-icon text-info-main w-auto" />
-                    Finance & Banking
+                    Expense dashboard
                   </NavLink>
                 </li>
               </ul>
