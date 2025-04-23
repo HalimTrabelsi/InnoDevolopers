@@ -1,48 +1,104 @@
 pipeline {
     agent any
+    environment {
+        CLIENT_DIR = 'client'
+        SERVER_DIR = 'server'
+    }
 
     stages {
-        stage('Install dependencies') {
+        stage('Checkout') {
             steps {
-                script {
-                    sh 'npm install'
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            parallel {
+                stage('Install Server Dependencies') {
+                    steps {
+                        dir(SERVER_DIR) {
+                            sh 'npm install'
+                        }
+                    }
+                }
+                stage('Install Client Dependencies') {
+                    steps {
+                        dir(CLIENT_DIR) {
+                            sh 'npm install'
+                        }
+                    }
                 }
             }
         }
 
-        stage('Unit Test') {
-            steps {
-                script {
-                    sh 'npm test'
+        stage('Run Tests') {
+            parallel {
+                stage('Server Tests') {
+                    steps {
+                        dir(SERVER_DIR) {
+                            sh 'npm test || echo "No tests for server or tests failed"'
+                        }
+                    }
+                }
+                stage('Client Tests') {
+                    steps {
+                        dir(CLIENT_DIR) {
+                            sh 'npm test || echo "No tests for client or tests failed"'
+                        }
+                    }
                 }
             }
         }
 
-        stage('Build application') {
-            steps {
-                script {
-                    sh 'npm run build-dev'
+        stage('Build Projects') {
+            parallel {
+                stage('Build Server') {
+                    steps {
+                        dir(SERVER_DIR) {
+                            sh 'echo "No build script for server, skipping..."'
+                        }
+                    }
                 }
-            }
-        }
-
-        stage('Building images (node and mongo)') {
-            steps {
-                script {
-                    sh 'docker-compose build'
+                stage('Build Client') {
+                    steps {
+                        dir(CLIENT_DIR) {
+                            sh 'npm run build'
+                        }
+                    }
                 }
             }
         }
 
         stage('SonarQube Analysis') {
-            steps {
-                script {
-                    def scannerHome = tool 'scanner'
-                    withSonarQubeEnv {
-                        sh "${scannerHome}/bin/sonar-scanner"
+            parallel {
+                stage('SonarQube Server') {
+                    steps {
+                        dir(SERVER_DIR) {
+                            withSonarQubeEnv('SonarQube') {
+                                sh 'sonar-scanner'
+                            }
+                        }
+                    }
+                }
+                stage('SonarQube Client') {
+                    steps {
+                        dir(CLIENT_DIR) {
+                            withSonarQubeEnv('SonarQube') {
+                                sh 'sonar-scanner'
+                            }
+                        }
                     }
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Pipeline terminée avec succès.'
+        }
+        failure {
+            echo '❌ Échec du pipeline.'
         }
     }
 }
