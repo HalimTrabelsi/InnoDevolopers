@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         nodejs "nodejs" // Adapter si besoin
-        sonarQube 'SonarQube' // Utilise le nom exact que tu as défini pour SonarQube
+        sonarQubeScanner 'SonarQube' // Utilise le nom exact de ton SonarQube Scanner
 
     }
 
