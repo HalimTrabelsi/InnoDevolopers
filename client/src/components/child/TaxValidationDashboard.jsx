@@ -18,20 +18,20 @@ const TaxValidationDashboard = () => {
     consumption: '',
   });
 
-  // Chargement des transactions
+  // Load transactions
   const fetchRecords = async () => {
     try {
       const token = localStorage.getItem('token');
-      console.log('Token utilisé:', token);
-      if (!token) throw new Error('Aucun token trouvé');
+      console.log('Token used:', token);
+      if (!token) throw new Error('No token found');
       const response = await axios.get('http://localhost:5001/api/taxRules', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log('Données transactions:', response.data);
+      console.log('Transaction data:', response.data);
       setRecords(response.data);
     } catch (error) {
-      console.error('Erreur Axios (fetchRecords):', error.response);
-      toast.error(`Erreur : ${error.response?.data?.message || 'Impossible de charger les transactions'}`);
+      console.error('Axios error (fetchRecords):', error.response);
+      toast.error(`Error: ${error.response?.data?.message || 'Failed to load transactions'}`);
     }
   };
 
@@ -47,32 +47,32 @@ const TaxValidationDashboard = () => {
       if (!isValid) {
         Swal.fire({
           icon: 'error',
-          title: 'Anomalie détectée',
+          title: 'Anomaly Detected',
           text: message,
           confirmButtonColor: '#4CAF50',
         });
       }
-      fetchRecords(); // Rafraîchir les données après validation
+      fetchRecords(); // Refresh data after validation
     });
 
     return () => socket.off('taxValidation');
   }, []);
 
-  // Validation des champs avant soumission
+  // Validate inputs before submission
   const validateInputs = () => {
     let tempErrors = {};
     let isValid = true;
 
     if (!userTax) {
-      tempErrors.userTax = "La taxe est requise";
+      tempErrors.userTax = 'Tax is required';
       isValid = false;
     } else if (isNaN(userTax) || parseFloat(userTax) <= 0) {
-      tempErrors.userTax = "La taxe doit être un nombre positif";
+      tempErrors.userTax = 'Tax must be a positive number';
       isValid = false;
     }
 
     if (consumption && (isNaN(consumption) || parseFloat(consumption) <= 0)) {
-      tempErrors.consumption = "La consommation doit être un nombre positif";
+      tempErrors.consumption = 'Consumption must be a positive number';
       isValid = false;
     }
 
@@ -83,17 +83,17 @@ const TaxValidationDashboard = () => {
   const handleValidate = async (recordId, collection) => {
     const token = localStorage.getItem('token');
     if (!token) {
-      toast.error('Aucun token trouvé. Veuillez vous connecter.');
+      toast.error('No token found. Please log in.');
       return;
     }
     if (!recordId || !collection) {
-      toast.error('Aucun enregistrement sélectionné.');
+      toast.error('No record selected.');
       return;
     }
 
-    // Valider les champs avant envoi
+    // Validate inputs before submission
     if (!validateInputs()) {
-      toast.error("Veuillez corriger les erreurs avant de valider");
+      toast.error('Please fix the errors before validating');
       return;
     }
 
@@ -105,16 +105,17 @@ const TaxValidationDashboard = () => {
       consumption: consumption ? parseFloat(consumption) : null,
       isExport,
     };
-    console.log('Payload envoyé:', payload);
+    console.log('Payload sent:', payload);
 
     Swal.fire({
-      title: 'Confirmer la validation ?',
-      text: 'Vérifiez que la taxe saisie est correcte.',
+      title: 'Confirm Validation?',
+      text: 'Please ensure the entered tax is correct.',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#4CAF50',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Valider',
+      confirmButtonText: 'Validate',
+      cancelButtonText: 'Cancel',
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -123,14 +124,14 @@ const TaxValidationDashboard = () => {
             payload,
             { headers: { Authorization: `Bearer ${token}` } }
           );
-          console.log('Réponse serveur:', response.data);
+          console.log('Server response:', response.data);
           if (response.data.isValid) {
             setRecords(
               records.map((r) =>
                 r._id === recordId ? { ...r, isTaxValidated: true, taxCalculated: response.data.expectedTax } : r
               )
             );
-            Swal.fire('Validé !', 'La taxe a été validée avec succès.', 'success');
+            Swal.fire('Validated!', 'The tax has been successfully validated.', 'success');
             fetchRecords();
             setUserTax('');
             setConsumption('');
@@ -139,14 +140,14 @@ const TaxValidationDashboard = () => {
           } else {
             Swal.fire({
               icon: 'error',
-              title: 'Erreur de validation',
-              text: `La taxe saisie (${userTax}) est incorrecte. Taxe attendue : ${response.data.expectedTax}`,
+              title: 'Validation Error',
+              text: `The entered tax (${userTax}) is incorrect. Expected tax: ${response.data.expectedTax}`,
               confirmButtonColor: '#4CAF50',
             });
           }
         } catch (error) {
-          console.error('Erreur Axios (handleValidate):', error.response);
-          toast.error(`Erreur : ${error.response?.data?.message || 'Validation échouée'}`);
+          console.error('Axios error (handleValidate):', error.response);
+          toast.error(`Error: ${error.response?.data?.message || 'Validation failed'}`);
         }
       }
     });
@@ -154,15 +155,15 @@ const TaxValidationDashboard = () => {
 
   return (
     <div style={{ background: '#f0f2f5', padding: '20px', minHeight: '100vh' }}>
-      <h2 style={{ color: '#333' }}>Validation Fiscale (Tunisie)</h2>
+      <h2 style={{ color: '#333' }}>Tax Validation</h2>
 
-      {/* Section de validation fiscale */}
+      {/* Tax Validation Section */}
       <div style={{ background: '#fff', padding: '20px', margin: '20px 0', borderRadius: '8px', border: '1px solid #ccc' }}>
-        <h3 style={{ color: '#333', marginBottom: '20px' }}>Valider une Transaction</h3>
+        <h3 style={{ color: '#333', marginBottom: '20px' }}>Validate a Transaction</h3>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'flex-start' }}>
           <div style={{ flex: '1 1 200px' }}>
             <label style={{ display: 'block', marginBottom: '5px', color: '#333' }}>
-              Taxe Saisie (TND)
+              Entered Tax (TND)
             </label>
             <input
               type="number"
@@ -174,7 +175,7 @@ const TaxValidationDashboard = () => {
                   setValidationErrors({ ...validationErrors, userTax: '' });
                 }
               }}
-              placeholder="Saisir la taxe (ex. 19)"
+              placeholder="Enter tax (e.g., 19)"
               style={{
                 padding: '10px',
                 border: validationErrors.userTax ? '1px solid #dc3545' : '1px solid #ccc',
@@ -191,7 +192,7 @@ const TaxValidationDashboard = () => {
           </div>
           <div style={{ flex: '1 1 200px' }}>
             <label style={{ display: 'block', marginBottom: '5px', color: '#333' }}>
-              Consommation (kWh, si applicable)
+              Consumption (kWh, if applicable)
             </label>
             <input
               type="number"
@@ -202,7 +203,7 @@ const TaxValidationDashboard = () => {
                   setValidationErrors({ ...validationErrors, consumption: '' });
                 }
               }}
-              placeholder="Consommation (ex. 300)"
+              placeholder="Consumption (e.g., 300)"
               style={{
                 padding: '10px',
                 border: validationErrors.consumption ? '1px solid #dc3545' : '1px solid #ccc',
@@ -224,11 +225,11 @@ const TaxValidationDashboard = () => {
                 checked={isExport}
                 onChange={(e) => {
                   setIsExport(e.target.checked);
-                  console.log('isExport mis à jour:', e.target.checked);
+                  console.log('isExport updated:', e.target.checked);
                 }}
                 style={{ marginRight: '5px' }}
               />
-              <span style={{ fontWeight: 'bold' }}>Exportation (IS 10%)</span>
+              <span style={{ fontWeight: 'bold' }}>Export (IS 10%)</span>
             </label>
           </div>
           <div style={{ flex: '1 1 200px' }}>
@@ -245,34 +246,40 @@ const TaxValidationDashboard = () => {
                 width: '100%',
               }}
             >
-              Valider
+              Validate
             </button>
           </div>
         </div>
       </div>
 
-      {/* Tableau des transactions */}
+      {/* Transactions Table */}
       <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff' }}>
         <thead>
           <tr style={{ background: '#e0e0e0' }}>
             <th style={{ padding: '10px' }}>ID</th>
-            <th style={{ padding: '10px' }}>Catégorie</th>
-            <th style={{ padding: '10px' }}>Montant</th>
-            <th style={{ padding: '10px' }}>Type de Taxe</th>
-            <th style={{ padding: '10px' }}>Statut</th>
-            <th style={{ padding: '10px' }}>Taxe Calculée</th>
+            <th style={{ padding: '10px' }}>Category</th>
+            <th style={{ padding: '10px' }}>Amount</th>
+            <th style={{ padding: '10px' }}>Tax Type</th>
+            <th style={{ padding: '10px' }}>Status</th>
+            <th style={{ padding: '10px' }}>Calculated Tax</th>
             <th style={{ padding: '10px' }}>Action</th>
           </tr>
         </thead>
         <tbody>
           {records.map((record) => (
-            <tr key={record._id}>
+            <tr
+              key={record._id}
+              style={{
+                background: selectedRecord?._id === record._id ? '#e3f2fd' : 'transparent',
+                transition: 'background 0.2s',
+              }}
+            >
               <td style={{ padding: '10px' }}>{record._id}</td>
               <td style={{ padding: '10px' }}>{record.category}</td>
               <td style={{ padding: '10px' }}>{record.amount}</td>
               <td style={{ padding: '10px' }}>{record.taxType}</td>
               <td style={{ padding: '10px' }}>
-                {record.isTaxValidated ? 'Validé' : 'Non validé'}
+                {record.isTaxValidated ? 'Validated' : 'Not Validated'}
               </td>
               <td style={{ padding: '10px' }}>
                 {record.taxCalculated ? `${record.taxCalculated} TND` : '-'}
@@ -281,7 +288,7 @@ const TaxValidationDashboard = () => {
                 <button
                   onClick={() => {
                     setSelectedRecord({ _id: record._id, collection: 'Transaction' });
-                    console.log('selectedRecord mis à jour:', { _id: record._id, collection: 'Transaction' });
+                    console.log('selectedRecord updated:', { _id: record._id, collection: 'Transaction' });
                   }}
                   style={{
                     padding: '5px 10px',
@@ -292,7 +299,7 @@ const TaxValidationDashboard = () => {
                     cursor: 'pointer',
                   }}
                 >
-                  Sélectionner
+                  Select
                 </button>
               </td>
             </tr>

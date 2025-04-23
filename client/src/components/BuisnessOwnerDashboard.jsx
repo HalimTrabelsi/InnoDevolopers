@@ -13,6 +13,7 @@ import News from '../components/News/News'
 import Trading from './crypto/trading'
 import Transaction from '../components/transaction/TransactionList'
 import ChatBot from './chatbolt/ChatbotFinance'
+import FinancialT  from './FinancialTrends'
 
 const BuisnessOwnerDashboard = () => {
   const userId = "67cc34299384fa66108bb394";
@@ -48,6 +49,8 @@ const BuisnessOwnerDashboard = () => {
 
       {/* LastTransactionOne */}
       <LastTransactionOne />
+
+      <FinancialT  />
       
       <CompteBancaireTable userId={userId} />      
       <Trading></Trading>
