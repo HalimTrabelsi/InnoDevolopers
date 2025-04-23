@@ -23,6 +23,7 @@ const ListRoutes = require("../routes/listRoutes");
 const taxRulesRoutes = require('../routes/taxRules');
 const socket = require('../socket'); 
 const financialTrendsRoutes = require('../routes/financialTrends');
+const simulationRoutes = require('../routes/simulationRoutes');
 
 dotenv.config();
 
@@ -76,6 +77,9 @@ app.use("/api/userstats", userStatsRoutes);
 app.use("/api/list", ListRoutes);
 app.use('/api/taxRules', taxRulesRoutes);
 app.use('/api/financial-trends', financialTrendsRoutes);
+app.use('/api/simulations', simulationRoutes);
+
+
 
 require("../controllers/passport");
 mongoose

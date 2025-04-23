@@ -5,13 +5,15 @@ import UnitCountTwo from './child/UnitCountTwo';
 import LastTransactionAcc from './child/LastTransactionAcc';
 import Tax from './Tax.jsx' ;
 import FinancialTrends from './FinancialTrends';
+import FinancialSimulation from './FinancialSimulation';
+
 
 
 const socket = io('http://localhost:5001', { withCredentials: true });
 
 const FinancialMangerLayer = () => {
   const [notification, setNotification] = useState('');
-
+  
   
    
      useEffect(() => {
@@ -35,6 +37,9 @@ const FinancialMangerLayer = () => {
       <LastTransactionAcc showActions={false} title="Approval History" setNotification={setNotification} />
       <Tax />
       <FinancialTrends />
+
+      <FinancialSimulation/> {/* Remplacez par l'ID utilisateur réel */}
+     
       {/* Affichage de la notification si nécessaire */}
     </section>
   );
