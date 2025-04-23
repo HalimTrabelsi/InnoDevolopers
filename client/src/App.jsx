@@ -6,7 +6,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Fab,
 } from "@mui/material";
 import { FaRobot } from "react-icons/fa";
 import { ToastContainer } from 'react-toastify';
@@ -24,9 +23,7 @@ import ViewProfilePage from "./pages/ViewProfilePage.jsx";
 import UsersListPage from "./pages/UsersListPage.jsx";
 import AddTransaction from "./components/transaction/AddTransaction";
 import TransactionList from "./components/transaction/TransactionList";
-import StripeRoute from "./components/stripe/PaymentFromExpress";
 import TradingRoute from "./components/crypto/trading";
-import CompteBancaireForm from "./components/CompteBancaire/CompteBancaireForm";
 import CompteBancaireTable from "./components/CompteBancaire/CompteBancaireTable";
 import CryptoTable from "./components/crypto/CryptoTable";
 import NewsRoute from "./components/News/News";
@@ -36,12 +33,13 @@ import VoiceCommand from "./components/Voccal/VoiceCommand";
 import AuthCallback from "./pages/AuthCallbackPage.jsx";
 import Confirmation from "./pages/ConfirmationLayer.jsx";
 import CompleteProfile from "./pages/CompleteProfileLayer.jsx";
+import ExpensePage from "./pages/ExpensePage.jsx";
+import InvoicePreviewPage from "./pages/InvoicePreviewPage";
 import AdminPanel from "./pages/AdminPanel.jsx";
 import ChatIaRoute from "./components/gemini-chatbot/GeminiChat";
 import HomePageTen from "./pages/HomePageTen.jsx";
-
 function App() {
-  const userId = "67cc34299384fa66108bb394";
+  const userId = "67ff6c1b6a739a45e0a45655";
   const [refresh, setRefresh] = useState(false);
   const [chatbotOpen, setChatbotOpen] = useState(false);
 
@@ -113,6 +111,9 @@ function App() {
         <Route path="/complete-profile" element={<CompleteProfile />} />
         <Route path="/auth-callback" element={<AuthCallback />} />
         <Route path="/confirmation" element={<Confirmation />} />
+        <Route exact path='/index-11' element={<ExpensePage />} />
+        <Route exact path='/invoice-preview' element={<InvoicePreviewPage />} />
+        <Route path="/news" element={<NewsRoute />} />
         <Route path="/deleteUsers" element={<AdminPanel />} />
         <Route path='/financialoverview' element={<HomePageTen />} />
 

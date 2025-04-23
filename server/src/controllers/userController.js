@@ -35,14 +35,11 @@ const registerUser = async (req, res) => {
         const imageUrl = req.file ? req.file.path : "";
         const verificationToken = crypto.randomBytes(32).toString("hex");
         const hashedPassword = await bcrypt.hash(password, 10);
-
+       
 
         if (!req.file) {
             return res.status(400).json({ message: "Image file is missing" });
         }
-
-       
-
 
         const newUser = new User({
             name,
@@ -51,12 +48,13 @@ const registerUser = async (req, res) => {
             phoneNumber,
             role,
             image: imageUrl,
-
             image: imageUrl, // Store the image URL
             isVerified: false, 
         });
-
-        newUser.verificationToken = verificationToken;
+        const verificationTokenMah = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
+            expiresIn: '1h',
+        });
+        newUser.verificationTokenMah = verificationTokenMah;
         await newUser.save();
 
         const transporter = nodemailer.createTransport({
@@ -67,7 +65,7 @@ const registerUser = async (req, res) => {
             },
         });
 
-        const verificationUrl = `http://localhost:5001/api/users/verify-email/${verificationToken}?email=${newUser.email}&redirect=sign-in`;
+        const verificationUrl = `http://localhost:5001/api/users/verify-email/${verificationTokenMah}?email=${newUser.email}&redirect=sign-in`;
 
         const mailOptions = {
             to: newUser.email,
@@ -187,7 +185,7 @@ const resetPassword = async (req, res) => {
 // Email Verification
 
 const verifyEmail = async (req, res) => {
-    const { verificationToken } = req.params;
+    const { verificationTokenMah } = req.params;
     const { email, redirect } = req.query; 
 
     try {
@@ -197,7 +195,7 @@ const verifyEmail = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        jwt.verify(verificationToken, process.env.JWT_SECRET, async (err, decoded) => {
+        jwt.verify(verificationTokenMah, process.env.JWT_SECRET, async (err, decoded) => {
             if (err) {
                 return res.status(400).json({ message: "Invalid or expired verification token" });
             }
@@ -207,7 +205,7 @@ const verifyEmail = async (req, res) => {
             }
 
             user.isVerified = true;
-            user.verificationToken = verificationToken; 
+            user.verificationTokenMah = verificationTokenMah ; 
             await user.save();
 
             res.redirect(`http://localhost:3000/${redirect}?verified=true`);
@@ -232,7 +230,7 @@ const resendVerificationEmail = async (req, res) => {
             return res.status(400).json({ message: "Email already verified" });
         }
 
-        const verificationToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        const verificationTokenMah = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
             expiresIn: '1h',
         });
 
@@ -244,7 +242,7 @@ const resendVerificationEmail = async (req, res) => {
             },
         });
 
-        const verificationUrl = `http://localhost:5001/api/users/verify-email/${verificationToken}?email=${user.email}&redirect=sign-in`;
+        const verificationUrl = `http://localhost:5001/api/users/verify-email/${verificationTokenMah}?email=${user.email}&redirect=sign-in`;
         const mailOptions = {
             to: email,
             from: process.env.EMAIL_USER,
@@ -255,7 +253,7 @@ const resendVerificationEmail = async (req, res) => {
 
 
         await transporter.sendMail(mailOptions);
-        user.verificationToken = verificationToken;
+        user.verificationTokenMah = verificationTokenMah;
         await user.save();
         res.status(200).json({ message: "Verification email resent!" });
     } catch (error) {

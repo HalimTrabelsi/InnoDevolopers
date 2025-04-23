@@ -25,12 +25,13 @@ const socket = require('../socket');
 const financialTrendsRoutes = require('../routes/financialTrends');
 const simulationRoutes = require('../routes/simulationRoutes');
 
+const gptRoute = require("../routes/gptSummary");
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 5001;
-
+const transactionRoutesSaif = require("../routes/transactionRoutes");
 const io = socket.init(server);
 
 app.use((req, res, next) => {
@@ -81,6 +82,7 @@ app.use('/api/simulations', simulationRoutes);
 
 
 
+app.use("/api/gpt", gptRoute);
 require("../controllers/passport");
 mongoose
     .connect(process.env.MONGO_URI, {
@@ -134,6 +136,7 @@ app.use('/api/profile', profileRoutes);
 app.use('/stripe', require('../routes/stripe'));
 app.use('/crypto', cryptoRoutes);
 app.use('/compteBancaire', compteBanciareRoutes);
+app.use('/transactionsayf', transactionRoutesSaif);
 
 server.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);

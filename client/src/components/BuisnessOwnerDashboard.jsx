@@ -11,6 +11,7 @@ import LastTransactionOne from './child/LastTransactionOne'
 import CompteBancaireTable from './CompteBancaire/CompteBancaireTable'
 import FinancialT  from './FinancialTrends'
 
+import News from '../components/News/News'
 import Trading from './crypto/trading'
 import Transaction from '../components/transaction/TransactionList'
 import ChatBot from './chatbolt/ChatbotFinance'
@@ -56,10 +57,10 @@ const BuisnessOwnerDashboard = () => {
       <Trading></Trading>
       <ChatBot></ChatBot>
       <Transaction></Transaction>
-      <UnitCountTwo></UnitCountTwo>
       <RevenueGrowthOne></RevenueGrowthOne>
       <EarningStaticOne></EarningStaticOne>
-     
+      <News></News>
+
     </section>
 
   )
