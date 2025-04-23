@@ -3,6 +3,9 @@ import io from 'socket.io-client';
 import InputFormWithF from './child/InputFormWithF';
 import UnitCountTwo from './child/UnitCountTwo';
 import LastTransactionAcc from './child/LastTransactionAcc';
+import Tax from './Tax.jsx' ;
+import FinancialTrends from './FinancialTrends';
+import FinancialSimulation from './FinancialSimulation';
 
 const socket = io('http://localhost:5001', { withCredentials: true });
 
@@ -30,6 +33,9 @@ const FinancialMangerLayer = () => {
       <InputFormWithF />
       <UnitCountTwo />
       <LastTransactionAcc showActions={false} title="Approval History" setNotification={setNotification} />
+      <Tax />
+      <FinancialTrends />
+      <FinancialSimulation/>
     </section>
   );
 };
