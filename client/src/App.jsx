@@ -26,18 +26,19 @@ import TradingRoute from "./components/crypto/trading";
 import CompteBancaireTable from "./components/CompteBancaire/CompteBancaireTable";
 import CryptoTable from "./components/crypto/CryptoTable";
 import NewsRoute from "./components/News/News";
-import ChatboltRoute from "./components/chatbolt/ChatbotFinance";
 import AccountantDashboardPage from "./pages/AccountantDashboardPage.jsx";
 import FinancialManagerPage from "./pages/FinancialManagerPage.jsx";
 import VoiceCommand from "./components/Voccal/VoiceCommand";
 import AuthCallback from "./pages/AuthCallbackPage.jsx";
 import Confirmation from "./pages/ConfirmationLayer.jsx";
 import CompleteProfile from "./pages/CompleteProfileLayer.jsx";
-import AdminPanel from "./pages/AdminPanel.jsx";
 import ExpensePage from "./pages/ExpensePage.jsx";
 import InvoicePreviewPage from "./pages/InvoicePreviewPage";
+import AdminPanel from "./pages/AdminPanel.jsx";
+import ChatIaRoute from "./components/gemini-chatbot/GeminiChat";
+import HomePageTen from "./pages/HomePageTen.jsx";
 function App() {
-  const userId = "67cc34299384fa66108bb394";
+  const userId = "67ff6c1b6a739a45e0a45655";
   const [refresh, setRefresh] = useState(false);
   const [chatbotOpen, setChatbotOpen] = useState(false);
 
@@ -78,21 +79,11 @@ function App() {
 
   return (
     <BrowserRouter>
-      {/* Bouton Flottant Chatbot */}
-
-
+      {/* Bouton Flottant pour ouvrir le chatbot */}
+          <ChatIaRoute />
       {/* Modal Chatbot avec Material UI */}
-      <Dialog open={chatbotOpen} onClose={toggleChatbot} maxWidth="md" fullWidth>
-        <DialogTitle>Assistant Virtuel</DialogTitle>
-        <DialogContent dividers>
-          <ChatboltRoute />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={toggleChatbot} color="secondary">
-            Fermer
-          </Button>
-        </DialogActions>
-      </Dialog>
+      
+   
 
       {/* Composant de reconnaissance vocale */}
       <VoiceCommand onCommand={handleVoiceCommand} />
@@ -112,45 +103,38 @@ function App() {
         <Route path="/add-transaction" element={<AddTransaction />} />
         <Route path="/transactions" element={<TransactionList />} />
         <Route path="/trading" element={<TradingRoute />} />
-        <Route path="/chatbot" element={<ChatboltRoute />} />
-        <Route exact path="/complete-profile" element={<CompleteProfile />} />
+        <Route path="/complete-profile" element={<CompleteProfile />} />
         <Route path="/auth-callback" element={<AuthCallback />} />
         <Route path="/confirmation" element={<Confirmation />} />
-        <Route path="/deleteUsers" element={<AdminPanel/>} />
         <Route exact path='/index-11' element={<ExpensePage />} />
         <Route exact path='/invoice-preview' element={<InvoicePreviewPage />} />
         <Route path="/news" element={<NewsRoute />} />
+        <Route path="/deleteUsers" element={<AdminPanel />} />
+        <Route path='/financialoverview' element={<HomePageTen />} />
 
         <Route 
-          path='/admin-dashboard' 
+          path="/admin-dashboard"
           element={
-            <PrivateRoute allowedRoles={["Admin"]}>
               <AdminDashboardPage />
-            </PrivateRoute>
-          } 
+          }
         />
-        <Route 
-          path='/business-owner-dashboard' 
+        <Route path="/business-owner-dashboard" element={<BusinessOwnerPage />} />
+        <Route
+          path="/Financial-manager-dashboard"
           element={
-              <BusinessOwnerPage />
-          } 
+            <PrivateRoute allowedRoles={["Financial manager"]}>
+              <FinancialManagerPage />
+            </PrivateRoute>
+          }
         />
         <Route
-            path="/Financial-manager-dashboard"
-            element={
-              <PrivateRoute allowedRoles={["Financial manager"]}>
-                <FinancialManagerPage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/accountant-dashboard"
-            element={
-              <PrivateRoute allowedRoles={["Accountant"]}>
-                <AccountantDashboardPage />
-              </PrivateRoute>
-            }
-          />
+          path="/accountant-dashboard"
+          element={
+            <PrivateRoute allowedRoles={["Accountant"]}>
+              <AccountantDashboardPage />
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/comptes-bancaires"
           element={
@@ -161,7 +145,8 @@ function App() {
             />
           }
         />
-
+        <Route path="/news" element={<NewsRoute />} />
+        <Route path="/ge" element={<ChatIaRoute />} />
       </Routes>
     </BrowserRouter>
   );

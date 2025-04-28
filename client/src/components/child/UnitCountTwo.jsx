@@ -11,7 +11,7 @@ const TaskDashboard = () => {
   });
 
   useEffect(() => {
-    axios.get("http://localhost:5001/api/ownerdashboard/ownerdashboard")
+    axios.get("http://localhost:5001/api/ownerdashboard/getownerdashboard")
       .then((response) => {
         if (Array.isArray(response.data.tasks)) {
           setTasks(response.data.tasks);
@@ -31,7 +31,7 @@ const TaskDashboard = () => {
     e.preventDefault();
     if (!newTask.title.trim() || !newTask.deadline) return;
 
-    axios.post("http://localhost:5001/api/ownerdashboard/ownerdashboard", newTask)
+    axios.post("http://localhost:5001/api/ownerdashboard/addownerdashboard", newTask)
       .then((response) => {
         setTasks([...tasks, response.data]);
         setShowForm(false);

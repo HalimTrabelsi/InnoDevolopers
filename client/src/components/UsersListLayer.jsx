@@ -8,17 +8,18 @@ const UsersListLayer = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [usersPerPage, setUsersPerPage] = useState(5);
+    const [usersPerPage] = useState(5);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
-    const [sortOrder, setSortOrder] = useState('A-Z'); // For A-Z or Z-A sorting
+    const [sortOrder, setSortOrder] = useState('A-Z');
     const [filteredUsers, setFilteredUsers] = useState([]);
+    const [editUserId, setEditUserId] = useState(null);
+    const [editedUserData, setEditedUserData] = useState({});
     const token = localStorage.getItem('token');
 
     const fetchUsers = async () => {
         setLoading(true);
         setError(null);
-
         try {
             if (!token) {
                 setError('Not authenticated. Please log in.');
@@ -31,20 +32,18 @@ const UsersListLayer = () => {
             });
 
             if (response.status === 200) {
-                // Sort users by isVerified (Active users first)
                 const sortedUsers = response.data.sort((a, b) => {
                     if (a.isVerified && !b.isVerified) return -1;
                     if (!a.isVerified && b.isVerified) return 1;
                     return 0;
                 });
-
                 setUsers(sortedUsers);
                 setFilteredUsers(sortedUsers);
             } else {
                 setError('Unexpected response from server.');
             }
-        } catch (error) {
-            console.error('Error fetching users:', error);
+        } catch (err) {
+            console.error('Error fetching users:', err);
             setError('An error occurred while fetching users.');
         } finally {
             setLoading(false);
@@ -55,36 +54,27 @@ const UsersListLayer = () => {
         fetchUsers();
     }, []);
 
-    const filterUsers = () => {
+    useEffect(() => {
         let filtered = [...users];
 
-        // Filter by search query
         if (searchQuery) {
-            const lowercasedQuery = searchQuery.toLowerCase();
-            filtered = filtered.filter((user) =>
-                user.name.toLowerCase().includes(lowercasedQuery)
-            );
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter((user) => user.name.toLowerCase().includes(query));
         }
 
-        // Filter by status (Active or Inactive)
         if (statusFilter !== 'All') {
             const isVerified = statusFilter === 'Active';
             filtered = filtered.filter((user) => user.isVerified === isVerified);
         }
 
-        // Sort by Name (A-Z or Z-A)
         if (sortOrder === 'A-Z') {
-            filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
-        } else if (sortOrder === 'Z-A') {
-            filtered = filtered.sort((a, b) => b.name.localeCompare(a.name));
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
+        } else {
+            filtered.sort((a, b) => b.name.localeCompare(a.name));
         }
 
         setFilteredUsers(filtered);
-    };
-
-    useEffect(() => {
-        filterUsers();
-    }, [searchQuery, statusFilter, sortOrder]);
+    }, [searchQuery, statusFilter, sortOrder, users]);
 
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -92,19 +82,70 @@ const UsersListLayer = () => {
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+    const handleEditClick = (user) => {
+        setEditUserId(user._id);
+        setEditedUserData({
+            name: user.name,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            role: user.role,
+        });
+    };
 
-    if (error) {
-        return <div>{error}</div>;
-    }
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setEditedUserData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSaveClick = async (userId) => {
+        try {
+            const response = await axios.put(
+                `http://localhost:5001/api/list/edit-user/${userId}`,
+                editedUserData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            if (response.status === 200) {
+                fetchUsers();
+                alert('User updated successfully');
+                setEditUserId(null);
+                setEditedUserData({});
+            }
+        } catch (error) {
+            console.error('Error updating user:', error);
+            alert('Failed to update user');
+        }
+    };
+
+    const handleDeleteClick = async (userId) => {
+        try {
+            const response = await axios.delete(
+                `http://localhost:5001/api/list/delete-user/${userId}`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            if (response.status === 200) {
+                fetchUsers();
+                alert('User deleted successfully');
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            alert('Failed to delete user');
+        }
+    };
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
 
     return (
         <div className="card h-100 p-0 radius-12">
             <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
                 <div className="d-flex align-items-center flex-wrap gap-3">
-                    <span className="text-md fw-medium text-secondary-light mb-0">Show</span>
                     <form className="navbar-search">
                         <input
                             type="text"
@@ -134,84 +175,79 @@ const UsersListLayer = () => {
                         <option value="Z-A">Z-A</option>
                     </select>
                 </div>
-                <Link
-                    to="/add-user"
-                    className="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
-                >
-                    <Icon
-                        icon="ic:baseline-plus"
-                        className="icon text-xl line-height-1"
-                    />
-                    Add New User
-                </Link>
+             
             </div>
             <div className="card-body p-24">
                 <div className="table-responsive scroll-sm">
                     <table className="table bordered-table sm-table mb-0">
                         <thead>
                             <tr>
-                                <th scope="col">
-                                    <div className="d-flex align-items-center gap-10">
-                                        <div className="form-check style-check d-flex align-items-center">
-                                            <input
-                                                className="form-check-input radius-4 border input-form-dark"
-                                                type="checkbox"
-                                                name="checkbox"
-                                                id="selectAll"
-                                            />
-                                        </div>
-                                    </div>
-                                </th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Phone Number</th>
-                                <th scope="col">Role</th>
-                                <th scope="col" className="text-center">
-                                    Status
-                                </th>
-                                <th scope="col" className="text-center">
-                                    Action
-                                </th>
+                                <th></th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone Number</th>
+                                <th>Role</th>
+                                <th className="text-center">Status</th>
+                                <th className="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {currentUsers.length > 0 ? (
-                                currentUsers.map((user, index) => (
-                                    <tr
-                                        key={user._id}
-                                        className={
-                                            !user.isVerified
-                                                ? 'bg-neutral-200' // Dimmed grey for inactive users
-                                                : ''
-                                        }
-                                    >
+                                currentUsers.map((user) => (
+                                    <tr key={user._id} className={!user.isVerified ? 'bg-neutral-200' : ''}>
                                         <td>
-                                            <div className="d-flex align-items-center gap-10">
-                                                <div className="form-check style-check d-flex align-items-center">
-                                                    <input
-                                                        className="form-check-input radius-4 border border-neutral-400"
-                                                        type="checkbox"
-                                                        name="checkbox"
-                                                    />
-                                                </div>
-                                            </div>
+                                            <input type="checkbox" className="form-check-input" />
                                         </td>
                                         <td>
-                                            <div className="d-flex align-items-center">
-                                                <div className="flex-grow-1">
-                                                    <span className="text-md mb-0 fw-normal text-secondary-light">
-                                                        {user.name}
-                                                    </span>
-                                                </div>
-                                            </div>
+                                            {editUserId === user._id ? (
+                                                <input
+                                                    type="text"
+                                                    name="name"
+                                                    value={editedUserData.name}
+                                                    onChange={handleInputChange}
+                                                />
+                                            ) : (
+                                                user.name
+                                            )}
                                         </td>
                                         <td>
-                                            <span className="text-md mb-0 fw-normal text-secondary-light">
-                                                {user.email}
-                                            </span>
+                                            {editUserId === user._id ? (
+                                                <input
+                                                    type="email"
+                                                    name="email"
+                                                    value={editedUserData.email}
+                                                    onChange={handleInputChange}
+                                                />
+                                            ) : (
+                                                user.email
+                                            )}
                                         </td>
-                                        <td>{user.phoneNumber}</td>
-                                        <td>{user.role}</td>
+                                        <td>
+                                            {editUserId === user._id ? (
+                                                <input
+                                                    type="text"
+                                                    name="phoneNumber"
+                                                    value={editedUserData.phoneNumber}
+                                                    onChange={handleInputChange}
+                                                />
+                                            ) : (
+                                                user.phoneNumber
+                                            )}
+                                        </td>
+                                        <td>
+                                            {editUserId === user._id ? (
+                                                <select
+                                                    name="role"
+                                                    value={editedUserData.role}
+                                                    onChange={handleInputChange}
+                                                >
+                                                    <option value="admin">admin</option>
+                                                    <option value="user">user</option>
+                                                </select>
+                                            ) : (
+                                                user.role
+                                            )}
+                                        </td>
                                         <td className="text-center">
                                             <span
                                                 className={`px-24 py-4 radius-4 fw-medium text-sm ${
@@ -225,29 +261,26 @@ const UsersListLayer = () => {
                                         </td>
                                         <td className="text-center">
                                             <div className="d-flex align-items-center gap-10 justify-content-center">
+                                                {editUserId === user._id ? (
+                                                    <button
+                                                        className="btn btn-success btn-sm"
+                                                        onClick={() => handleSaveClick(user._id)}
+                                                    >
+                                                        Save
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        className="bg-info-focus text-info-600 rounded-circle w-40-px h-40-px"
+                                                        onClick={() => handleEditClick(user)}
+                                                    >
+                                                        <Icon icon="lucide:edit" />
+                                                    </button>
+                                                )}
                                                 <button
-                                                    type="button"
-                                                    className="bg-info-focus bg-hover-info-200 text-info-600 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
+                                                    className="bg-danger-focus text-danger-600 rounded-circle w-40-px h-40-px"
+                                                    onClick={() => handleDeleteClick(user._id)}
                                                 >
-                                                    <Icon
-                                                        icon="majesticons:eye-line"
-                                                        className="icon text-xl"
-                                                    />
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
-                                                >
-                                                    <Icon icon="lucide:edit" className="menu-icon" />
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className="remove-item-btn bg-danger-focus bg-hover-danger-200 text-danger-600 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
-                                                >
-                                                    <Icon
-                                                        icon="fluent:delete-24-regular"
-                                                        className="menu-icon"
-                                                    />
+                                                    <Icon icon="fluent:delete-24-regular" />
                                                 </button>
                                             </div>
                                         </td>
@@ -265,15 +298,13 @@ const UsersListLayer = () => {
                 </div>
                 <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
                     <span>
-                        Showing {indexOfFirstUser + 1} to {indexOfLastUser} of {filteredUsers.length} users
+                        Showing {indexOfFirstUser + 1} to {Math.min(indexOfLastUser, filteredUsers.length)} of{' '}
+                        {filteredUsers.length} users
                     </span>
                     <nav>
                         <ul className="pagination">
                             {[...Array(Math.ceil(filteredUsers.length / usersPerPage))].map((_, index) => (
-                                <li
-                                    key={index}
-                                    className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}
-                                >
+                                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
                                     <button className="page-link" onClick={() => paginate(index + 1)}>
                                         {index + 1}
                                     </button>

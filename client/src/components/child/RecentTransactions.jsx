@@ -1,142 +1,222 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { MdTextsms } from "react-icons/md";
+
+// Function to handle GPT query
+const askGPT = async (query, transactions) => {
+  try {
+    const response = await axios.post("http://localhost:5001/api/gpt/ask", {
+      query,
+      transactions,
+    });
+    return response.data.answer;
+  } catch (err) {
+    console.error("Error fetching GPT response:", err);
+    return "❌ Error fetching GPT response.";
+  }
+};
 
 const RecentTransactions = () => {
+  const [transactions, setTransactions] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const transactionsPerPage = 5;
+
+  const [gptQuery, setGptQuery] = useState("");
+  const [gptResponse, setGptResponse] = useState("");
+  const [gptLoading, setGptLoading] = useState(false);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  const fetchTransactions = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get("http://localhost:5001/api/transactions/viewTransaction");
+      if (response.status === 200) {
+        setTransactions(response.data);
+      }
+    } catch (error) {
+      setError("Error fetching transactions.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTriggerSMS = async (transactionId) => {
+    const transaction = transactions.find((t) => t._id === transactionId);
+    if (!transaction) {
+      alert("❌ Transaction not found.");
+      return;
+    }
+    if (transaction.amount <= 600) {
+      alert("⚠️ SMS not sent: Transaction amount must be greater than 600.");
+      return;
+    }
+    try {
+      await axios.post("http://localhost:5001/api/transactions/trigger-sms", {
+        transactionId,
+      });
+      alert("🚀 SMS notification sent successfully!");
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+      if (errorMessage.includes("Invalid 'To' Phone Number")) {
+        alert("❌ SMS failed: Invalid phone number format. Please check the user's phone number.");
+      } else {
+        alert("❌ Failed to send SMS: " + errorMessage);
+      }
+    }
+  };
+
+  const downloadReport = async (type) => {
+    try {
+      const url = `http://localhost:5001/api/export/generate-${type}`;
+      const response = await axios.post(url, { transactions }, { responseType: "blob" });
+      const blob = new Blob([response.data], {
+        type:
+          type === "pdf"
+            ? "application/pdf"
+            : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `recent_transactions.${type === "excel" ? "xlsx" : "pdf"}`;
+      link.click();
+      alert(`✅ ${type.toUpperCase()} file downloaded successfully.`);
+    } catch (error) {
+      alert("❌ Failed to download " + type.toUpperCase() + ": " + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const handleAskGPT = async () => {
+    setGptLoading(true);
+    const answer = await askGPT(gptQuery, transactions);
+    setGptResponse(answer);
+    setGptLoading(false);
+  };
+
+  const paginateTransactions = () => {
+    const startIndex = (currentPage - 1) * transactionsPerPage;
+    const endIndex = startIndex + transactionsPerPage;
+    return transactions.slice(startIndex, endIndex);
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const totalPages = Math.ceil(transactions.length / transactionsPerPage);
+
   return (
-    <div className='col-xxl-8'>
-      <div className='card h-100'>
-        <div className='card-header'>
-          <div className='d-flex align-items-center flex-wrap gap-2 justify-content-between'>
-            <h6 className='mb-2 fw-bold text-lg mb-0'>Recent Transactions</h6>
-            <Link
-              to='#'
-              className='text-primary-600 hover-text-primary d-flex align-items-center gap-1'
-            >
-              View All
-              <iconify-icon
-                icon='solar:alt-arrow-right-linear'
-                className='icon'
-              />
-            </Link>
+    <div className="container-fluid px-4 mt-5">
+      <div className="card w-100 mt-4">
+        <div className="card-header d-flex justify-content-between align-items-center">
+          <h6 className="fw-bold text-lg mb-0">Recent Transactions</h6>
+          <div>
+            <button className="btn btn-outline-success me-2" onClick={() => downloadReport("excel")}>
+              Export Excel
+            </button>
+            <button className="btn btn-outline-danger" onClick={() => downloadReport("pdf")}>
+              Export PDF
+            </button>
           </div>
         </div>
-        <div className='card-body p-24'>
-          <div className='table-responsive scroll-sm'>
-            <table className='table bordered-table mb-0'>
-              <thead>
-                <tr>
-                  <th scope='col'>SL</th>
-                  <th scope='col'>Date </th>
-                  <th scope='col'>Payment Type</th>
-                  <th scope='col'>Paid Amount</th>
-                  <th scope='col'>Due Amount</th>
-                  <th scope='col'>Payable Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <span className='text-secondary-light'>1</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>21 Jun 2024</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>Cash</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$0.00</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$150.00</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$150.00</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <span className='text-secondary-light'>2</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>21 Jun 2024</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>Bank</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$570 </span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$0.00</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$570.00</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <span className='text-secondary-light'>3</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>21 Jun 2024</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>PayPal</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$300.00</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$100.00</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$200.00</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <span className='text-secondary-light'>4</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>21 Jun 2024</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>Cash</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$0.00</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$150.00</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$150.00</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <span className='text-secondary-light'>3</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>21 Jun 2024</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>PayPal</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$300.00</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$100.00</span>
-                  </td>
-                  <td>
-                    <span className='text-secondary-light'>$200.00</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+
+        <div className="card-body p-3">
+          {/* GPT Query Section */}
+          <div className="mb-3">
+            <label className="form-label">Ask GPT:</label>
+            <div className="input-group">
+              <input
+                type="text"
+                className="form-control form-control-sm"
+                placeholder="e.g. How much did I spend on food?"
+                value={gptQuery}
+                onChange={(e) => setGptQuery(e.target.value)}
+                style={{ fontSize: "14px" }}
+              />
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={handleAskGPT}
+                disabled={gptLoading}
+                style={{ fontSize: "14px" }}
+              >
+                {gptLoading ? "Asking..." : "Ask GPT"}
+              </button>
+            </div>
+            {gptResponse && (
+              <div className="mt-2 alert alert-info">
+                <strong>GPT Answer:</strong> {gptResponse}
+              </div>
+            )}
           </div>
+
+          {loading ? (
+            <p>Loading...</p>
+          ) : error ? (
+            <p className="text-danger">{error}</p>
+          ) : (
+            <div className="table-responsive">
+              <table className="table table-bordered">
+                <thead className="table-light">
+                  <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Amount (TND)</th>
+                    <th>Bank Account</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginateTransactions().length > 0 ? (
+                    paginateTransactions().map((transaction, index) => (
+                      <tr key={index}>
+                        <td>{new Date(transaction.date).toLocaleDateString()}</td>
+                        <td>{transaction.type}</td>
+                        <td>{transaction.amount || "N/A"}</td>
+                        <td>{transaction.compteBancaire || "N/A"}</td>
+                        <td className="text-center">
+                          <button
+                            className="btn btn-outline-warning d-flex justify-content-center align-items-center mx-auto"
+                            onClick={() => handleTriggerSMS(transaction._id)}
+                            style={{ width: "40px", height: "40px", borderRadius: "50%" }}
+                          >
+                            <MdTextsms size={20} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="text-center">
+                        No transactions found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+
+              {/* Pagination */}
+              <div className="d-flex justify-content-center">
+                <nav aria-label="Page navigation">
+                  <ul className="pagination">
+                    {[...Array(totalPages)].map((_, index) => (
+                      <li key={index} className="page-item">
+                        <button
+                          className="page-link"
+                          onClick={() => handlePageChange(index + 1)}
+                        >
+                          {index + 1}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

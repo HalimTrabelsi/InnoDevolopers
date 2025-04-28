@@ -3,23 +3,23 @@ const router = express.Router();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const CompteBancaire = require('../models/compteBancaire');
 const Transaction = require('../models/FinancialTransaction');
+const requestIp = require('request-ip');
+const geoip = require('geoip-lite');
+const axios = require('axios'); // ✅ manquant
 
-// Fonction pour effectuer un paiement et mettre à jour le solde
+// Route de paiement Stripe
 router.post('/pay/:userId', async (req, res) => {
   const { userId } = req.params;
   const { amount, currency, bankAccountNumber } = req.body;
 
-  // Validation des données
   if (!amount || !currency || !bankAccountNumber) {
     return res.status(400).json({ error: 'Données manquantes' });
   }
 
   try {
-    // Conversion du montant selon la devise
     const isZeroDecimal = ['JPY', 'KRW'].includes(currency.toUpperCase());
     const unit_amount = isZeroDecimal ? amount : Math.round(amount * 100);
 
-    // Création de la session Stripe
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{
@@ -32,55 +32,61 @@ router.post('/pay/:userId', async (req, res) => {
       }],
       mode: 'payment',
       metadata: {
-        userId: userId,
-        bankAccountNumber: bankAccountNumber
+        userId,
+        numeroCompte: bankAccountNumber // ✅ cohérent avec webhook
       },
       success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.FRONTEND_URL}/cancel`,
     });
 
-    // Attente de la réponse du paiement via le webhook Stripe
-    const sessionId = session.id;
-
-    // Traitement du paiement après la réussite du paiement
-    // Mise à jour atomique du solde du compte bancaire et création de la transaction
+    // Mise à jour temporaire avant confirmation via webhook
     const updatedAccount = await CompteBancaire.findOneAndUpdate(
       { numeroCompte: bankAccountNumber },
       { $inc: { balance: amount } },
       { new: true, runValidators: true }
     );
 
-    if (!updatedAccount) {
-      throw new Error('Compte bancaire introuvable');
+    if (!updatedAccount) throw new Error('Compte bancaire introuvable');
+
+    // ✅ Récupération IP réelle + géoloc
+    let ipAddress = requestIp.getClientIp(req);
+
+    if (!ipAddress || ipAddress === '::1' || ipAddress === '127.0.0.1') {
+      try {
+        const response = await axios.get('https://api64.ipify.org?format=json');
+        ipAddress = response.data.ip;
+      } catch (err) {
+        console.error('Erreur IP publique :', err.message);
+        ipAddress = 'Inconnu';
+      }
     }
 
-    // Création de la transaction
+    const geo = geoip.lookup(ipAddress);
+    const location = geo ? `${geo.city || 'Inconnu'}, ${geo.country || 'Inconnu'}` : 'Inconnu';
+
     const transaction = new Transaction({
-      amount: amount,
-      description: `Recharge Stripe - ${sessionId}`,
-      type: 'credit', // Le type est 'credit' car il s'agit d'un ajout au solde
+      amount,
+      description: `Recharge Stripe - ${session.id}`,
+      type: 'credit',
       user: userId,
       compteBancaire: bankAccountNumber,
-      ipAddress: req.ip, // Capture de l'adresse IP de la requête
-      location: req.headers['x-forwarded-for'] || req.connection.remoteAddress, // Adresse IP du client
+      ipAddress,
+      location,
+      status: 'pending'
     });
 
-    // Sauvegarder la transaction dans l'historique
     await transaction.save();
 
-    console.log(`✅ Recharge réussie pour ${amount} ${currency}`);
-    
-    // Réponse avec l'ID de la session Stripe
-    res.json({ sessionId });
+    console.log(`✅ Recharge initiée pour ${amount} ${currency}`);
+    res.json({ sessionId: session.id });
+
   } catch (error) {
-    console.error('Erreur lors du paiement:', error);
+    console.error('Erreur paiement :', error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// Webhook Stripe pour valider la réussite du paiement et effectuer les mises à jour après paiement
-
-// Webhook Stripe pour valider la réussite du paiement et effectuer les mises à jour après paiement
+// ✅ Webhook Stripe
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -88,39 +94,29 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   let event;
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-    console.log('Événement reçu:', event.type);
+    console.log('🟢 Événement Stripe reçu :', event.type);
   } catch (err) {
-    console.error('⚠️ Webhook invalide:', err);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+    console.error('⚠️ Signature Stripe invalide :', err);
+    return res.status(400).send(`Erreur Webhook : ${err.message}`);
   }
 
-  // Gestion de l'événement de paiement terminé
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    try {
-      // Vérification du statut de paiement
-      if (session.payment_status !== 'paid') {
-        console.error('Paiement non finalisé:', session.payment_status);
-        throw new Error('Paiement non finalisé');
-      }
 
-      // Extraction des données des métadonnées
-      const { userId, numeroCompte } = session.metadata; // Changed from bankAccountNumber to numeroCompte
-      // Conversion du montant en fonction de la devise
+    try {
+      if (session.payment_status !== 'paid') throw new Error('Paiement non confirmé');
+
+      const { userId, numeroCompte } = session.metadata;
       const amount = session.amount_total / (session.currency === 'jpy' ? 1 : 100);
 
-      // Mise à jour atomique du solde du compte bancaire
       const updatedAccount = await CompteBancaire.findOneAndUpdate(
-        { numeroCompte: numeroCompte }, // Changed from bankAccountNumber to numeroCompte
+        { numeroCompte },
         { $inc: { balance: amount } },
         { new: true, runValidators: true }
       );
 
-      if (!updatedAccount) {
-        throw new Error('Compte bancaire introuvable');
-      }
+      if (!updatedAccount) throw new Error('Compte bancaire introuvable');
 
-      // Création de la transaction dans l'historique
       const transaction = new Transaction({
         amount,
         description: `Recharge Stripe - ${session.id}`,
@@ -128,20 +124,21 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         user: userId,
         compteBancaire: numeroCompte,
         status: 'completed',
-        ipAddress: req.headers['x-forwarded-for'] || req.connection.remoteAddress, // Meilleure gestion IP
+        ipAddress: req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Inconnu',
       });
-      await transaction.save(); // Sauvegarder la transaction dans l'historique
 
-      console.log(`✅ Recharge réussie pour ${amount} ${session.currency}`);
+      await transaction.save();
+
+      console.log(`✅ Paiement confirmé pour ${amount} ${session.currency}`);
       res.json({ received: true });
+
     } catch (error) {
-      console.error('❌ Erreur de traitement:', error);
+      console.error('❌ Erreur Webhook :', error);
       return res.status(400).json({ error: error.message });
     }
   } else {
-    res.status(200).send('Événement non traité');
+    res.status(200).send('Événement ignoré');
   }
 });
-
 
 module.exports = router;

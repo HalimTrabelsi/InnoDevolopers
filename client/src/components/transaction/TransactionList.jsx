@@ -29,7 +29,7 @@ const TransactionsTable = ({ userId }) => {
 
   // Charger les transactions depuis l'API
   useEffect(() => {
-    axios.get(`http://localhost:5001/transaction/transactions/67ce6e61e991a44fb4bfe596`)
+    axios.get(`http://localhost:5001/transactionsayf/transactions/67cc34299384fa66108bb394`)
       .then(response => {
         setTransactions(response.data);
         setFilteredTransactions(response.data);
@@ -148,11 +148,7 @@ const TransactionsTable = ({ userId }) => {
             <div className="saif-modal-body">
               <div className="saif-transaction-info">
                 <div className="saif-transaction-details">
-                  <div className="saif-detail-item">
-                    <div className="saif-detail-label">ID Transaction</div>
-                    <div className="saif-detail-value">{selectedTransaction._id}</div>
-                  </div>
-                  
+                   
                   <div className="saif-detail-item">
                     <div className="saif-detail-label">Montant</div>
                     <div className="saif-detail-value">{selectedTransaction.amount} TND</div>
@@ -196,22 +192,27 @@ const TransactionsTable = ({ userId }) => {
                   <div className="saif-detail-item">
                     <div className="saif-detail-label">Compte Source</div>
                     <div className="saif-detail-value">
-                      {accounts[selectedTransaction.compteBancaire]?.numeroCompte || 'Inconnu'}
+                      {accounts[selectedTransaction.compteBancaire] || 'Inconnu'}
                     </div>
                   </div>
                   
                   <div className="saif-detail-item">
                     <div className="saif-detail-label">Destinataire</div>
                     <div className="saif-detail-value">
-                      {accounts[selectedTransaction.recipient]?.name || 'Inconnu'}
+                      {accounts[selectedTransaction.recipient]?.user.name || 'Inconnu'}
                     </div>
                   </div>
                   
                   <div className="saif-detail-item">
-                    <div className="saif-detail-label">Localisation</div>
+                    <div className="saif-detail-label">Ip Adresse</div>
                     <div className="saif-detail-value">
-                      {selectedTransaction.location || 'Non spécifiée'}
+                      {selectedTransaction.ipAddress || '192.168.56.1'}
                     </div>
+                  </div>
+                  <div className="saif-detail-item">
+                    <div className="saif-detail-label">Location</div>
+                    {selectedTransaction.location || 'Tunis Ariena'}
+
                   </div>
                 </div>
               </div>

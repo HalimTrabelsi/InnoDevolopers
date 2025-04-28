@@ -6,7 +6,7 @@ import './payment.css'; // Import CSS standard
 const stripePromise = loadStripe('pk_test_51QmNFiBHq30Q7wRRS2u1lBBUM6LS0X9sdUtWBu1UJWgQvUvXmUmF327Y8NOgFDga7ym5qDWimgsJqsqi47lzm9WO00KlOv4Lxu');
 
 const PaymentFromExpress = () => {
-  const [userId, setUserId] = useState('67bc888c89b0c925344f8703');
+  const [userId, setUserId] = useState('67cc34299384fa66108bb394');
   const [amount, setAmount] = useState(100);
   const [currency, setCurrency] = useState('eur');
   const [bankAccountNumber, setBankAccountNumber] = useState('TN59 1000 6035 583340670 65');
