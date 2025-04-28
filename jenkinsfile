@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         nodejs "nodejs" // Adapter si besoin
-        sonarQubeScanner 'scanner' // Assure-toi que ce nom est celui défini dans Jenkins
+        sonarQubeScanner 'sonar' // Assure-toi que ce nom est celui défini dans Jenkins
     }
 
     environment {
