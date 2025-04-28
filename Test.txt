@@ -1,3 +1,4 @@
 ##start jenkins
 sudo systemctl status jenkins.service
 192.168.33.10/24
+docker start 6a6ad6e84253 //sonarqube
