@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     tools {
-        nodejs "nodejs" // Adapter si besoin
-        sonarQubeScanner 'sonar' // Assure-toi que ce nom est celui défini dans Jenkins
+        nodejs "nodejs" // Adjust as necessary
+        sonarScanner 'SonarQube Scanner' // Ensure this matches the name in Jenkins
     }
 
     environment {
-        CI = 'false' // désactive le fail on warning pour React
+        CI = 'false' // Disable fail on warning for React
     }
 
     stages {
@@ -36,7 +36,7 @@ pipeline {
                     steps {
                         dir('server') {
                             script {
-                                def scannerHome = tool 'scanner'
+                                def scannerHome = tool 'SonarQube Scanner'
                                 withSonarQubeEnv('SonarQube') {
                                     sh "${scannerHome}/bin/sonar-scanner"
                                 }
@@ -49,7 +49,7 @@ pipeline {
                     steps {
                         dir('client') {
                             script {
-                                def scannerHome = tool 'scanner' 
+                                def scannerHome = tool 'SonarQube Scanner'
                                 withSonarQubeEnv('SonarQube') {
                                     sh "${scannerHome}/bin/sonar-scanner"
                                 }
@@ -65,7 +65,7 @@ pipeline {
                 stage('Build Server') {
                     steps {
                         dir('server') {
-                            sh 'npm run build || true' // continue même avec warnings
+                            sh 'npm run build || true'
                         }
                     }
                 }
@@ -83,10 +83,10 @@ pipeline {
 
     post {
         always {
-            echo '✅ Pipeline terminé'
+            echo '✅ Pipeline completed'
         }
         failure {
-            echo '❌ Pipeline échoué'
+            echo '❌ Pipeline failed'
         }
     }
 }
