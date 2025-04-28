@@ -3,7 +3,6 @@ pipeline {
 
     tools {
         nodejs "nodejs" // Adjust as necessary
-        sonarScanner 'SonarQube Scanner' // Ensure this matches the name in Jenkins
     }
 
     environment {
@@ -36,7 +35,7 @@ pipeline {
                     steps {
                         dir('server') {
                             script {
-                                def scannerHome = tool 'SonarQube Scanner'
+                                def scannerHome = tool 'sonar'
                                 withSonarQubeEnv('SonarQube') {
                                     sh "${scannerHome}/bin/sonar-scanner"
                                 }
@@ -49,7 +48,7 @@ pipeline {
                     steps {
                         dir('client') {
                             script {
-                                def scannerHome = tool 'SonarQube Scanner'
+                                def scannerHome = tool 'sonar'
                                 withSonarQubeEnv('SonarQube') {
                                     sh "${scannerHome}/bin/sonar-scanner"
                                 }
