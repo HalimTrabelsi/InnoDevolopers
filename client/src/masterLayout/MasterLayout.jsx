@@ -467,7 +467,7 @@ const MasterLayout = ({ children }) => {
             </li>
             <li>
               <NavLink
-                to="/calendar-main"
+               to="/calendar"
                 className={(navData) => (navData.isActive ? "active-page" : "")}
               >
                 <Icon icon="solar:calendar-outline" className="menu-icon" />
