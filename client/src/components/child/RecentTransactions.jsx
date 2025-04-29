@@ -2,17 +2,16 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { MdTextsms } from "react-icons/md";
 
-// Function to handle GPT query
-const askGPT = async (query, transactions) => {
+// --- Combined Function for Health Score and Late Payment Forecast ---
+const analyzeClient = async (transactions) => {
   try {
-    const response = await axios.post("http://localhost:5001/api/gpt/ask", {
-      query,
+    const response = await axios.post("http://localhost:5001/api/gemini/predict-late", {
       transactions,
     });
-    return response.data.answer;
+    return response.data;
   } catch (err) {
-    console.error("Error fetching GPT response:", err);
-    return "❌ Error fetching GPT response.";
+    console.error("Error analyzing client:", err);
+    return null;
   }
 };
 
@@ -23,9 +22,8 @@ const RecentTransactions = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const transactionsPerPage = 5;
 
-  const [gptQuery, setGptQuery] = useState("");
-  const [gptResponse, setGptResponse] = useState("");
-  const [gptLoading, setGptLoading] = useState(false);
+  const [clientAnalysis, setClientAnalysis] = useState(null);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
 
   useEffect(() => {
     fetchTransactions();
@@ -90,11 +88,18 @@ const RecentTransactions = () => {
     }
   };
 
-  const handleAskGPT = async () => {
-    setGptLoading(true);
-    const answer = await askGPT(gptQuery, transactions);
-    setGptResponse(answer);
-    setGptLoading(false);
+  // --- Client Analysis Handler ---
+  const handleClientAnalysis = async () => {
+    setAnalysisLoading(true);
+    try {
+      const analysis = await analyzeClient(transactions);
+      setClientAnalysis(analysis);
+    } catch (err) {
+      console.error("Error analyzing client:", err);
+      alert("❌ Error analyzing client: " + (err.response?.data?.message || err.message));
+    } finally {
+      setAnalysisLoading(false);
+    }
   };
 
   const paginateTransactions = () => {
@@ -125,34 +130,38 @@ const RecentTransactions = () => {
         </div>
 
         <div className="card-body p-3">
-          {/* GPT Query Section */}
-          <div className="mb-3">
-            <label className="form-label">Ask GPT:</label>
-            <div className="input-group">
-              <input
-                type="text"
-                className="form-control form-control-sm"
-                placeholder="e.g. How much did I spend on food?"
-                value={gptQuery}
-                onChange={(e) => setGptQuery(e.target.value)}
-                style={{ fontSize: "14px" }}
-              />
+          {/* Client Analysis Section */}
+          <div className="mb-4">
+            <label className="form-label">Client Analysis:</label>
+            <div>
               <button
-                className="btn btn-primary btn-sm"
-                onClick={handleAskGPT}
-                disabled={gptLoading}
+                className="btn btn-outline-warning btn-sm"
+                onClick={handleClientAnalysis}
+                disabled={analysisLoading}
                 style={{ fontSize: "14px" }}
               >
-                {gptLoading ? "Asking..." : "Ask GPT"}
+                {analysisLoading ? "Analyzing..." : "Analyze Client"}
               </button>
             </div>
-            {gptResponse && (
-              <div className="mt-2 alert alert-info">
-                <strong>GPT Answer:</strong> {gptResponse}
+            {clientAnalysis && (
+              <div
+                className={`alert ${
+                  clientAnalysis.willMissNextInvoice ? "alert-danger" : "alert-success"
+                } mt-2`}
+              >
+                <strong>Prediction:</strong>{" "}
+                {clientAnalysis.willMissNextInvoice
+                  ? "❌ Likely to miss next invoice"
+                  : "✅ Likely to pay on time"}{" "}
+                <br />
+                <strong>Confidence:</strong> {clientAnalysis.confidenceScore}/100 <br />
+                <strong>Reason:</strong> {clientAnalysis.reason} <br />
+                <strong>Health Score:</strong> {clientAnalysis.healthScore}/100
               </div>
             )}
           </div>
 
+          {/* Transactions Table */}
           {loading ? (
             <p>Loading...</p>
           ) : error ? (
