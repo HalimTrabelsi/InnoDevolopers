@@ -42,7 +42,7 @@ pipeline {
                 stage('Build Client') {
                     steps {
                         dir('client') {
-                            sh 'npm run build || true'
+                            sh 'npm run build '
                         }
                     }
                 }
