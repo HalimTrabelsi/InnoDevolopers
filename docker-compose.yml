@@ -1,6 +1,5 @@
-version: '3.8'
-
 services:
+  # MongoDB Service
   db:
     image: mongo:4.2
     container_name: db
@@ -11,14 +10,39 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./data/dump:/dump
+      - ./data/db:/data/db
 
-  app:
-    build: .
-    image: 192.168.33.10:8083/nodemongoapp:6.0
-    container_name: back
+  # Backend (Node/Express)
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: innodev/mern-backend:1.0
+    container_name: backend
     restart: always
     ports:
       - "5000:5000"
     depends_on:
       - db
+    environment:
+      MONGO_URI: mongodb://root:example@db:27017/test?authSource=admin
+    networks:
+      - mern-network
+
+  # Frontend (React + Nginx)
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: innodev/mern-frontend:1.0
+    container_name: frontend
+    restart: always
+    ports:
+      - "80:80"  # Nginx will serve the React app on port 80
+    networks:
+      - mern-network
+
+# Optional: Define a custom network for communication between services
+networks:
+  mern-network:
+    driver: bridge

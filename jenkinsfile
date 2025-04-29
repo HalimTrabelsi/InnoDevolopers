@@ -59,6 +59,15 @@ pipeline {
                 }
             }
         }
+
+        // New stage for building images
+        stage('Building images ') {
+            steps {
+                script {
+                    sh('docker-compose build')
+                }
+            }
+        }
     }
 
     post {

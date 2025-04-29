@@ -1,21 +1,22 @@
-FROM node:20.18.4 AS build
+# First stage: build the React app
+FROM node:20.18.2-alpine AS build
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
 RUN npm install
 
-COPY . ./
-
+COPY . .
 RUN npm run build
 
+# Second stage: serve the app with nginx
 FROM nginx:alpine
 
-# Copy the build files from the previous stage to the nginx web server
+# Copy the build output from the previous stage
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Expose the port the app will run on
+# Expose the port (Nginx default is 80)
 EXPOSE 80
 
-# Start the nginx server
+# Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]
