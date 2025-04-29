@@ -22,7 +22,6 @@ const upload = require('../middlewares/uploadImage');
 const ListRoutes = require("../routes/listRoutes");
 const taxRulesRoutes = require('../routes/taxRules');
 const socket = require('../socket'); 
-const gptRoute = require("../routes/gptSummary");
 const financialTrendsRoutes = require('../routes/financialTrends');
 const simulationRoutes = require('../routes/simulationRoutes');
 const geminiRoute = require('../routes/geminiRoute');
@@ -80,7 +79,6 @@ app.use("/api/list", ListRoutes);
 app.use('/api/taxRules', taxRulesRoutes);
 app.use('/api/financial-trends', financialTrendsRoutes);
 app.use('/api/simulations', simulationRoutes);
-app.use("/api/gpt", gptRoute);
 app.use("/api/gemini", geminiRoute); 
 
 require("../controllers/passport");
