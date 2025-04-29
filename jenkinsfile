@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     tools {
-        nodejs "nodejs" // Adjust as necessary
+        nodejs "nodejs"
     }
 
     environment {
-        CI = 'false' // Disable fail on warning for React
+        CI = 'false'
     }
 
     stages {
@@ -42,8 +42,19 @@ pipeline {
                 stage('Build Client') {
                     steps {
                         dir('client') {
-                            sh 'npm run build '
+                            sh 'npm run build'
                         }
+                    }
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'scanner'  
+                    withSonarQubeEnv('SonarQube') {   
+                        sh "${scannerHome}/bin/sonar-scanner"
                     }
                 }
             }
