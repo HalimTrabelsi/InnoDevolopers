@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./src/config/server.js",
     "dev": "nodemon ./src/config/server.js",
-    "build": "rimraf dist && mkdir dist && copyfiles -u 1 \"src/**/*\" dist"
+    "build": "npx rimraf dist && mkdir dist && copyfiles -u 1 \"src/**/*\" dist"
   },
   "dependencies": {
     "@huggingface/inference": "^3.8.0",
