@@ -29,36 +29,6 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            parallel {
-                stage('SonarQube Server') {
-                    steps {
-                        dir('server') {
-                            script {
-                                def scannerHome = tool 'sonar' // Use the correct tool name
-                                withSonarQubeEnv('SonarQube') {
-                                    sh "${scannerHome}/bin/sonar-scanner"
-                                }
-                            }
-                        }
-                    }
-                }
-
-                stage('SonarQube Client') {
-                    steps {
-                        dir('client') {
-                            script {
-                                def scannerHome = tool 'sonar' // Use the correct tool name
-                                withSonarQubeEnv('SonarQube') {
-                                    sh "${scannerHome}/bin/sonar-scanner"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         stage('Build Application') {
             parallel {
                 stage('Build Server') {
