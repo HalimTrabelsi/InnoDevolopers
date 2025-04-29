@@ -2,28 +2,20 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { MdTextsms } from "react-icons/md";
 
-// --- Combined Function for Health Score and Late Payment Forecast ---
-const analyzeClient = async (transactions) => {
-  try {
-    const response = await axios.post("http://localhost:5001/api/gemini/predict-late", {
-      transactions,
-    });
-    return response.data;
-  } catch (err) {
-    console.error("Error analyzing client:", err);
-    return null;
-  }
-};
-
 const RecentTransactions = () => {
   const [transactions, setTransactions] = useState([]);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [analysis, setAnalysis] = useState(null);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
+
+  const [query, setQuery] = useState("");
+  const [queryResponse, setQueryResponse] = useState("");
+  const [queryLoading, setQueryLoading] = useState(false);
+
   const [currentPage, setCurrentPage] = useState(1);
   const transactionsPerPage = 5;
-
-  const [clientAnalysis, setClientAnalysis] = useState(null);
-  const [analysisLoading, setAnalysisLoading] = useState(false);
 
   useEffect(() => {
     fetchTransactions();
@@ -33,10 +25,8 @@ const RecentTransactions = () => {
     setLoading(true);
     try {
       const response = await axios.get("http://localhost:5001/api/transactions/viewTransaction");
-      if (response.status === 200) {
-        setTransactions(response.data);
-      }
-    } catch (error) {
+      setTransactions(response.data || []);
+    } catch (err) {
       setError("Error fetching transactions.");
     } finally {
       setLoading(false);
@@ -45,26 +35,17 @@ const RecentTransactions = () => {
 
   const handleTriggerSMS = async (transactionId) => {
     const transaction = transactions.find((t) => t._id === transactionId);
-    if (!transaction) {
-      alert("❌ Transaction not found.");
+    if (!transaction || transaction.amount <= 600) {
+      alert("⚠️ Transaction must exist and exceed 600 TND.");
       return;
     }
-    if (transaction.amount <= 600) {
-      alert("⚠️ SMS not sent: Transaction amount must be greater than 600.");
-      return;
-    }
+
     try {
-      await axios.post("http://localhost:5001/api/transactions/trigger-sms", {
-        transactionId,
-      });
+      await axios.post("http://localhost:5001/api/transactions/trigger-sms", { transactionId });
       alert("🚀 SMS notification sent successfully!");
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
-      if (errorMessage.includes("Invalid 'To' Phone Number")) {
-        alert("❌ SMS failed: Invalid phone number format. Please check the user's phone number.");
-      } else {
-        alert("❌ Failed to send SMS: " + errorMessage);
-      }
+      alert(`❌ SMS Failed: ${errorMessage}`);
     }
   };
 
@@ -82,37 +63,47 @@ const RecentTransactions = () => {
       link.href = window.URL.createObjectURL(blob);
       link.download = `recent_transactions.${type === "excel" ? "xlsx" : "pdf"}`;
       link.click();
-      alert(`✅ ${type.toUpperCase()} file downloaded successfully.`);
+      alert(`✅ ${type.toUpperCase()} file downloaded.`);
     } catch (error) {
-      alert("❌ Failed to download " + type.toUpperCase() + ": " + (error.response?.data?.message || error.message));
+      alert("❌ Failed to download " + type.toUpperCase());
     }
   };
 
-  // --- Client Analysis Handler ---
   const handleClientAnalysis = async () => {
     setAnalysisLoading(true);
     try {
-      const analysis = await analyzeClient(transactions);
-      setClientAnalysis(analysis);
-    } catch (err) {
-      console.error("Error analyzing client:", err);
-      alert("❌ Error analyzing client: " + (err.response?.data?.message || err.message));
+      const response = await axios.post("http://localhost:5001/api/gemini/predict-late", {
+        transactions,
+      });
+      setAnalysis(response.data);
+    } catch (error) {
+      alert("❌ Failed to analyze client.");
     } finally {
       setAnalysisLoading(false);
     }
   };
 
+  const handleAskGemini = async () => {
+    if (!query.trim()) return;
+
+    setQueryLoading(true);
+    try {
+      const response = await axios.post("http://localhost:5001/api/gemini/ask", {
+        query,
+        transactions,
+      });
+      setQueryResponse(response.data.answer || "No response.");
+    } catch (error) {
+      setQueryResponse("❌ Gemini query failed.");
+    } finally {
+      setQueryLoading(false);
+    }
+  };
+
   const paginateTransactions = () => {
-    const startIndex = (currentPage - 1) * transactionsPerPage;
-    const endIndex = startIndex + transactionsPerPage;
-    return transactions.slice(startIndex, endIndex);
+    const start = (currentPage - 1) * transactionsPerPage;
+    return transactions.slice(start, start + transactionsPerPage);
   };
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  const totalPages = Math.ceil(transactions.length / transactionsPerPage);
 
   return (
     <div className="container-fluid px-4 mt-5">
@@ -130,33 +121,57 @@ const RecentTransactions = () => {
         </div>
 
         <div className="card-body p-3">
-          {/* Client Analysis Section */}
+          {/* Analysis Section */}
           <div className="mb-4">
-            <label className="form-label">Client Analysis:</label>
-            <div>
-              <button
-                className="btn btn-outline-warning btn-sm"
-                onClick={handleClientAnalysis}
-                disabled={analysisLoading}
-                style={{ fontSize: "14px" }}
-              >
-                {analysisLoading ? "Analyzing..." : "Analyze Client"}
-              </button>
-            </div>
-            {clientAnalysis && (
+            <button
+              className="btn btn-outline-warning btn-sm"
+              onClick={handleClientAnalysis}
+              disabled={analysisLoading}
+            >
+              {analysisLoading ? "Analyzing..." : "Analyze Client"}
+            </button>
+            {analysis && (
               <div
                 className={`alert ${
-                  clientAnalysis.willMissNextInvoice ? "alert-danger" : "alert-success"
+                  analysis.willMissNextInvoice ? "alert-danger" : "alert-success"
                 } mt-2`}
               >
                 <strong>Prediction:</strong>{" "}
-                {clientAnalysis.willMissNextInvoice
+                {analysis.willMissNextInvoice
                   ? "❌ Likely to miss next invoice"
-                  : "✅ Likely to pay on time"}{" "}
+                  : "✅ Likely to pay on time"}
                 <br />
-                <strong>Confidence:</strong> {clientAnalysis.confidenceScore}/100 <br />
-                <strong>Reason:</strong> {clientAnalysis.reason} <br />
-                <strong>Health Score:</strong> {clientAnalysis.healthScore}/100
+                <strong>Confidence:</strong> {analysis.confidenceScore}/100
+                <br />
+                <strong>Reason:</strong> {analysis.reason}
+                {analysis.healthScore !== undefined && (
+                  <>
+                    <br />
+                    <strong>Health Score:</strong> {analysis.healthScore}/100
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Ask Gemini */}
+          <div className="mb-4">
+            <label className="form-label">Ask Gemini (AI):</label>
+            <div className="d-flex">
+              <input
+                type="text"
+                className="form-control me-2"
+                placeholder="e.g. What's my highest spending category?"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+              <button className="btn btn-info" onClick={handleAskGemini} disabled={queryLoading}>
+                {queryLoading ? "Asking..." : "Ask"}
+              </button>
+            </div>
+            {queryResponse && (
+              <div className="alert alert-secondary mt-2" style={{ whiteSpace: "pre-line" }}>
+                {queryResponse}
               </div>
             )}
           </div>
@@ -209,20 +224,18 @@ const RecentTransactions = () => {
 
               {/* Pagination */}
               <div className="d-flex justify-content-center">
-                <nav aria-label="Page navigation">
-                  <ul className="pagination">
-                    {[...Array(totalPages)].map((_, index) => (
-                      <li key={index} className="page-item">
-                        <button
-                          className="page-link"
-                          onClick={() => handlePageChange(index + 1)}
-                        >
-                          {index + 1}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
+                <ul className="pagination">
+                  {[...Array(Math.ceil(transactions.length / transactionsPerPage))].map((_, i) => (
+                    <li className="page-item" key={i}>
+                      <button
+                        className="page-link"
+                        onClick={() => setCurrentPage(i + 1)}
+                      >
+                        {i + 1}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           )}
