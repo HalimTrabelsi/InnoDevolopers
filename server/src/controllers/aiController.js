@@ -1,10 +1,12 @@
 const fs = require('fs');
 const pdfParse = require("pdf-parse");
 const { NlpManager } = require("node-nlp");
+const path = require('path');
+
 
 const manager = new NlpManager();
 (async () => {
-    await manager.load("../config/aiModel/model.json"); // Load the AI model once
+    manager.load(path.join(__dirname, '../config/aiModel/model.json'));
 })();
 
 const analyzePdf = async (req, res) => {
