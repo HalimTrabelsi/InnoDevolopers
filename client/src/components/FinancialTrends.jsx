@@ -102,28 +102,20 @@ const FinancialTrends = () => {
     }
   };
 
-  const validateImageData = (dataUrl) => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(true);
-      img.onerror = () => reject(new Error('Invalid or corrupted image data'));
-      img.src = dataUrl;
-    });
-  };
-
   const generateReport = async () => {
     try {
       const pdf = new jsPDF();
       let yOffset = 10;
 
-      // Skip logo capture to isolate chart issue
+      // Add logo directly
+      pdf.addImage('images/finova-logo.png', 'PNG', 10, yOffset, 30, 15);
       pdf.setFontSize(20);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('Finova', 10, yOffset + 10);
+      pdf.text('Finova', 45, yOffset + 10);
       pdf.setFontSize(12);
       pdf.setFont('helvetica', 'normal');
-      pdf.text('Financial Trends Report', 10, yOffset + 18);
-      yOffset += 20;
+      pdf.text('Financial Trends Report', 45, yOffset + 18);
+      yOffset += 25;
 
       // Add generation date
       const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -133,22 +125,22 @@ const FinancialTrends = () => {
       yOffset += 10;
 
       // Capture chart
-      if (chartRef.current) {
-        // Wait for chart to render with retry mechanism
+      if (chartRef.current && trends.chartData?.length > 0) {
+        console.log('Chart data:', trends.chartData);
         let chartData = null;
         let attempts = 0;
         const maxAttempts = 3;
         while (!chartData && attempts < maxAttempts) {
           try {
-            await new Promise((resolve) => setTimeout(resolve, 3000)); // 3000ms delay
+            console.log(`Chart capture attempt ${attempts + 1}`);
+            await new Promise((resolve) => setTimeout(resolve, 5000));
             chartData = await domtoimage.toJpeg(chartRef.current, {
               bgcolor: '#ffffff',
               quality: 0.95,
               width: 700,
               height: 350,
             });
-            console.log('Chart Data URL:', chartData); // Debug output
-            await validateImageData(chartData); // Validate image
+            console.log('Chart Data URL:', chartData);
             pdf.addImage(chartData, 'JPEG', 10, yOffset, 190, 80);
             yOffset += 90;
           } catch (error) {
@@ -156,15 +148,20 @@ const FinancialTrends = () => {
             attempts++;
             if (attempts === maxAttempts) {
               console.error('All chart capture attempts failed');
-              toast.error('Failed to capture chart after multiple attempts');
+              toast.error('Failed to capture chart');
+              pdf.setFontSize(12);
+              pdf.setTextColor(255, 0, 0);
+              pdf.text('Chart could not be captured', 10, yOffset);
               yOffset += 90;
-              return; // Exit to avoid further errors
             }
           }
         }
       } else {
-        console.warn('Chart element not found');
-        toast.warn('Chart could not be included in the PDF.');
+        console.warn('Chart not available', { chartRef: chartRef.current, chartDataLength: trends.chartData?.length });
+        toast.warn('Chart could not be included in the PDF');
+        pdf.setFontSize(12);
+        pdf.setTextColor(255, 0, 0);
+        pdf.text('Chart not available', 10, yOffset);
         yOffset += 90;
       }
 
@@ -193,12 +190,11 @@ const FinancialTrends = () => {
       pdf.text('Powered by Finova', 10, 290);
       pdf.text('Page 1', 190, 290, { align: 'right' });
 
-      // Save the PDF
       pdf.save('financial_trends_report.pdf');
       toast.success('Report generated successfully');
     } catch (error) {
-      console.error('Error generating report:', error.message, error.stack);
-      toast.error('Failed to generate report: ' + error.message);
+      console.error('Error generating report:', error.message);
+      toast.error('Failed to generate report');
     }
   };
 
@@ -267,7 +263,6 @@ const FinancialTrends = () => {
     const yRevenues = tf.tensor2d(monthlyRevenues, [monthlyRevenues.length, 1]);
     const yExpenses = tf.tensor2d(monthlyExpenses, [monthlyRevenues.length, 1]);
 
-    // Create separate models for revenue and expenses
     const revenueModel = tf.sequential();
     revenueModel.add(tf.layers.dense({ units: 1, inputShape: [1] }));
     revenueModel.compile({ optimizer: tf.train.sgd(0.001), loss: 'meanSquaredError' });
@@ -277,21 +272,18 @@ const FinancialTrends = () => {
     expenseModel.compile({ optimizer: tf.train.sgd(0.001), loss: 'meanSquaredError' });
 
     try {
-      // Train and predict for revenues
       await revenueModel.fit(x, yRevenues, { epochs: 200, verbose: 0 });
       let revenuePredictions = revenueModel.predict(tf.tensor2d(
         [[monthlyRevenues.length], [monthlyRevenues.length + 1], [monthlyRevenues.length + 2]],
         [3, 1]
       )).arraySync().flat().map(val => Math.max(0, val));
 
-      // Train and predict for expenses
       await expenseModel.fit(x, yExpenses, { epochs: 200, verbose: 0 });
       let expensePredictions = expenseModel.predict(tf.tensor2d(
         [[monthlyExpenses.length], [monthlyExpenses.length + 1], [monthlyExpenses.length + 2]],
         [3, 1]
       )).arraySync().flat().map(val => Math.max(0, val));
 
-      // Dispose of tensors and models
       x.dispose();
       yRevenues.dispose();
       yExpenses.dispose();
@@ -429,7 +421,6 @@ const FinancialTrends = () => {
       };
     } catch (error) {
       console.error('Error in predictTrends:', error);
-      // Ensure cleanup in case of error
       x.dispose();
       yRevenues.dispose();
       yExpenses.dispose();
@@ -485,6 +476,9 @@ const FinancialTrends = () => {
         if (transactions.length > 0) {
           const predictedTrends = await predictTrends(transactions);
           setTrends(predictedTrends);
+        } else {
+          console.warn('No transactions received');
+          toast.warn('No financial data available');
         }
       } catch (error) {
         console.error('Error loading trends:', error);
@@ -678,13 +672,7 @@ const FinancialTrends = () => {
     <div style={{ background: '#fff', padding: '20px', margin: '20px 0', borderRadius: '8px', border: '1px solid #ccc' }}>
       <h3 style={{ color: '#333', marginBottom: '20px' }}>Global Financial Trends (3-Month Forecast)</h3>
 
-      <img
-        id="finova-logo"
-        src={process.env.PUBLIC_URL + '/images/finova-logo.png'}
-        alt="Finova Logo"
-        style={{ display: 'none', height: 60 }}
-        crossOrigin="anonymous"
-      />
+      <img src="images/finova-logo.png" alt="Finova Logo" style={{ height: 60, marginRight: 16 }} />
 
       {loading ? (
         <p style={{ color: '#666', textAlign: 'center' }}>Loading forecasts...</p>
