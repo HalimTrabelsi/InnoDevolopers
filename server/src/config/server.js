@@ -24,6 +24,8 @@ const taxRulesRoutes = require('../routes/taxRules');
 const socket = require('../socket'); 
 const financialTrendsRoutes = require('../routes/financialTrends');
 const simulationRoutes = require('../routes/simulationRoutes');
+const taskRoutes = require('../routes/tasksRoutes');
+
 
 const gptRoute = require("../routes/gptSummary");
 dotenv.config();
@@ -79,7 +81,7 @@ app.use("/api/list", ListRoutes);
 app.use('/api/taxRules', taxRulesRoutes);
 app.use('/api/financial-trends', financialTrendsRoutes);
 app.use('/api/simulations', simulationRoutes);
-
+app.use('/api/tasks', taskRoutes);
 
 
 app.use("/api/gpt", gptRoute);

@@ -4,6 +4,7 @@ import CampaignStaticAcc from './child/CampaignStaticAcc';
 import LastTransactionAcc from './child/LastTransactionAcc';
 import UnitCountAcc from './child/UnitCountAcc';
 import TaxValidation from './child/TaxValidationDashboard';
+import PrioritizedTasks from './PrioritizedTasks'; 
 
 const socket = io('http://localhost:5001', { withCredentials: true });
 
@@ -30,6 +31,7 @@ useEffect(() => {
       <CampaignStaticAcc />
       <LastTransactionAcc showActions={true} setNotification={setNotification} />
       <TaxValidation setNotification={setNotification} />
+      <PrioritizedTasks /> {/* Ajout du composant PrioritizedTasks */}
     </section>
   );
 };
