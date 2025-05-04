@@ -5,6 +5,7 @@ import LastTransactionAcc from './child/LastTransactionAcc';
 import UnitCountAcc from './child/UnitCountAcc';
 import TaxValidation from './child/TaxValidationDashboard';
 import PrioritizedTasks from './PrioritizedTasks'; 
+import AITaskAssistant from './AITaskAssistant'; 
 
 const socket = io('http://localhost:5001', { withCredentials: true });
 
@@ -32,6 +33,7 @@ useEffect(() => {
       <LastTransactionAcc showActions={true} setNotification={setNotification} />
       <TaxValidation setNotification={setNotification} />
       <PrioritizedTasks /> {/* Ajout du composant PrioritizedTasks */}
+      <AITaskAssistant /> {/* Ajout du composant AITaskAssistant */}
     </section>
   );
 };
