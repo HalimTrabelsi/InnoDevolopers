@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { MdTextsms } from "react-icons/md";
+import { Line } from "react-chartjs-2";
+import { Chart as ChartJS } from "chart.js/auto";
 
 const RecentTransactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -69,6 +71,33 @@ const RecentTransactions = () => {
     }
   };
 
+  const downloadCSV = () => {
+    if (!transactions || transactions.length === 0) {
+      alert("❌ No transactions to export.");
+      return;
+    }
+
+    const headers = ["Date", "Category", "Amount (TND)", "Bank Account"];
+    const csvRows = [
+      headers.join(","),
+      ...transactions.map((t) =>
+        [
+          new Date(t.date).toLocaleDateString(),
+          t.type,
+          t.amount,
+          t.compteBancaire || "N/A",
+        ].join(",")
+      ),
+    ];
+
+    const csvData = new Blob([csvRows.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(csvData);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "recent_transactions.csv";
+    link.click();
+  };
+
   const handleClientAnalysis = async () => {
     setAnalysisLoading(true);
     try {
@@ -105,31 +134,67 @@ const RecentTransactions = () => {
     return transactions.slice(start, start + transactionsPerPage);
   };
 
+  const totalAmount = transactions.reduce((acc, t) => acc + (t.amount || 0), 0);
+  const averageAmount = transactions.length > 0 ? (totalAmount / transactions.length).toFixed(2) : 0;
+  const transactionCount = transactions.length;
+
+  // Prepare chart data
+  const chartData = {
+    labels: transactions.map((t) => new Date(t.date).toLocaleDateString()),
+    datasets: [
+      {
+        label: "Transaction Amount (TND)",
+        data: transactions.map((t) => t.amount || 0),
+        fill: false,
+        borderColor: "rgba(75,192,192,1)",
+        tension: 0.1,
+      },
+    ],
+  };
+
   return (
     <div className="container-fluid px-4 mt-5">
       <div className="card w-100 mt-4">
         <div className="card-header d-flex justify-content-between align-items-center">
           <h6 className="fw-bold text-lg mb-0">Recent Transactions</h6>
           <div>
+            <button className="btn btn-outline-primary me-2" onClick={downloadCSV}>
+              Export CSV
+            </button>
             <button className="btn btn-outline-success me-2" onClick={() => downloadReport("excel")}>
               Export Excel
             </button>
-            <button className="btn btn-outline-danger" onClick={() => downloadReport("pdf")}>
+            <button className="btn btn-outline-danger me-2" onClick={() => downloadReport("pdf")}>
               Export PDF
             </button>
-          </div>
-        </div>
-
-        <div className="card-body p-3">
-          {/* Analysis Section */}
-          <div className="mb-4">
             <button
-              className="btn btn-outline-warning btn-sm"
+              className="btn btn-outline-warning"
               onClick={handleClientAnalysis}
               disabled={analysisLoading}
             >
               {analysisLoading ? "Analyzing..." : "Analyze Client"}
             </button>
+          </div>
+        </div>
+
+        <div className="card-body p-3">
+          {/* Transaction Stats */}
+          <div className="mb-4">
+            <div className="alert alert-info">
+              <strong>📊 Transaction Stats:</strong><br />
+              Total Transactions: {transactionCount} <br />
+              Total Amount: {totalAmount.toFixed(2)} TND <br />
+              Average Amount: {averageAmount} TND
+            </div>
+          </div>
+
+          {/* Small Line Chart */}
+          <div className="mb-4" style={{ maxWidth: "400px", margin: "auto" }}>
+            <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} height={350} />
+          </div>
+
+          {/* Analysis Section */}
+          <div className="mb-4">
             {analysis && (
               <div
                 className={`alert ${
