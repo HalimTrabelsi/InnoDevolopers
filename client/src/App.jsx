@@ -38,6 +38,7 @@ import InvoicePreviewPage from "./pages/InvoicePreviewPage";
 import AdminPanel from "./pages/AdminPanel.jsx";
 import ChatIaRoute from "./components/gemini-chatbot/GeminiChat";
 import HomePageTen from "./pages/HomePageTen.jsx";
+import HomePageTwenty from "./pages/HomePageTwenty.jsx";
 import Calendar from "./components/child/Calendar.jsx";
 
 function App() {
@@ -114,7 +115,7 @@ function App() {
         <Route path="/news" element={<NewsRoute />} />
         <Route path="/deleteUsers" element={<AdminPanel />} />
         <Route path='/financialoverview' element={<HomePageTen />} />
-        <Route path='/Calendar' element={<Calendar />} />
+        <Route path='/Calender' element={<HomePageTwenty />} />
 
         <Route 
           path="/admin-dashboard"
