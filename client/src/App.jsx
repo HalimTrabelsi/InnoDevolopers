@@ -39,6 +39,7 @@ import AdminPanel from "./pages/AdminPanel.jsx";
 import ChatIaRoute from "./components/gemini-chatbot/GeminiChat";
 import HomePageTen from "./pages/HomePageTen.jsx";
 import HomePageTwenty from "./pages/HomePageTwenty.jsx";
+import Calendar from "./components/child/Calendar.jsx";
 
 function App() {
   const userId = "67ff6c1b6a739a45e0a45655";

@@ -8,6 +8,7 @@
     "@dnd-kit/sortable": "^8.0.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@fullcalendar/bootstrap5": "^6.1.17",
     "@fullcalendar/core": "^6.1.10",
     "@fullcalendar/daygrid": "^6.1.10",
     "@fullcalendar/interaction": "^6.1.10",
