@@ -1,72 +1,67 @@
-import React from 'react'
-import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import interactionPlugin from '@fullcalendar/interaction'
-import { INITIAL_EVENTS, createEventId } from '../../hook/event-utils.js'
+import React, { useState, useEffect } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import bootstrap5Plugin from '@fullcalendar/bootstrap5';
+import axios from 'axios';
 
-export default function Calendar() {
+export default function TransactionCalendar() {
+  const [events, setEvents] = useState([]);
 
-    function handleDateSelect(selectInfo) {
-        let title = prompt('Please enter a new title for your event')
-        let calendarApi = selectInfo.view.calendar
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
 
-        calendarApi.unselect()
+  const fetchTransactions = async () => {
+    try {
+      const { data } = await axios.get('http://localhost:5001/api/transactions/viewTransaction');
+      const transactionEvents = data.map((transaction, index) => ({
+        id: transaction._id,
+        title: `#${index + 1} | $${transaction.amount.toFixed(2)}`,
+        start: transaction.date,
+        allDay: true,
+        backgroundColor: transaction.type === 'credit' ? '#198754' : '#dc3545',
+        borderColor: transaction.type === 'credit' ? '#198754' : '#dc3545',
+        textColor: '#ffffff',
+      }));
 
-        if (title) {
-            calendarApi.addEvent({
-                id: createEventId(),
-                title,
-                start: selectInfo.startStr,
-                end: selectInfo.endStr,
-                allDay: selectInfo.allDay
-            })
-        }
+      setEvents(transactionEvents);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
     }
+  };
 
-    function handleEventClick(clickInfo) {
-        // eslint-disable-next-line no-restricted-globals
-        if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-            clickInfo.event.remove()
-        }
-    }
+  const renderEventContent = ({ event }) => (
+    <div style={{ fontSize: '0.65rem', fontWeight: '400', textAlign: 'center' }}>
+      {event.title}
+    </div>
+  );
 
-    return (
-        <div className='demo-app'>
-
-            <div className='demo-app-main'>
-                <FullCalendar
-                    plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                    headerToolbar={{
-
-                        left: 'title',
-                        center: 'timeGridDay,timeGridWeek,dayGridMonth',
-                        right: 'prev,next today'
-                    }}
-                    initialView='dayGridMonth'
-                    editable={true}
-                    selectable={true}
-                    selectMirror={true}
-                    dayMaxEvents={true}
-                    weekends={true}
-                    initialEvents={INITIAL_EVENTS}
-                    select={handleDateSelect}
-                    eventContent={renderEventContent}
-                    eventClick={handleEventClick}
-
-                />
-            </div>
-        </div>
-    )
+  return (
+    <div className="d-flex justify-content-center my-3">
+      <div className="card shadow-sm p-2" style={{ width: '800px', maxWidth: '90%' }}>
+        <h5 className="text-center mb-2" style={{ fontWeight: '500' }}>📅 Transactions</h5>
+        <FullCalendar
+          themeSystem="bootstrap5"
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, bootstrap5Plugin]}
+          initialView="dayGridMonth"
+          headerToolbar={{
+            left: 'prev,next today',  
+            center: 'title',  
+            right: 'dayGridMonth,timeGridWeek,timeGridDay',  
+          }}
+          height="600px"
+          events={events}
+          eventContent={renderEventContent}
+          dayMaxEvents={1}
+          eventTimeFormat={{
+            hour: 'numeric',
+            minute: '2-digit',
+            meridiem: 'short',
+          }}
+        />
+      </div>
+    </div>
+  );
 }
-
-function renderEventContent(eventInfo) {
-    return (
-        <>
-            <b>{eventInfo.timeText}</b>
-            <i>{eventInfo.event.title}</i>
-        </>
-    )
-}
-
-

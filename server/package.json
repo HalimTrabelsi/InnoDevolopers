@@ -8,6 +8,7 @@
     "build": "rimraf dist && mkdir dist && copyfiles -u 1 \"src/**/*\" dist"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@huggingface/inference": "^3.8.0",
     "@nlpjs/nlu": "^5.0.0-alpha.5",
     "@tensorflow/tfjs": "^4.22.0",

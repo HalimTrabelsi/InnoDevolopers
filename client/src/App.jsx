@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import AdminDashboardPage from "./pages/AdminDashboardPage.jsx";
 import SignInPage from "./pages/SignInPage.jsx";
@@ -38,6 +39,8 @@ import AdminPanel from "./pages/AdminPanel.jsx";
 import ChatIaRoute from "./components/gemini-chatbot/GeminiChat";
 import HomePageTen from "./pages/HomePageTen.jsx";
 import HomePage from "./pages/HomePage.jsx";
+import HomePageTwenty from "./pages/HomePageTwenty.jsx";
+import Calendar from "./components/child/Calendar.jsx";
 
 function App() {
   const userId = "67ff6c1b6a739a45e0a45655";
@@ -113,6 +116,7 @@ function App() {
         <Route path="/news" element={<NewsRoute />} />
         <Route path="/deleteUsers" element={<AdminPanel />} />
         <Route path='/financialoverview' element={<HomePageTen />} />
+        <Route path='/Calender' element={<HomePageTwenty />} />
 
         <Route 
           path="/admin-dashboard"
