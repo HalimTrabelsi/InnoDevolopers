@@ -37,6 +37,8 @@ import InvoicePreviewPage from "./pages/InvoicePreviewPage";
 import AdminPanel from "./pages/AdminPanel.jsx";
 import ChatIaRoute from "./components/gemini-chatbot/GeminiChat";
 import HomePageTen from "./pages/HomePageTen.jsx";
+import HomePage from "./pages/HomePage.jsx";
+
 function App() {
   const userId = "67ff6c1b6a739a45e0a45655";
   const [refresh, setRefresh] = useState(false);
@@ -89,8 +91,8 @@ function App() {
       <VoiceCommand onCommand={handleVoiceCommand} />
 
       <Routes>
-        <Route path="/" element={<SignInPage />} />
-        <Route path="/sign-in" element={<SignInPage />} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="/sign-in" element={<SignInPage />} />
         <Route path="/sign-up" element={<SignUpPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
