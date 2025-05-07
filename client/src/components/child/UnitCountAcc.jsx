@@ -61,62 +61,84 @@ const UnitCountAcc = () => {
       <div className="row gy-4">
         {/* AnomaliesWidget */}
         <div className="col-xxl-3 col-lg-3 col-md-6 col-sm-12">
-          <div className="card p-2 shadow border h-100 bg-light">
-            <div className="card-body d-flex flex-column align-items-center text-center">
-              <h5 className="fw-medium text-secondary mb-1">Detected Anomalies</h5>
-              <span className="icon-circle bg-danger text-white">
-                <FaExclamationTriangle />
-              </span>
-              <h3 className="normal-text mb-0">
-                {anomaliesLoading ? "Loading..." : anomaliesError ? "Error" : anomaliesCount}
-              </h3>
-              <p className="text-muted mb-0">Total anomalies detected</p>
+          <div className="card shadow-none border bg-gradient-start-3 h-100">
+            <div className="card-body p-20">
+              <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div>
+                  <p className="fw-medium text-primary-light mb-1">Detected Anomalies</p>
+                  <h6 className="mb-0">
+                    {anomaliesLoading ? "Loading..." : anomaliesError ? "Error" : anomaliesCount}
+                  </h6>
+                </div>
+                <div className="w-50-px h-50-px bg-danger rounded-circle d-flex justify-content-center align-items-center">
+                  <FaExclamationTriangle className="text-white text-2xl mb-0" />
+                </div>
+              </div>
+              <p className="fw-medium text-sm text-primary-light mt-12 mb-0">
+                Total anomalies detected
+              </p>
             </div>
           </div>
         </div>
 
         {/* LastAccountWidget */}
         <div className="col-xxl-3 col-lg-3 col-md-6 col-sm-12">
-          <div className="card p-2 shadow border h-100 bg-light">
-            <div className="card-body d-flex flex-column align-items-center text-center">
-              <h5 className="fw-medium text-secondary mb-1">Last Account</h5>
-              <span className="icon-circle bg-primary text-white">
-                <FaUniversity />
-              </span>
-              <h3 className="normal-text mb-0">
-                {lastAccountLoading ? "Loading..." : lastAccountError ? "Error" : lastAccount?.numeroCompte || "N/A"}
-              </h3>
-              <p className="text-muted mb-0 small">Balance: {lastAccountLoading ? "Loading..." : lastAccountError ? "Error" : lastAccount ? lastAccount.balance.toLocaleString() : "0"} DT</p>
+          <div className="card shadow-none border bg-gradient-start-4 h-100">
+            <div className="card-body p-20">
+              <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div>
+                  <p className="fw-medium text-primary-light mb-1">Last Account</p>
+                  <h6 className="mb-0">
+                    {lastAccountLoading ? "Loading..." : lastAccountError ? "Error" : lastAccount?.numeroCompte || "N/A"}
+                  </h6>
+                </div>
+                <div className="w-50-px h-50-px bg-primary rounded-circle d-flex justify-content-center align-items-center">
+                  <FaUniversity className="text-white text-2xl mb-0" />
+                </div>
+              </div>
+              <p className="fw-medium text-sm text-primary-light mt-12 mb-0">
+                Balance: {lastAccountLoading ? "Loading..." : lastAccountError ? "Error" : lastAccount ? lastAccount.balance.toLocaleString() : "0"} DT
+              </p>
             </div>
           </div>
         </div>
 
         {/* TotalBalanceWidget */}
         <div className="col-xxl-3 col-lg-3 col-md-6 col-sm-12">
-          <div className="card p-2 shadow border h-100 bg-light">
-            <div className="card-body d-flex flex-column align-items-center text-center">
-              <h5 className="fw-medium text-secondary mb-1">Total Balance</h5>
-              <span className="icon-circle bg-success text-white">
-                <FaWallet />
-              </span>
-              <h3 className="normal-text mb-0">
-                {balanceLoading ? "Loading..." : balanceError ? "Error" : `${balance.toLocaleString()} DT`}
-              </h3>
-              <p className="text-muted mb-0 small">Total across all accounts</p>
+          <div className="card shadow-none border bg-gradient-start-5 h-100">
+            <div className="card-body p-20">
+              <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div>
+                  <p className="fw-medium text-primary-light mb-1">Total Balance</p>
+                  <h6 className="mb-0">
+                    {balanceLoading ? "Loading..." : balanceError ? "Error" : `${balance.toLocaleString()} DT`}
+                  </h6>
+                </div>
+                <div className="w-50-px h-50-px bg-success rounded-circle d-flex justify-content-center align-items-center">
+                  <FaWallet className="text-white text-2xl mb-0" />
+                </div>
+              </div>
+              <p className="fw-medium text-sm text-primary-light mt-12 mb-0">
+                Total across all accounts
+              </p>
             </div>
           </div>
         </div>
 
         {/* RecentTransactionsWidget */}
         <div className="col-xxl-3 col-lg-3 col-md-6 col-sm-12">
-          <div className="card p-2 shadow border h-100 bg-light">
-            <div className="card-body d-flex flex-column align-items-center text-center">
-              <h5 className="fw-medium text-secondary mb-1">Recent Transactions</h5>
-              <span className="icon-circle bg-purple text-white">
-                <FaExchangeAlt />
-              </span>
-              <h3 className="normal-text mb-0">{transactionsLoading ? "Loading..." : transactionsError ? "Error" : transactions.length}</h3>
-              <div className="transactions-list">
+          <div className="card shadow-none border bg-gradient-start-5 h-100">
+            <div className="card-body p-20">
+              <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div>
+                  <p className="fw-medium text-primary-light mb-1">Recent Transactions</p>
+                  <h6 className="mb-0">{transactionsLoading ? "Loading..." : transactionsError ? "Error" : transactions.length}</h6>
+                </div>
+                <div className="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
+                  <FaExchangeAlt className="text-white text-2xl mb-0" />
+                </div>
+              </div>
+              <div className="transactions-list mt-12">
                 {transactionsLoading ? (
                   <p className="text-muted mb-0">Loading...</p>
                 ) : transactionsError ? (

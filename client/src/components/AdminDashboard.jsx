@@ -16,16 +16,15 @@ const AdminDashboard = () => {
 
     return (
         <>
-                <UnitCountOne />
+                
                 <section className="row gy-4 mt-1">
                 <TextGeneratonLayer/>
                 <FileTranslator/>
-                <TotslSubscription/>
-                <StatStatisticOne />
                 <UsersOverviewOne />
                 <SalesStatisticOne />
                 <PdfSummarizer/>
                 <InputFormWithA/>
+              
                 
             </section>
         </>

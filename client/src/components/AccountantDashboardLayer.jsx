@@ -7,6 +7,8 @@ import TaxValidation from './child/TaxValidationDashboard';
 import PrioritizedTasks from './PrioritizedTasks';
 import AITaskAssistant from './AITaskAssistant';
 
+
+
 const socket = io('http://localhost:5001', { withCredentials: true });
 
 const styles = {
@@ -96,6 +98,9 @@ const AccountantDashboardLayer = () => {
     <LastTransactionAcc key="last-transaction" showActions={true} setNotification={setNotification} />,
     <TaxValidation key="tax-validation" setNotification={setNotification} />,
     <PrioritizedTasks key="prioritized-tasks" />,
+   
+    
+    
     // AITaskAssistant est retiré de cette liste
   ];
 
@@ -189,7 +194,6 @@ const AccountantDashboardLayer = () => {
         </div>
       </section>
 
-      {/* Assistant positionné en bas centre de l'écran */}
       <div style={styles.assistantWrapper}>
         <AITaskAssistant />
       </div>

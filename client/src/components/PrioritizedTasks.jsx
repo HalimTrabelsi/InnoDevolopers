@@ -51,7 +51,7 @@ const PrioritizedTasks = () => {
         (filter.overdue === 'no' && !isDeadlinePassed(task.deadline));
       return priorityMatch && overdueMatch;
     })
-    .sort((a, b) => b.adjustedPriority - a.adjustedPriority); // Sort by priority
+    .sort((a, b) => b.adjustedPriority - a.adjustedPriority);
 
   const chartData = {
     labels: filteredTasks.map((task) => task.title),
@@ -75,7 +75,7 @@ const PrioritizedTasks = () => {
   };
 
   const chartOptions = {
-    indexAxis: 'y', // Horizontal bars
+    indexAxis: 'y',
     scales: {
       x: {
         beginAtZero: true,
@@ -109,73 +109,85 @@ const PrioritizedTasks = () => {
   if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6 text-center">Prioritized Tasks </h2>
-
-      {/* Filters */}
-      <div className="mb-6 flex flex-col items-center gap-4">
-        <div>
-          <label className="mr-2 font-medium">Priority:</label>
-          <div className="inline-flex gap-2">
-            <button
-              onClick={() => setFilter({ ...filter, priority: 'all' })}
-              className={`px-3 py-1 rounded ${filter.priority === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setFilter({ ...filter, priority: 'high' })}
-              className={`px-3 py-1 rounded ${filter.priority === 'high' ? 'bg-red-500 text-white' : 'bg-gray-200'}`}
-            >
-              High (7-10)
-            </button>
-            <button
-              onClick={() => setFilter({ ...filter, priority: 'medium' })}
-              className={`px-3 py-1 rounded ${filter.priority === 'medium' ? 'bg-yellow-500 text-white' : 'bg-gray-200'}`}
-            >
-              Medium (4-6)
-            </button>
-            <button
-              onClick={() => setFilter({ ...filter, priority: 'low' })}
-              className={`px-3 py-1 rounded ${filter.priority === 'low' ? 'bg-green-500 text-white' : 'bg-gray-200'}`}
-            >
-              Low (0-3)
-            </button>
+    <div className="col-lg-12">
+      <div className="card shadow-none border bg-gradient-start-5 h-100">
+        <div className="card-body p-20">
+          <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+              <p className="fw-medium text-primary-light mb-1">Prioritized Tasks</p>
+            </div>
+            <div className="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
+              <FaCalendarAlt className="text-white text-2xl mb-0" />
+            </div>
           </div>
-        </div>
-        <div>
-          <label className="mr-2 font-medium">Deadline:</label>
-          <div className="inline-flex gap-2">
-            <button
-              onClick={() => setFilter({ ...filter, overdue: 'all' })}
-              className={`px-3 py-1 rounded ${filter.overdue === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setFilter({ ...filter, overdue: 'yes' })}
-              className={`px-3 py-1 rounded ${filter.overdue === 'yes' ? 'bg-red-500 text-white' : 'bg-gray-200'}`}
-            >
-              Overdue
-            </button>
-            <button
-              onClick={() => setFilter({ ...filter, overdue: 'no' })}
-              className={`px-3 py-1 rounded ${filter.overdue === 'no' ? 'bg-green-500 text-white' : 'bg-gray-200'}`}
-            >
-              Not Overdue
-            </button>
+          <div className="mt-12">
+            {/* Filters */}
+            <div className="mb-6 d-flex flex-column align-items-center gap-4">
+              <div>
+                <label className="mr-2 font-medium">Priority:</label>
+                <div className="d-inline-flex gap-2">
+                  <button
+                    onClick={() => setFilter({ ...filter, priority: 'all' })}
+                    className={`px-3 py-1 rounded ${filter.priority === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                  >
+                    All
+                  </button>
+                  <button
+                    onClick={() => setFilter({ ...filter, priority: 'high' })}
+                    className={`px-3 py-1 rounded ${filter.priority === 'high' ? 'bg-red-500 text-white' : 'bg-gray-200'}`}
+                  >
+                    High (7-10)
+                  </button>
+                  <button
+                    onClick={() => setFilter({ ...filter, priority: 'medium' })}
+                    className={`px-3 py-1 rounded ${filter.priority === 'medium' ? 'bg-yellow-500 text-white' : 'bg-gray-200'}`}
+                  >
+                    Medium (4-6)
+                  </button>
+                  <button
+                    onClick={() => setFilter({ ...filter, priority: 'low' })}
+                    className={`px-3 py-1 rounded ${filter.priority === 'low' ? 'bg-green-500 text-white' : 'bg-gray-200'}`}
+                  >
+                    Low (0-3)
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="mr-2 font-medium">Deadline:</label>
+                <div className="d-inline-flex gap-2">
+                  <button
+                    onClick={() => setFilter({ ...filter, overdue: 'all' })}
+                    className={`px-3 py-1 rounded ${filter.overdue === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                  >
+                    All
+                  </button>
+                  <button
+                    onClick={() => setFilter({ ...filter, overdue: 'yes' })}
+                    className={`px-3 py-1 rounded ${filter.overdue === 'yes' ? 'bg-red-500 text-white' : 'bg-gray-200'}`}
+                  >
+                    Overdue
+                  </button>
+                  <button
+                    onClick={() => setFilter({ ...filter, overdue: 'no' })}
+                    className={`px-3 py-1 rounded ${filter.overdue === 'no' ? 'bg-green-500 text-white' : 'bg-gray-200'}`}
+                  >
+                    Not Overdue
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Chart */}
+            {filteredTasks.length === 0 ? (
+              <p className="text-center text-gray-500">No tasks to display.</p>
+            ) : (
+              <div className="w-100">
+                <Bar data={chartData} options={chartOptions} />
+              </div>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Chart */}
-      {filteredTasks.length === 0 ? (
-        <p className="text-center text-gray-500">No tasks to display.</p>
-      ) : (
-        <div className="w-full max-w-4xl mx-auto">
-          <Bar data={chartData} options={chartOptions} />
-        </div>
-      )}
     </div>
   );
 };

@@ -77,13 +77,21 @@ const DebitCreditChartWidget = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="widget">
-      <div className="widget-header">
-        <FaChartBar className="icon" />
-        <h4>Debit/Credit Breakdown</h4>
-      </div>
-      <div className="chart-container">
-        <Bar data={chartData} options={options} />
+    <div className="col-xxl-12 col-xl-12 col-lg-12">
+      <div className="card shadow-none border bg-gradient-start-5 h-100">
+        <div className="card-body p-20">
+          <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+              <p className="fw-medium text-primary-light mb-1">Debit/Credit Breakdown</p>
+            </div>
+            <div className="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
+              <FaChartBar className="text-white text-2xl mb-0" />
+            </div>
+          </div>
+          <div className="chart-container mt-12">
+            <Bar data={chartData} options={options} />
+          </div>
+        </div>
       </div>
       <style jsx>{`
         .widget {
