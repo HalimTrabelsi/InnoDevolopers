@@ -7,11 +7,11 @@ const bodyParser = require('body-parser');
 const cors = require("cors");
 const upload = require('../middlewares/uploadImage');
 require('dotenv').config();
+const predictRoutes = require('./routes/predictRoute');
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
-
 // Connect to MongoDB
 connectDB();
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
@@ -22,7 +22,11 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api', predictRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
+require('../services/scheduler');

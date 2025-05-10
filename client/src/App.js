@@ -24,6 +24,11 @@ import Confirmation from "./pages/ConfirmationLayer.jsx";
 import AdminPanel from "./pages/AdminPanel.jsx";
 import StatPage from "./pages/StatPage.jsx";
 import VerifyEmail from "./pages/VerifyEmailPage.jsx";
+
+import ExpensePage from "./pages/ExpensePage.jsx";
+import InvoicePreviewPage from "./pages/InvoicePreviewPage";
+import SmartRevenueOptimizer from "./components/SmartRevenueOptimizer";
+
 // Composant qui utilise useNavigate() et contient la logique de navigation vocale et les routes
 function MainApp() {
   const userId = "67bde12663b4be3e706162f3";
@@ -97,6 +102,9 @@ function MainApp() {
         <Route path="/StatUsers" element={<StatPage/>} />
         <Route path="/verify-email" element={<VerifyEmail />} /> {/* Nouvelle route */}
 
+        <Route exact path='/index-11' element={<ExpensePage />} />
+        <Route exact path='/invoice-preview' element={<InvoicePreviewPage />} />
+        <Route path="/optimizer" element={<SmartRevenueOptimizer />} />
 
           <Route
             path="/admin-dashboard"

@@ -14,9 +14,12 @@ const session = require('express-session');
 const app = express();
 const PORT = process.env.PORT || 5001;
 const transactionRoutes = require('./routes/transactionRoutes');
+const predictRoute = require('./routes/predictRoute');
+
+
 const FinancialTransaction = require('./models/FinancialTransaction');
 const aiService = require('./services/aiService');
-const User = require('./models/User');
+const User = require('./models/user');
 const Transaction = require('./models/transaction');
 const CoinGeckoService=require('./services/CoinGeckoService')
 const authRoutes = require('./routes/authRoutes');
@@ -59,9 +62,11 @@ app.use('/api/password', passwordRoutes);
 app.use('/api/ownerdashboard', dashboardOwnerRoutes);
 app.use('/api', revenueRoutes);
 app.use('/api', taskRoute);
+app.use('/api', predictRoute);
 
 // Start the server
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => app.listen(PORT, () => console.log(`Server running on port ${PORT}`)))
   .catch((error) => console.log(error.message));
 
+  require('./services/scheduler');

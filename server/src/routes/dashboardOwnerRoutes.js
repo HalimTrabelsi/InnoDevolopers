@@ -7,4 +7,5 @@ const { getDashboardData, createDashboardData } = require("../controllers/dashbo
 //router.get('/ownerdashboard', dashboardOwnerController.getDashboardData);
 router.get('/ownerdashboard', getDashboardData);
 router.post('/ownerdashboard', createDashboardData);
+
 module.exports = router;

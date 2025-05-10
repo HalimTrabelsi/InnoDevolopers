@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useReactApexChart from '../../hook/useReactApexChart';
 import Chart from 'react-apexcharts';
 
-const RevenueGrowthOne = () => {
+const RevenueGrowthOne1 = () => {
   const [chartData, setChartData] = useState({
     series: [],
     options: {
@@ -68,4 +68,4 @@ const RevenueGrowthOne = () => {
 
 
 
-export default RevenueGrowthOne;
+export default RevenueGrowthOne1;

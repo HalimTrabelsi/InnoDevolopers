@@ -1,10 +1,38 @@
 import React from "react";
-import useReactApexChart from "../../hook/useReactApexChart";
 import ReactApexChart from "react-apexcharts";
 
 const ExpenseStatistics = () => {
-  let { expenseStatisticsOptions, expenseStatisticsSeries } =
-    useReactApexChart();
+  const expenseStatisticsOptions = {
+    chart: {
+      type: "pie",
+    },
+    labels: [
+      "Software & Tools",
+      "Office & Infrastructure",
+      "Marketing & Advertising",
+      "Salaries & Freelancers",
+    ],
+    legend: {
+      position: "bottom",
+    },
+    responsive: [
+      {
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: 280,
+          },
+          legend: {
+            position: "bottom",
+          },
+        },
+      },
+    ],
+    colors: ["#4e73df", "#e74a3b", "#f6c23e", "#1cc88a"],
+  };
+
+  const expenseStatisticsSeries = [300, 500, 1200, 4000];
+
   return (
     <div className='col-md-6'>
       <div className='card radius-16 h-100'>
@@ -28,8 +56,8 @@ const ExpenseStatistics = () => {
               options={expenseStatisticsOptions}
               series={expenseStatisticsSeries}
               type='pie'
-              height={540}
-              width={420}
+              height={360} // Smaller height
+              width={300}   // Smaller width
             />
           </div>
         </div>

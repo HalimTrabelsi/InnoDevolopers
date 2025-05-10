@@ -1,6 +1,6 @@
 import React from 'react'
 import UnitCountTwo from './child/UnitCountTwo'
-import RevenueGrowthOne from './child/RevenueGrowthOne'
+import RevenueGrowthOne from './child/RevenueGrowthOne1'
 import EarningStaticOne from './child/EarningStaticOne'
 import CampaignStaticOne from './child/CampaignStaticOne'
 import ClientPaymentOne from './child/ClientPaymentOne'

@@ -1,7 +1,10 @@
 import React from 'react'
 import UnitCountTwo from './child/UnitCountTwo'
-import RevenueGrowthOne from './child/RevenueGrowthOne'
+import RevenueGrowthOne1 from './child/RevenueGrowthOne1'
 import EarningStaticOne from './child/EarningStaticOne'
+import RevenuePrediction from "./RevenuePrediction";
+import SmartRevenueOptimizer from './SmartRevenueOptimizer';
+import DashboardDataFetcher from './DashboardDataFetcher';
 
 const BuisnessOwnerDashboard = () => {
   return (
@@ -9,14 +12,17 @@ const BuisnessOwnerDashboard = () => {
 
       {/* UnitCountTwo */}
       <UnitCountTwo />
-
+<div style={{ display: 'flex', gap: '20px' }}>
       {/* RevenueDistribution */}
-      <RevenueGrowthOne />
-
+      <RevenueGrowthOne1 />
+      <RevenuePrediction />
+      </div>
       {/* RevenueData */}
       <EarningStaticOne />
 
-      
+
+      {/* <SmartRevenueOptimizer/> */}
+      <DashboardDataFetcher/>
     </section>
 
   )
