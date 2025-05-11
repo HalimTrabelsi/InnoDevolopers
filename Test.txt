@@ -3,3 +3,85 @@ sudo systemctl status jenkins.service
 192.168.33.10/24
 docker start 6a6ad6e84253 //sonarqube
 sudo chmod 666 /var/run/docker.sock
+
+
+pipeline {
+    agent any
+
+    tools {
+        nodejs "nodejs"
+    }
+
+    environment {
+        CI = 'false'
+    }
+
+    stages {
+        stage('Install Dependencies') {
+            parallel {
+                stage('Install Server') {
+                    steps {
+                        dir('server') {
+                            sh 'npm install'
+                        }
+                    }
+                }
+                stage('Install Client') {
+                    steps {
+                        dir('client') {
+                            sh 'npm install'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Build Application') {
+            parallel {
+                stage('Build Server') {
+                    steps {
+                        dir('server') {
+                            sh 'npm run build || true'
+                        }
+                    }
+                }
+
+                stage('Build Client') {
+                    steps {
+                        dir('client') {
+                            sh 'npm run build'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'sonar'  
+                    withSonarQubeEnv('sonar') {   
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
+            }
+        }
+
+        stage('Building images ') {
+            steps {
+                script {
+                    sh('docker-compose build')
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo '✅ Pipeline completed'
+        }
+        failure {
+            echo '❌ Pipeline failed'
+        }
+    }
+}
