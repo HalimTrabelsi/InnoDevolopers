@@ -1,7 +1,6 @@
 import React from 'react'
 
-import LatestRegisteredOne from './child/LatestRegisteredOne';
-import UnitCountOne from './child/UnitCountOne';
+
 import TextGeneratonLayer from './CompilanceLayer';
 import FileTranslator from './FileTranslator';
 import  TotslSubscription from './child/TotalSubscriberOne';
@@ -24,8 +23,6 @@ const AdminDashboard = () => {
                 <SalesStatisticOne />
                 <PdfSummarizer/>
                 <InputFormWithA/>
-              
-                
             </section>
         </>
 
