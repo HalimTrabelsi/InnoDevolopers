@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # MongoDB Service
   db:
     image: mongo:4.2
     container_name: db
@@ -16,12 +15,11 @@ services:
     networks:
       - mern-network
 
-  # Backend (Node/Express)
   backend:
     build:
       context: ./server
       dockerfile: Dockerfile
-    image: 192.168.33.10:8083/mern-backend:1.0
+    image: 192.168.33.10:8083/docker-repo/mern-backend:1.0
     container_name: backend
     restart: always
     ports:
@@ -33,12 +31,11 @@ services:
     networks:
       - mern-network
 
-  # Frontend (React + Nginx)
   frontend:
     build:
       context: ./client
       dockerfile: Dockerfile
-    image: 192.168.33.10:8083/mern-frontend:1.0
+    image: 192.168.33.10:8083/docker-repo/mern-frontend:1.0
     container_name: frontend
     restart: always
     ports:
