@@ -7,25 +7,18 @@ import TopCustomer from "./child/TopCustomer";
 import FinancialOverview from "./child/FinancialOverview";
 import PurchaseAndSales from "./child/PurchaseAndSales";
 import RecentTransactions from "./child/RecentTransactions";
+import ViewTransactions from "./child/ViewTransactions";
 
-const DashBoardLayerTen = () => {
+const DashBoardLayerViewTransaction = () => {
   return (
     <div className='row gy-4'>
-      {/* IncomeStatement  */}
-      <IncomeStatement   />
-
-      {/* IncomeVsExpense */}
-      <IncomeVsExpense />
-
-      {/* TopExpenses */}
-      <TopExpenses />
-
-      {/* FinancialOverview */}
-      <FinancialOverview />
-
       
+     
+
+      {/* RecentTransactions */}
+      <ViewTransactions />
     </div>
   );
 };
 
-export default DashBoardLayerTen;
+export default DashBoardLayerViewTransaction;

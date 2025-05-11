@@ -72,16 +72,17 @@ const FinancialOverview = () => {
       <div className="card radius-12 position-relative">
         {/* Combo box on the far top right */}
         <div className="position-absolute" style={{ top: "1rem", right: "1rem", zIndex: 1 }}>
-          <select
-            className="form-select form-select-sm bg-base border text-secondary-light"
-            value={selectedPeriod}
-            onChange={handlePeriodChange}
-          >
-            <option>Monthly</option>
-            <option>Weekly</option>
-            <option>Today</option>
-            <option>Yearly</option>
-          </select>
+        <select
+  className="custom-dropdown"
+  value={selectedPeriod}
+  onChange={handlePeriodChange}
+>
+  <option value="Monthly">Monthly</option>
+  <option value="Weekly">Weekly</option>
+  <option value="Today">Today</option>
+  <option value="Yearly">Yearly</option>
+</select>
+
         </div>
 
         <div className="card-header">

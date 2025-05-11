@@ -8,24 +8,16 @@ import FinancialOverview from "./child/FinancialOverview";
 import PurchaseAndSales from "./child/PurchaseAndSales";
 import RecentTransactions from "./child/RecentTransactions";
 
-const DashBoardLayerTen = () => {
+const DashBoardLayerTransaction = () => {
   return (
     <div className='row gy-4'>
-      {/* IncomeStatement  */}
-      <IncomeStatement   />
-
-      {/* IncomeVsExpense */}
-      <IncomeVsExpense />
-
-      {/* TopExpenses */}
-      <TopExpenses />
-
-      {/* FinancialOverview */}
-      <FinancialOverview />
-
       
+     
+
+      {/* RecentTransactions */}
+      <RecentTransactions />
     </div>
   );
 };
 
-export default DashBoardLayerTen;
+export default DashBoardLayerTransaction;

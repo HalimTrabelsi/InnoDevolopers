@@ -91,16 +91,18 @@ const IncomeVsExpense = () => {
       <div className="card-body">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h6 className="fw-bold text-lg">Income Vs Expense</h6>
-          <select
-            className="form-select form-select-sm w-auto"
-            value={timeframe}
-            onChange={(e) => setTimeframe(e.target.value)}
-            style={{ fontSize: '0.875rem' }}
-          >
-            <option>Monthly</option>
-            <option>Weekly</option>
-            <option>Today</option>
-          </select>
+         <div className="dropdown-wrapper">
+  <select
+    className="custom-dropdown"
+    value={timeframe}
+    onChange={(e) => setTimeframe(e.target.value)}
+  >
+    <option value="Monthly">Monthly</option>
+    <option value="Weekly">Weekly</option>
+    <option value="Today">Today</option>
+  </select>
+</div>
+
         </div>
 
         {/* Statistics */}

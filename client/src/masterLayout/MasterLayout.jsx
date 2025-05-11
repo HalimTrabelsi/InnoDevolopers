@@ -429,7 +429,7 @@ const MasterLayout = ({ children }) => {
                     }
                   >
                     <i className="ri-circle-fill circle-icon text-info-main w-auto" />
-                    POS & Inventory
+                    Financial Overview
                   </NavLink>
                 </li>
                 <li>
@@ -903,57 +903,58 @@ const MasterLayout = ({ children }) => {
             </li>
 
             <li className="dropdown">
-              <Link to="#">
-                <Icon icon="heroicons:document" className="menu-icon" />
-                <span>Forms</span>
-              </Link>
-              <ul className="sidebar-submenu">
-                <li>
-                  <NavLink
-                    to="/form"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />
-                    Input Forms
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/form-layout"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-warning-main w-auto" />
-                    Input Layout
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/form-validation"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-success-main w-auto" />
-                    Form Validation
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/wizard"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-danger-main w-auto" />
-                    Form Wizard
-                  </NavLink>
-                </li>
-              </ul>
-            </li>
+  <Link to="#">
+    <Icon icon="heroicons:banknotes" className="menu-icon" />
+    <span>Transaction</span>
+  </Link>
+  <ul className="sidebar-submenu">
+    <li>
+      <NavLink
+        to="/transaction/add"
+        className={(navData) =>
+          navData.isActive ? "active-page" : ""
+        }
+      >
+        <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />
+        Add Transaction
+      </NavLink>
+    </li>
+    <li>
+      <NavLink
+        to="/ViewTransaction"
+        className={(navData) =>
+          navData.isActive ? "active-page" : ""
+        }
+      >
+        <i className="ri-circle-fill circle-icon text-warning-main w-auto" />
+        View Transaction
+      </NavLink>
+    </li>
+    <li>
+      <NavLink
+        to="/calender"
+        className={(navData) =>
+          navData.isActive ? "active-page" : ""
+        }
+      >
+        <i className="ri-circle-fill circle-icon text-success-main w-auto" />
+        Track Transaction
+      </NavLink>
+    </li>
+    <li>
+      <NavLink
+        to="/HealthTransaction"
+        className={(navData) =>
+          navData.isActive ? "active-page" : ""
+        }
+      >
+        <i className="ri-circle-fill circle-icon text-danger-main w-auto" />
+        Health Board
+      </NavLink>
+    </li>
+  </ul>
+</li>
+
 
             <li className="dropdown">
               <Link to="#">

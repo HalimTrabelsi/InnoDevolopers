@@ -1,6 +1,5 @@
 import { Icon } from '@iconify/react';
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const UsersListLayer = () => {
@@ -87,7 +86,6 @@ const UsersListLayer = () => {
         setEditedUserData({
             name: user.name,
             email: user.email,
-            phoneNumber: user.phoneNumber,
             role: user.role,
         });
     };
@@ -175,17 +173,15 @@ const UsersListLayer = () => {
                         <option value="Z-A">Z-A</option>
                     </select>
                 </div>
-             
             </div>
             <div className="card-body p-24">
-                <div className="table-responsive scroll-sm">
+                <div className="table-responsive">
                     <table className="table bordered-table sm-table mb-0">
                         <thead>
                             <tr>
                                 <th></th>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Phone Number</th>
                                 <th>Role</th>
                                 <th className="text-center">Status</th>
                                 <th className="text-center">Action</th>
@@ -222,18 +218,7 @@ const UsersListLayer = () => {
                                                 user.email
                                             )}
                                         </td>
-                                        <td>
-                                            {editUserId === user._id ? (
-                                                <input
-                                                    type="text"
-                                                    name="phoneNumber"
-                                                    value={editedUserData.phoneNumber}
-                                                    onChange={handleInputChange}
-                                                />
-                                            ) : (
-                                                user.phoneNumber
-                                            )}
-                                        </td>
+                                    
                                         <td>
                                             {editUserId === user._id ? (
                                                 <select

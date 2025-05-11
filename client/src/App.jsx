@@ -38,6 +38,11 @@ import InvoicePreviewPage from "./pages/InvoicePreviewPage";
 
 import ChatIaRoute from "./components/gemini-chatbot/GeminiChat";
 import HomePageTen from "./pages/HomePageTen.jsx";
+import HomePageTwenty from "./pages/HomePageTwenty.jsx";
+import Calendar from "./components/child/Calendar.jsx";
+import HomePageTransaction from "./pages/HomePageTransaction.jsx";
+import HomePageViewTransaction from "./pages/HomePageViewTransaction.jsx";
+
 function App() {
   const userId = "67ff6c1b6a739a45e0a45655";
   const [refresh, setRefresh] = useState(false);
@@ -117,6 +122,9 @@ function App() {
         
         <Route path='/financialoverview' element={<HomePageTen />} />
 
+        <Route path='/Calender' element={<HomePageTwenty />} />
+        <Route path='/HealthTransaction' element={<HomePageTransaction />} />
+        <Route path='/ViewTransaction' element={<HomePageViewTransaction />} />
         <Route 
           path="/admin-dashboard"
           element={
