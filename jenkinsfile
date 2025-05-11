@@ -7,74 +7,55 @@ pipeline {
 
     environment {
         CI = 'false'
-        registryCredentials = "nexus"              // ID des credentials Nexus dans Jenkins
-        registry = "192.168.33.10:8083"            // Adresse du registre Docker Nexus
+        registryCredentials = "nexus"
+        registry = "192.168.33.10:8083"
     }
 
     stages {
-        stage('Install Dependencies') {
-            parallel {
-                stage('Install Server') {
-                    steps {
-                        dir('server') {
-                            sh 'npm install'
-                        }
-                    }
-                }
-                stage('Install Client') {
-                    steps {
-                        dir('client') {
-                            sh 'npm install'
-                        }
-                    }
-                }
-            }
-        }
-
-        // stage('Build Application') {
+        // stage('Install Dependencies') {
         //     parallel {
-        //         stage('Build Server') {
+        //         stage('Install Server') {
         //             steps {
         //                 dir('server') {
-        //                     sh 'npm run build || true'
+        //                     sh 'npm install'
         //                 }
         //             }
         //         }
-        //         stage('Build Client') {
+        //         stage('Install Client') {
         //             steps {
         //                 dir('client') {
-        //                     sh 'npm run build'
+        //                     sh 'npm install'
         //                 }
         //             }
         //         }
         //     }
         // }
 
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    def scannerHome = tool 'sonar'
-                    withSonarQubeEnv('sonar') {
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
-                }
-            }
-        }
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         script {
+        //             def scannerHome = tool 'sonar'
+        //             withSonarQubeEnv('sonar') {
+        //                 sh "${scannerHome}/bin/sonar-scanner"
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('Building Docker Images') {
-            steps {
-                script {
-                    sh 'docker-compose build'
-                }
-            }
-        }
+        // stage('Building Docker Images') {
+        //     steps {
+        //         script {
+        //             sh 'docker-compose build'
+        //         }
+        //     }
+        // }
 
         stage('Deploy to Nexus') {
             steps {
                 script {
                     docker.withRegistry("http://${registry}", registryCredentials) {
-                        sh 'docker push $registry/mern-backend:1.0'
-                        sh 'docker push $registry/mern-frontend:1.0'
+                        sh 'docker push $registry/docker-repo/mern-backend:1.0'
+                        sh 'docker push $registry/docker-repo/mern-frontend:1.0'
                     }
                 }
             }
@@ -84,8 +65,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("http://${registry}", registryCredentials) {
-                        sh 'docker pull $registry/mern-backend:1.0'
-                        sh 'docker pull $registry/mern-frontend:1.0'
+                        sh 'docker pull $registry/docker-repo/mern-backend:1.0'
+                        sh 'docker pull $registry/docker-repo/mern-frontend:1.0'
                         sh 'docker-compose up -d'
                     }
                 }
