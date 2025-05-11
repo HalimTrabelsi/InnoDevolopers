@@ -81,7 +81,6 @@ const FinancialTrends = () => {
       return response.data;
     } catch (error) {
       console.error('Error saving recommendation:', error.response?.data || error.message);
-      toast.error('Failed to save recommendation');
       return null;
     }
   };
@@ -138,7 +137,7 @@ const FinancialTrends = () => {
               bgcolor: '#ffffff',
               quality: 0.95,
               width: 700,
-              height: 350,
+              height: 400,
             });
             console.log('Chart Data URL:', chartData);
             pdf.addImage(chartData, 'JPEG', 10, yOffset, 190, 80);
@@ -436,14 +435,7 @@ const FinancialTrends = () => {
       const monthNum = new Date(`${month} 1, ${year}`).getMonth() + 1;
       const transactions = await fetchTransactionsByMonth(year, monthNum);
       if (transactions.length > 0) {
-        const categoryBreakdown = transactions.reduce((acc, t) => {
-          acc[t.subCategory] = (acc[t.subCategory] || 0) + t.amount;
-          return acc;
-        }, {});
-        setModalData({
-          transactions,
-          categoryData: Object.entries(categoryBreakdown).map(([name, value]) => ({ name, value })),
-        });
+        setModalData({ transactions });
         setIsModalOpen(true);
       } else {
         toast.info('No transactions found for this month.');
@@ -683,14 +675,16 @@ const FinancialTrends = () => {
               <div ref={chartRef} style={{ overflow: 'visible', background: '#ffffff' }}>
                 <LineChart
                   width={700}
-                  height={350}
+                  height={400}
                   data={trends.chartData}
                   margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
                   onClick={handleChartClick}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                  <XAxis dataKey="month" tick={{ fontSize: 12 }} angle={-45} textAnchor="end" height={70} />
-                  <YAxis tickFormatter={(value) => `${value} TND`} tick={{ fontSize: 12 }} />
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                  <YAxis tickFormatter={(value) => `${value.toFixed(0)} TND`} tick={{ fontSize: 12 }} />
+                  <Tooltip formatter={(value) => `${value.toFixed(2)} TND`} />
+                  <Legend />
                   <Line type="monotone" dataKey="revenue" name="Revenue (TND)" stroke="#8884d8" strokeWidth={2} dot={{ r: 4 }} />
                   <Line type="monotone" dataKey="expense" name="Expenses (TND)" stroke="#ff7300" strokeWidth={2} dot={{ r: 4 }} />
                 </LineChart>
@@ -771,45 +765,66 @@ const FinancialTrends = () => {
             isOpen={isModalOpen}
             onRequestClose={() => setIsModalOpen(false)}
             style={{
-              content: { top: '50%', left: '50%', right: 'auto', bottom: 'auto', marginRight: '-50%', transform: 'translate(-50%, -50%)', width: '600px' },
+              content: {
+                top: '50%',
+                left: '50%',
+                right: 'auto',
+                bottom: 'auto',
+                marginRight: '-50%',
+                transform: 'translate(-50%, -50%)',
+                width: '700px',
+                maxHeight: '80vh',
+                overflowY: 'auto',
+                padding: '20px',
+                borderRadius: '8px',
+              },
             }}
           >
-            <h3>Transactions for the Selected Month</h3>
-            {modalData && (
-              <>
-                <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
-                  <thead>
-                    <tr>
-                      <th style={{ border: '1px solid #ddd', padding: '8px' }}>Date</th>
-                      <th style={{ border: '1px solid #ddd', padding: '8px' }}>Category</th>
-                      <th style={{ border: '1px solid #ddd', padding: '8px' }}>Subcategory</th>
-                      <th style={{ border: '1px solid #ddd', padding: '8px' }}>Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {modalData.transactions.map((t) => (
-                      <tr key={t._id || Math.random()}>
-                        <td style={{ border: '1px solid #ddd', padding: '8px' }}>{new Date(t.date).toLocaleDateString()}</td>
-                        <td style={{ border: '1px solid #ddd', padding: '8px' }}>{t.category}</td>
-                        <td style={{ border: '1px solid #ddd', padding: '8px' }}>{t.subCategory}</td>
-                        <td style={{ border: '1px solid #ddd', padding: '8px' }}>{t.amount} TND</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <h4>Category Breakdown</h4>
-                <PieChart width={400} height={200}>
-                  <Pie data={modalData.categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80}>
-                    {modalData.categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={['#8884d8', '#ff7300', '#82ca9d', '#ffc107'][index % 4]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => `${value.toFixed(2)} TND`} />
-                </PieChart>
-              </>
+            <h3 style={{ marginBottom: '20px', color: '#333' }}>Transactions for the Selected Month</h3>
+            {modalData && modalData.transactions.length > 0 ? (
+              <div>
+                {modalData.transactions.map((t, index) => (
+                  <div
+                    key={t._id || Math.random()}
+                    style={{
+                      marginBottom: '20px',
+                      padding: '15px',
+                      border: '1px solid #ddd',
+                      borderRadius: '4px',
+                      background: '#f9f9f9',
+                    }}
+                  >
+                    <h4 style={{ marginBottom: '10px', color: '#007bff' }}>Transaction {index + 1}</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div>
+                        <strong>Date:</strong> {new Date(t.date).toLocaleDateString()}
+                      </div>
+                      <div>
+                        <strong>Category:</strong> {t.category}
+                      </div>
+                      <div>
+                        <strong>Subcategory:</strong> {t.subCategory}
+                      </div>
+                      <div>
+                        <strong>Amount:</strong> {t.amount} TND
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No transactions available for this month.</p>
             )}
             <button
-              style={{ marginTop: '10px', padding: '10px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px' }}
+              style={{
+                marginTop: '20px',
+                padding: '10px 20px',
+                background: '#dc3545',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
               onClick={() => setIsModalOpen(false)}
             >
               Close
