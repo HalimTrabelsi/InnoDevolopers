@@ -7,6 +7,8 @@ pipeline {
 
     environment {
         CI = 'false'
+        registryCredentials = "nexus"              // ID des credentials Nexus dans Jenkins
+        registry = "192.168.33.10:8083"            // Adresse du registre Docker Nexus
     }
 
     stages {
@@ -29,42 +31,63 @@ pipeline {
             }
         }
 
-        stage('Build Application') {
-            parallel {
-                stage('Build Server') {
-                    steps {
-                        dir('server') {
-                            sh 'npm run build || true'
-                        }
-                    }
-                }
-
-                stage('Build Client') {
-                    steps {
-                        dir('client') {
-                            sh 'npm run build'
-                        }
-                    }
-                }
-            }
-        }
+        // stage('Build Application') {
+        //     parallel {
+        //         stage('Build Server') {
+        //             steps {
+        //                 dir('server') {
+        //                     sh 'npm run build || true'
+        //                 }
+        //             }
+        //         }
+        //         stage('Build Client') {
+        //             steps {
+        //                 dir('client') {
+        //                     sh 'npm run build'
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    def scannerHome = tool 'sonar'  
-                    withSonarQubeEnv('sonar') {   
+                    def scannerHome = tool 'scanner'
+                    withSonarQubeEnv('sonar') {
                         sh "${scannerHome}/bin/sonar-scanner"
                     }
                 }
             }
         }
 
-        // New stage for building images
-        stage('Building images ') {
+        stage('Building Docker Images') {
             steps {
                 script {
-                    sh('docker-compose build')
+                    sh 'docker-compose build'
+                }
+            }
+        }
+
+        stage('Deploy to Nexus') {
+            steps {
+                script {
+                    docker.withRegistry("http://${registry}", registryCredentials) {
+                        sh 'docker push $registry/mern-backend:1.0'
+                        sh 'docker push $registry/mern-frontend:1.0'
+                    }
+                }
+            }
+        }
+
+        stage('Run Application') {
+            steps {
+                script {
+                    docker.withRegistry("http://${registry}", registryCredentials) {
+                        sh 'docker pull $registry/mern-backend:1.0'
+                        sh 'docker pull $registry/mern-frontend:1.0'
+                        sh 'docker-compose up -d'
+                    }
                 }
             }
         }
@@ -72,10 +95,10 @@ pipeline {
 
     post {
         always {
-            echo '✅ Pipeline completed'
+            echo '✅ Pipeline terminé'
         }
         failure {
-            echo '❌ Pipeline failed'
+            echo '❌ Pipeline échoué'
         }
     }
 }
