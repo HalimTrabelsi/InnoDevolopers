@@ -17,16 +17,21 @@ const askGPT = async (query, transactions) => {
 };
 
 const RecentTransactions = () => {
+  // ===== State Variables =====
   const [transactions, setTransactions] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const transactionsPerPage = 5;
 
+<<<<<<< Updated upstream
   const [gptQuery, setGptQuery] = useState("");
   const [gptResponse, setGptResponse] = useState("");
   const [gptLoading, setGptLoading] = useState(false);
 
+=======
+  // ===== Fetch Transactions =====
+>>>>>>> Stashed changes
   useEffect(() => {
     fetchTransactions();
   }, []);
@@ -45,6 +50,7 @@ const RecentTransactions = () => {
     }
   };
 
+  // ===== Trigger SMS Notification =====
   const handleTriggerSMS = async (transactionId) => {
     const transaction = transactions.find((t) => t._id === transactionId);
     if (!transaction) {
@@ -70,10 +76,12 @@ const RecentTransactions = () => {
     }
   };
 
+  // ===== Download Report (PDF/Excel) =====
   const downloadReport = async (type) => {
     try {
       const url = `http://localhost:5001/api/export/generate-${type}`;
       const response = await axios.post(url, { transactions }, { responseType: "blob" });
+
       const blob = new Blob([response.data], {
         type:
           type === "pdf"
@@ -85,19 +93,24 @@ const RecentTransactions = () => {
       link.href = window.URL.createObjectURL(blob);
       link.download = `recent_transactions.${type === "excel" ? "xlsx" : "pdf"}`;
       link.click();
+<<<<<<< Updated upstream
       alert(`✅ ${type.toUpperCase()} file downloaded successfully.`);
+=======
 
       alert(`✅ ${type.toUpperCase()} file downloaded.`);
+>>>>>>> Stashed changes
     } catch (error) {
       alert("❌ Failed to download " + type.toUpperCase() + ": " + (error.response?.data?.message || error.message));
     }
   };
 
+<<<<<<< Updated upstream
   const handleAskGPT = async () => {
     setGptLoading(true);
     const answer = await askGPT(gptQuery, transactions);
     setGptResponse(answer);
     setGptLoading(false);
+=======
   // ===== Download CSV =====
   const downloadCSV = () => {
     if (!transactions || transactions.length === 0) {
@@ -156,6 +169,7 @@ const RecentTransactions = () => {
     } finally {
       setQueryLoading(false);
     }
+>>>>>>> Stashed changes
   };
 
   // ===== Pagination Logic =====
@@ -165,12 +179,14 @@ const RecentTransactions = () => {
     return transactions.slice(startIndex, endIndex);
   };
 
+<<<<<<< Updated upstream
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
   const totalPages = Math.ceil(transactions.length / transactionsPerPage);
 
+=======
   // ===== Transaction Stats =====
   const totalAmount = transactions.reduce((acc, t) => acc + (t.amount || 0), 0);
   const averageAmount =
@@ -192,6 +208,7 @@ const RecentTransactions = () => {
   };
 
   // ===== Render UI =====
+>>>>>>> Stashed changes
   return (
     <div className="container-fluid px-4 mt-5">
       <div className="card w-100 mt-4">
@@ -210,10 +227,12 @@ const RecentTransactions = () => {
 
         {/* Body */}
         <div className="card-body p-3">
+<<<<<<< Updated upstream
           {/* GPT Query Section */}
           <div className="mb-3">
             <label className="form-label">Ask GPT:</label>
             <div className="input-group">
+=======
 
           {/* Stats Summary */}
           <div className="mb-4">
@@ -250,6 +269,7 @@ const RecentTransactions = () => {
           <div className="mb-4">
             <label className="form-label">Ask Gemini (AI):</label>
             <div className="d-flex">
+>>>>>>> Stashed changes
               <input
                 type="text"
                 className="form-control form-control-sm"
@@ -259,18 +279,21 @@ const RecentTransactions = () => {
                 style={{ fontSize: "14px" }}
               />
               <button
+<<<<<<< Updated upstream
                 className="btn btn-primary btn-sm"
                 onClick={handleAskGPT}
                 disabled={gptLoading}
                 style={{ fontSize: "14px" }}
               >
                 {gptLoading ? "Asking..." : "Ask GPT"}
+=======
                 className="btn"
                 style={{ backgroundColor: "#4893D7", color: "white" }}
                 onClick={handleAskGemini}
                 disabled={queryLoading}
               >
                 {queryLoading ? "Asking..." : "Ask"}
+>>>>>>> Stashed changes
               </button>
             </div>
             {gptResponse && (
@@ -327,6 +350,7 @@ const RecentTransactions = () => {
 
               {/* Pagination */}
               <div className="d-flex justify-content-center">
+<<<<<<< Updated upstream
                 <nav aria-label="Page navigation">
                   <ul className="pagination">
                     {[...Array(totalPages)].map((_, index) => (
@@ -341,6 +365,7 @@ const RecentTransactions = () => {
                     ))}
                   </ul>
                 </nav>
+=======
                 <ul className="pagination">
                   {[...Array(Math.ceil(transactions.length / transactionsPerPage))].map((_, i) => (
                     <li className="page-item" key={i}>
@@ -350,6 +375,7 @@ const RecentTransactions = () => {
                     </li>
                   ))}
                 </ul>
+>>>>>>> Stashed changes
               </div>
             </div>
           )}
