@@ -24,8 +24,10 @@ const taxRulesRoutes = require('../routes/taxRules');
 const socket = require('../socket'); 
 const financialTrendsRoutes = require('../routes/financialTrends');
 const simulationRoutes = require('../routes/simulationRoutes');
-const geminiRoute = require('../routes/geminiRoute');
+const taskRoutes = require('../routes/tasksRoutes');
 
+
+const gptRoute = require("../routes/gptSummary");
 dotenv.config();
 
 const app = express();
@@ -79,8 +81,10 @@ app.use("/api/list", ListRoutes);
 app.use('/api/taxRules', taxRulesRoutes);
 app.use('/api/financial-trends', financialTrendsRoutes);
 app.use('/api/simulations', simulationRoutes);
-app.use("/api/gemini", geminiRoute); 
+app.use('/api/tasks', taskRoutes);
 
+
+app.use("/api/gpt", gptRoute);
 require("../controllers/passport");
 mongoose
     .connect(process.env.MONGO_URI, {
@@ -139,4 +143,3 @@ app.use('/transactionsayf', transactionRoutesSaif);
 server.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
-require('../services/scheduler');

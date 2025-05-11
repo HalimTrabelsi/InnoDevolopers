@@ -4,7 +4,8 @@ import axios from "axios";
 
 const LastTransactionAcc = ({ showActions = true, title = "Pending Approvals", setNotification }) => {
   const [approvals, setApprovals] = useState([]);
-  const [showAll, setShowAll] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchApprovals = async () => {
@@ -23,7 +24,7 @@ const LastTransactionAcc = ({ showActions = true, title = "Pending Approvals", s
     try {
       await axios.put(`http://localhost:5001/api/approvals/approve/${id}`);
       setApprovals((prev) => prev.filter((a) => a._id !== id));
-      setNotification("Approval request has been approved."); // Notification ajoutée
+      setNotification("Approval request has been approved.");
     } catch (err) {
       console.error("Erreur lors de l'approbation :", err);
     }
@@ -33,54 +34,58 @@ const LastTransactionAcc = ({ showActions = true, title = "Pending Approvals", s
     try {
       await axios.put(`http://localhost:5001/api/approvals/reject/${id}`);
       setApprovals((prev) => prev.filter((a) => a._id !== id));
-      setNotification("Approval request has been rejected."); // Notification ajoutée
+      setNotification("Approval request has been rejected.");
     } catch (err) {
       console.error("Erreur lors du refus :", err);
     }
   };
 
+  const totalPages = Math.ceil(approvals.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentApprovals = approvals.slice(startIndex, startIndex + itemsPerPage);
+
+  const goToPreviousPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const goToNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
   return (
-    <div className="col-12">
-      <div className="card h-100 shadow-lg">
-        <div className="card-header border-bottom bg-base py-4 px-5 d-flex align-items-center justify-content-between">
-          <h4 className="fw-bold mb-0">{title}</h4>
-          <button
-            onClick={() => setShowAll(!showAll)}
-            className="text-primary-600 hover:text-primary-800 d-flex align-items-center gap-2 fs-5"
-          >
-            {showAll ? "View Less" : "View All"}
-            <Icon icon="solar:alt-arrow-right-linear" className="fs-4" />
-          </button>
-        </div>
-        <div className="card-body p-5 bg-gray-100">
-          <div className="table-responsive scroll-sm">
-            <table className="table table-bordered mb-0">
-              <thead className="table-light">
+    <div className="col-lg-12">
+      <div className="card shadow-none border bg-gradient-start-5 h-100">
+        <div className="card-body p-20">
+          <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+              <p className="fw-medium text-primary-light mb-1">{title}</p>
+            </div>
+            <div className="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
+              <Icon icon="solar:checklist-bold" className="text-white text-2xl mb-0" />
+            </div>
+          </div>
+          <div className="table-responsive mt-12">
+            <table className="table bordered-table mb-0">
+              <thead>
                 <tr>
-                  <th className="fs-5">Approval Type</th>
-                  <th className="fs-5">Details</th>
-                  <th className="fs-5">Status</th>
-                  {showActions && <th className="fs-5">Actions</th>}
+                  <th scope="col" className="fs-5">Approval Type</th>
+                  <th scope="col" className="fs-5">Details</th>
+                  <th scope="col" className="fs-5 text-center">Status</th>
+                  {showActions && <th scope="col" className="fs-5">Actions</th>}
                 </tr>
               </thead>
               <tbody>
-                {approvals.length > 0 ? (
-                  approvals.slice(0, showAll ? approvals.length : 3).map((a) => (
+                {currentApprovals.length > 0 ? (
+                  currentApprovals.map((a) => (
                     <tr key={a._id} className="align-middle">
-                      <td className="fs-6">{a.approvalType || "N/A"}</td>
-                      <td className="fs-6">{a.details || "N/A"}</td>
-                      <td>
+                      <td className="text-lg text-secondary-light fw-semibold">{a.approvalType || "N/A"}</td>
+                      <td className="text-lg text-secondary-light fw-semibold">{a.details || "N/A"}</td>
+                      <td className="text-center">
                         {a.status ? (
                           <span
-                            className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-bold ${
-                              a.status === "pending"
-                                ? "bg-warning"
-                                : a.status === "approved"
-                                ? "bg-success"
-                                : "bg-secondary"
-                            }`}
+                            className={`bg-${a.status === "pending" ? "warning" : a.status === "approved" ? "success" : "secondary"}-focus text-${a.status === "pending" ? "warning" : a.status === "approved" ? "success" : "secondary"}-main px-24 py-4 rounded-pill fw-medium text-sm`}
                           >
-                            {a.status.charAt(0).toUpperCase()}
+                            {a.status.charAt(0).toUpperCase() + a.status.slice(1)}
                           </span>
                         ) : (
                           "N/A"
@@ -118,6 +123,27 @@ const LastTransactionAcc = ({ showActions = true, title = "Pending Approvals", s
               </tbody>
             </table>
           </div>
+          {approvals.length > itemsPerPage && (
+            <div className="d-flex justify-content-center mt-3">
+              <button
+                onClick={goToPreviousPage}
+                disabled={currentPage === 1}
+                className="btn btn-primary me-2"
+              >
+                Previous
+              </button>
+              <span className="align-self-center">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+                className="btn btn-primary ms-2"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

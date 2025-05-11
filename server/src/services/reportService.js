@@ -54,7 +54,7 @@ const generateFinancialReport = async () => {
         </div>
   
         <div style="background-color: #ecf0f1; padding: 15px; text-align: center; font-size: 13px; color: #95a5a6;">
-          Â© ${new Date().getFullYear()} Innodevolopers. â€” All rights reserved.
+          Â© ${new Date().getFullYear()} Numericia Inc. â€” All rights reserved.
         </div>
   
       </div>

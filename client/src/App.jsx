@@ -7,8 +7,8 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import 'bootstrap/dist/css/bootstrap.min.css';
-
+import { FaRobot } from "react-icons/fa";
+import { ToastContainer } from 'react-toastify';
 import AdminDashboardPage from "./pages/AdminDashboardPage.jsx";
 import SignInPage from "./pages/SignInPage.jsx";
 import SignUpPage from "./pages/SignUpPage.jsx";
@@ -35,12 +35,9 @@ import Confirmation from "./pages/ConfirmationLayer.jsx";
 import CompleteProfile from "./pages/CompleteProfileLayer.jsx";
 import ExpensePage from "./pages/ExpensePage.jsx";
 import InvoicePreviewPage from "./pages/InvoicePreviewPage";
-import AdminPanel from "./pages/AdminPanel.jsx";
+
 import ChatIaRoute from "./components/gemini-chatbot/GeminiChat";
 import HomePageTen from "./pages/HomePageTen.jsx";
-import HomePageTwenty from "./pages/HomePageTwenty.jsx";
-import Calendar from "./components/child/Calendar.jsx";
-
 function App() {
   const userId = "67ff6c1b6a739a45e0a45655";
   const [refresh, setRefresh] = useState(false);
@@ -85,6 +82,10 @@ function App() {
     <BrowserRouter>
       {/* Bouton Flottant pour ouvrir le chatbot */}
           <ChatIaRoute />
+
+        <FaRobot />
+   
+        <ToastContainer />
       {/* Modal Chatbot avec Material UI */}
       
    
@@ -113,9 +114,8 @@ function App() {
         <Route exact path='/index-11' element={<ExpensePage />} />
         <Route exact path='/invoice-preview' element={<InvoicePreviewPage />} />
         <Route path="/news" element={<NewsRoute />} />
-        <Route path="/deleteUsers" element={<AdminPanel />} />
+        
         <Route path='/financialoverview' element={<HomePageTen />} />
-        <Route path='/Calender' element={<HomePageTwenty />} />
 
         <Route 
           path="/admin-dashboard"

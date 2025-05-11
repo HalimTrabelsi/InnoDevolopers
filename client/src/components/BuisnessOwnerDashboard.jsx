@@ -9,11 +9,12 @@ import TopPerformanceOne from './child/TopperformanceOne'
 import LatestPerformanceOne from './child/LatestPerformanceOne'
 import LastTransactionOne from './child/LastTransactionOne'
 import CompteBancaireTable from './CompteBancaire/CompteBancaireTable'
+import FinancialT  from './FinancialTrends'
+
 import News from '../components/News/News'
 import Trading from './crypto/trading'
 import Transaction from '../components/transaction/TransactionList'
 import ChatBot from './chatbolt/ChatbotFinance'
-import FinancialT  from './FinancialTrends'
 
 const BuisnessOwnerDashboard = () => {
   const userId = "67cc34299384fa66108bb394";
@@ -29,26 +30,8 @@ const BuisnessOwnerDashboard = () => {
       
     
 
-      {/* EarningStaticOne */}
-      <EarningStaticOne />
 
-      {/* CampaignStaticOne */}
-      <CampaignStaticOne />
-
-      {/* ClientPaymentOne  */}
-      <ClientPaymentOne />
-
-      {/* CountryStatusOne */}
-      <CountryStatusOne />
-
-      {/* TopPerformanceOne */}
-      <TopPerformanceOne />
-
-      {/* LatestPerformanceOne */}
-      <LatestPerformanceOne />
-
-      {/* LastTransactionOne */}
-      <LastTransactionOne />
+     
 
       <FinancialT  />
       

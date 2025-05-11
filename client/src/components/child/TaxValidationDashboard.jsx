@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import io from 'socket.io-client';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import 'sweetalert2/dist/sweetalert2.css';
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 const socket = io('http://localhost:5001');
 
@@ -17,8 +18,9 @@ const TaxValidationDashboard = () => {
     userTax: '',
     consumption: '',
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-  // Load transactions
   const fetchRecords = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -52,13 +54,12 @@ const TaxValidationDashboard = () => {
           confirmButtonColor: '#4CAF50',
         });
       }
-      fetchRecords(); // Refresh data after validation
+      fetchRecords();
     });
 
     return () => socket.off('taxValidation');
   }, []);
 
-  // Validate inputs before submission
   const validateInputs = () => {
     let tempErrors = {};
     let isValid = true;
@@ -91,7 +92,6 @@ const TaxValidationDashboard = () => {
       return;
     }
 
-    // Validate inputs before submission
     if (!validateInputs()) {
       toast.error('Please fix the errors before validating');
       return;
@@ -153,159 +153,187 @@ const TaxValidationDashboard = () => {
     });
   };
 
-  return (
-    <div style={{ background: '#f0f2f5', padding: '20px', minHeight: '100vh' }}>
-      <h2 style={{ color: '#333' }}>Tax Validation</h2>
+  const totalPages = Math.ceil(records.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentRecords = records.slice(startIndex, startIndex + itemsPerPage);
 
-      {/* Tax Validation Section */}
-      <div style={{ background: '#fff', padding: '20px', margin: '20px 0', borderRadius: '8px', border: '1px solid #ccc' }}>
-        <h3 style={{ color: '#333', marginBottom: '20px' }}>Validate a Transaction</h3>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'flex-start' }}>
-          <div style={{ flex: '1 1 200px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', color: '#333' }}>
-              Entered Tax (TND)
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              value={userTax}
-              onChange={(e) => {
-                setUserTax(e.target.value);
-                if (validationErrors.userTax) {
-                  setValidationErrors({ ...validationErrors, userTax: '' });
-                }
-              }}
-              placeholder="Enter tax (e.g., 19)"
-              style={{
-                padding: '10px',
-                border: validationErrors.userTax ? '1px solid #dc3545' : '1px solid #ccc',
-                borderRadius: '4px',
-                width: '100%',
-                background: '#fff',
-              }}
-            />
-            {validationErrors.userTax && (
-              <div style={{ color: '#dc3545', fontSize: '12px', marginTop: '5px' }}>
-                {validationErrors.userTax}
-              </div>
-            )}
+  const goToPreviousPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const goToNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  return (
+    <div className="col-lg-12">
+      {/* Validation Form Card */}
+      <div className="card shadow-none border bg-gradient-start-5 h-100 mb-4">
+        <div className="card-body p-20">
+          <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+              <p className="fw-medium text-primary-light mb-1">Validate a Transaction</p>
+            </div>
+            <div className="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
+              <Icon icon="solar:calculator-bold" className="text-white text-2xl mb-0" />
+            </div>
           </div>
-          <div style={{ flex: '1 1 200px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', color: '#333' }}>
-              Consumption (kWh, if applicable)
-            </label>
-            <input
-              type="number"
-              value={consumption}
-              onChange={(e) => {
-                setConsumption(e.target.value);
-                if (validationErrors.consumption) {
-                  setValidationErrors({ ...validationErrors, consumption: '' });
-                }
-              }}
-              placeholder="Consumption (e.g., 300)"
-              style={{
-                padding: '10px',
-                border: validationErrors.consumption ? '1px solid #dc3545' : '1px solid #ccc',
-                borderRadius: '4px',
-                width: '100%',
-                background: '#fff',
-              }}
-            />
-            {validationErrors.consumption && (
-              <div style={{ color: '#dc3545', fontSize: '12px', marginTop: '5px' }}>
-                {validationErrors.consumption}
-              </div>
-            )}
-          </div>
-          <div style={{ flex: '1 1 200px', display: 'flex', alignItems: 'center' }}>
-            <label style={{ display: 'flex', alignItems: 'center', color: '#333' }}>
+          <div className="d-flex flex-wrap gap-3 mt-12">
+            <div className="flex-1 min-w-[200px]">
+              <label className="d-block mb-1 text-secondary-light">Entered Tax (TND)</label>
               <input
-                type="checkbox"
-                checked={isExport}
+                type="number"
+                step="0.01"
+                value={userTax}
                 onChange={(e) => {
-                  setIsExport(e.target.checked);
-                  console.log('isExport updated:', e.target.checked);
+                  setUserTax(e.target.value);
+                  if (validationErrors.userTax) {
+                    setValidationErrors({ ...validationErrors, userTax: '' });
+                  }
                 }}
-                style={{ marginRight: '5px' }}
+                placeholder="Enter tax (e.g., 19)"
+                className={`w-100 p-2 border ${validationErrors.userTax ? 'border-danger' : 'border-gray-300'} rounded`}
               />
-              <span style={{ fontWeight: 'bold' }}>Export (IS 10%)</span>
-            </label>
-          </div>
-          <div style={{ flex: '1 1 200px' }}>
-            <button
-              onClick={() => handleValidate(selectedRecord?._id, selectedRecord?.collection)}
-              disabled={!selectedRecord}
-              style={{
-                padding: '10px 20px',
-                background: selectedRecord ? '#4CAF50' : '#ccc',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: selectedRecord ? 'pointer' : 'not-allowed',
-                width: '100%',
-              }}
-            >
-              Validate
-            </button>
+              {validationErrors.userTax && (
+                <div className="text-danger text-sm mt-1">{validationErrors.userTax}</div>
+              )}
+            </div>
+            <div className="flex-1 min-w-[200px]">
+              <label className="d-block mb-1 text-secondary-light">Consumption (kWh, if applicable)</label>
+              <input
+                type="number"
+                value={consumption}
+                onChange={(e) => {
+                  setConsumption(e.target.value);
+                  if (validationErrors.consumption) {
+                    setValidationErrors({ ...validationErrors, consumption: '' });
+                  }
+                }}
+                placeholder="Consumption (e.g., 300)"
+                className={`w-100 p-2 border ${validationErrors.consumption ? 'border-danger' : 'border-gray-300'} rounded`}
+              />
+              {validationErrors.consumption && (
+                <div className="text-danger text-sm mt-1">{validationErrors.consumption}</div>
+              )}
+            </div>
+            <div className="flex-1 min-w-[200px] d-flex align-items-center">
+              <label className="d-flex align-items-center text-secondary-light">
+                <input
+                  type="checkbox"
+                  checked={isExport}
+                  onChange={(e) => {
+                    setIsExport(e.target.checked);
+                    console.log('isExport updated:', e.target.checked);
+                  }}
+                  className="me-2"
+                />
+                <span className="fw-bold">Export (IS 10%)</span>
+              </label>
+            </div>
+            <div className="flex-1 min-w-[200px]">
+              <button
+                onClick={() => handleValidate(selectedRecord?._id, selectedRecord?.collection)}
+                disabled={!selectedRecord}
+                className={`w-100 p-2 text-white rounded ${selectedRecord ? 'bg-success' : 'bg-gray-400 cursor-not-allowed'}`}
+              >
+                Validate
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Transactions Table */}
-      <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff' }}>
-        <thead>
-          <tr style={{ background: '#e0e0e0' }}>
-            <th style={{ padding: '10px' }}>ID</th>
-            <th style={{ padding: '10px' }}>Category</th>
-            <th style={{ padding: '10px' }}>Amount</th>
-            <th style={{ padding: '10px' }}>Tax Type</th>
-            <th style={{ padding: '10px' }}>Status</th>
-            <th style={{ padding: '10px' }}>Calculated Tax</th>
-            <th style={{ padding: '10px' }}>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {records.map((record) => (
-            <tr
-              key={record._id}
-              style={{
-                background: selectedRecord?._id === record._id ? '#e3f2fd' : 'transparent',
-                transition: 'background 0.2s',
-              }}
-            >
-              <td style={{ padding: '10px' }}>{record._id}</td>
-              <td style={{ padding: '10px' }}>{record.category}</td>
-              <td style={{ padding: '10px' }}>{record.amount}</td>
-              <td style={{ padding: '10px' }}>{record.taxType}</td>
-              <td style={{ padding: '10px' }}>
-                {record.isTaxValidated ? 'Validated' : 'Not Validated'}
-              </td>
-              <td style={{ padding: '10px' }}>
-                {record.taxCalculated ? `${record.taxCalculated} TND` : '-'}
-              </td>
-              <td style={{ padding: '10px' }}>
-                <button
-                  onClick={() => {
-                    setSelectedRecord({ _id: record._id, collection: 'Transaction' });
-                    console.log('selectedRecord updated:', { _id: record._id, collection: 'Transaction' });
-                  }}
-                  style={{
-                    padding: '5px 10px',
-                    background: '#2196F3',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Select
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* Transactions Table Card */}
+      <div className="card shadow-none border bg-gradient-start-5 h-100">
+        <div className="card-body p-20">
+          <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+              <p className="fw-medium text-primary-light mb-1">Tax Validation Records</p>
+            </div>
+            <div className="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
+              <Icon icon="solar:document-text-bold" className="text-white text-2xl mb-0" />
+            </div>
+          </div>
+          <div className="table-responsive mt-12">
+            <table className="table bordered-table mb-0">
+              <thead>
+                <tr>
+                  <th scope="col" className="fs-5">ID</th>
+                  <th scope="col" className="fs-5">Category</th>
+                  <th scope="col" className="fs-5">Amount</th>
+                  <th scope="col" className="fs-5">Tax Type</th>
+                  <th scope="col" className="fs-5 text-center">Status</th>
+                  <th scope="col" className="fs-5">Calculated Tax</th>
+                  <th scope="col" className="fs-5">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentRecords.length > 0 ? (
+                  currentRecords.map((record) => (
+                    <tr
+                      key={record._id}
+                      className={`align-middle ${selectedRecord?._id === record._id ? 'bg-info-light' : ''}`}
+                    >
+                      <td className="text-lg text-secondary-light fw-semibold">{record._id}</td>
+                      <td className="text-lg text-secondary-light fw-semibold">{record.category || 'N/A'}</td>
+                      <td className="text-lg text-secondary-light fw-semibold">{record.amount || 'N/A'}</td>
+                      <td className="text-lg text-secondary-light fw-semibold">{record.taxType || 'N/A'}</td>
+                      <td className="text-center">
+                        <span
+                          className={`bg-${record.isTaxValidated ? 'success' : 'warning'}-focus text-${record.isTaxValidated ? 'success' : 'warning'}-main px-24 py-4 rounded-pill fw-medium text-sm`}
+                        >
+                          {record.isTaxValidated ? 'Validated' : 'Not Validated'}
+                        </span>
+                      </td>
+                      <td className="text-lg text-secondary-light fw-semibold">
+                        {record.taxCalculated ? `${record.taxCalculated} TND` : '-'}
+                      </td>
+                      <td>
+                        <button
+                          onClick={() => {
+                            setSelectedRecord({ _id: record._id, collection: 'Transaction' });
+                            console.log('selectedRecord updated:', { _id: record._id, collection: 'Transaction' });
+                          }}
+                          className="btn btn-primary btn-sm px-3 py-2"
+                        >
+                          Select
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={7} className="text-center text-muted fs-5 py-4">
+                      No records available.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          {records.length > itemsPerPage && (
+            <div className="d-flex justify-content-center mt-3">
+              <button
+                onClick={goToPreviousPage}
+                disabled={currentPage === 1}
+                className="btn btn-primary me-2"
+              >
+                Previous
+              </button>
+              <span className="align-self-center">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+                className="btn btn-primary ms-2"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,240 +1,380 @@
 import React, { useState, useRef } from 'react';
-import { TextField, Button, Typography, Box, Card, CardContent, Divider } from '@mui/material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { Icon } from '@iconify/react/dist/iconify.js';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend
+} from 'recharts';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 const FinancialSimulation = () => {
-  const [scenarioName, setScenarioName] = useState('');
-  const [revenueChange, setRevenueChange] = useState('');
-  const [expenseChange, setExpenseChange] = useState('');
-  const [investment, setInvestment] = useState('');
+  const [formData, setFormData] = useState({
+    scenarioName: '',
+    revenueChange: '',
+    expenseChange: '',
+    investment: '',
+  });
+  const [errors, setErrors] = useState({
+    scenarioName: '',
+    revenueChange: '',
+    expenseChange: '',
+    investment: '',
+  });
   const [simulationResult, setSimulationResult] = useState(null);
-  const [error, setError] = useState('');
-  const [showForm, setShowForm] = useState(true); // État pour contrôler l'affichage du formulaire ou des résultats
-  const chartRef = useRef(null); // Référence pour capturer le graphique
+  const [showForm, setShowForm] = useState(true);
+  const resultRef = useRef(null);
 
-  // Handle form submission
+  const { scenarioName, revenueChange, expenseChange, investment } = formData;
+
+  const validateForm = () => {
+    let tempErrors = {};
+    let isValid = true;
+
+    if (!scenarioName.trim()) {
+      tempErrors.scenarioName = 'Scenario name is required';
+      isValid = false;
+    }
+
+    if (revenueChange === '') {
+      tempErrors.revenueChange = 'Revenue change is required';
+      isValid = false;
+    } else if (isNaN(revenueChange) || Number(revenueChange) < -100 || Number(revenueChange) > 100) {
+      tempErrors.revenueChange = 'Value must be between -100% and 100%';
+      isValid = false;
+    }
+
+    if (expenseChange === '') {
+      tempErrors.expenseChange = 'Expense change is required';
+      isValid = false;
+    } else if (isNaN(expenseChange) || Number(expenseChange) < 0) {
+      tempErrors.expenseChange = 'Positive value is required';
+      isValid = false;
+    }
+
+    if (investment === '') {
+      tempErrors.investment = 'Investment is required';
+      isValid = false;
+    } else if (isNaN(investment) || Number(investment) < 0) {
+      tempErrors.investment = 'Positive value is required';
+      isValid = false;
+    }
+
+    setErrors(tempErrors);
+    return isValid;
+  };
+
+  const onChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (errors[e.target.name]) {
+      setErrors({ ...errors, [e.target.name]: '' });
+    }
+  };
+
   const handleSimulate = async (e) => {
     e.preventDefault();
-    setError('');
-    setSimulationResult(null); // Reset results
 
-    if (!scenarioName) {
-      setError('Scenario name is required');
+    if (!validateForm()) {
+      toast.error('Please correct the errors in the form');
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:5001/api/simulations/simulate', {
+      const res = await axios.post('http://localhost:5001/api/simulations/simulate', {
         name: scenarioName,
-        revenueChange: revenueChange || 0,
-        expenseChange: expenseChange || 0,
-        investment: investment || 0,
+        revenueChange: Number(revenueChange),
+        expenseChange: Number(expenseChange),
+        investment: Number(investment),
       });
-      setSimulationResult(response.data);
-      setShowForm(false); // Hide form and show results
-    } catch (err) {
-      if (err.response && err.response.status === 400) {
-        setError(err.response.data.message || 'Error: Invalid data');
-      } else {
-        setError('Error during simulation');
-      }
+
+      setSimulationResult(res.data);
+      setShowForm(false);
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Simulation completed successfully!',
+        confirmButtonText: 'OK',
+        timer: 3000,
+        timerProgressBar: true,
+      });
+    } catch (error) {
+      console.error('Simulation error:', error.response ? error.response.data : error.message);
+      toast.error(
+        error.response ? error.response.data.message : 'Simulation failed. Please try again.',
+        {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        }
+ );
     }
   };
 
-  // Prepare data for the chart
   const chartData = simulationResult
     ? [
-        { name: 'Current', revenues: simulationResult.current.revenues, expenses: simulationResult.current.expenses, cashFlow: simulationResult.current.cashFlow },
-        { name: 'Simulated', revenues: simulationResult.simulated.revenues, expenses: simulationResult.simulated.expenses, cashFlow: simulationResult.simulated.cashFlow },
+        {
+          name: 'Current',
+          revenues: simulationResult.current.revenues,
+          expenses: simulationResult.current.expenses,
+          cashFlow: simulationResult.current.cashFlow,
+        },
+        {
+          name: 'Simulated',
+          revenues: simulationResult.simulated.revenues,
+          expenses: simulationResult.simulated.expenses,
+          cashFlow: simulationResult.simulated.cashFlow,
+        },
       ]
     : [];
 
-  // Download chart as PNG
   const downloadPNG = () => {
-    if (chartRef.current) {
-      html2canvas(chartRef.current).then((canvas) => {
+    const exportElement = document.getElementById('export-area');
+    if (exportElement) {
+      html2canvas(exportElement, { scale: 3 }).then((canvas) => {
         const link = document.createElement('a');
-        link.download = `${scenarioName || 'simulation'}_chart.png`;
+        link.download = `${scenarioName}_result.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
       });
     }
   };
 
-  // Download chart as PDF
   const downloadPDF = () => {
-    if (chartRef.current) {
-      html2canvas(chartRef.current).then((canvas) => {
+    const exportElement = document.getElementById('export-area');
+    if (exportElement) {
+      html2canvas(exportElement, { scale: 3 }).then((canvas) => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgProps = pdf.getImageProperties(imgData);
         const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
         pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth - 20, pdfHeight);
-        pdf.save(`${scenarioName || 'simulation'}_chart.pdf`);
+        pdf.save(`${scenarioName}_result.pdf`);
       });
     }
   };
 
-  // Reset and return to form
   const handleBackToForm = () => {
     setShowForm(true);
-    setScenarioName('');
-    setRevenueChange('');
-    setExpenseChange('');
-    setInvestment('');
+    setFormData({
+      scenarioName: '',
+      revenueChange: '',
+      expenseChange: '',
+      investment: '',
+    });
+    setErrors({});
     setSimulationResult(null);
-    setError('');
   };
 
   return (
-    <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
-      <Typography variant="h4" gutterBottom sx={{ color: '#1976d2', textAlign: 'center' }}>
-        Financial Scenario Simulation
-      </Typography>
+    <div className="container my-5">
+      <h3 className="text-center mb-4 text-primary fw-bold">Financial Simulation</h3>
 
       {showForm ? (
-        // Simulation form
-        <Card sx={{ mb: 3, borderRadius: 2 }}>
-          <CardContent>
-            <form onSubmit={handleSimulate}>
-              <TextField
-                label="Scenario Name"
-                value={scenarioName}
-                onChange={(e) => setScenarioName(e.target.value)}
-                fullWidth
-                margin="normal"
-                variant="outlined"
-                InputLabelProps={{ style: { color: '#1976d2' } }}
-                InputProps={{ style: { backgroundColor: '#f5f5f5' } }}
-              />
-              <TextField
-                label="Revenue Change (%)"
-                type="number"
-                value={revenueChange}
-                onChange={(e) => setRevenueChange(e.target.value)}
-                fullWidth
-                margin="normal"
-                variant="outlined"
-                helperText="Ex: 10 for +10%, -10 for -10%"
-                InputLabelProps={{ style: { color: '#1976d2' } }}
-                InputProps={{ style: { backgroundColor: '#f5f5f5' } }}
-              />
-              <TextField
-                label="Expense Change (TND)"
-                type="number"
-                value={expenseChange}
-                onChange={(e) => setExpenseChange(e.target.value)}
-                fullWidth
-                margin="normal"
-                variant="outlined"
-                helperText="Ex: 5000 to add 5000 TND"
-                InputLabelProps={{ style: { color: '#1976d2' } }}
-                InputProps={{ style: { backgroundColor: '#f5f5f5' } }}
-              />
-              <TextField
-                label="New Investment (TND)"
-                type="number"
-                value={investment}
-                onChange={(e) => setInvestment(e.target.value)}
-                fullWidth
-                margin="normal"
-                variant="outlined"
-                InputLabelProps={{ style: { color: '#1976d2' } }}
-                InputProps={{ style: { backgroundColor: '#f5f5f5' } }}
-              />
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-                sx={{ mt: 2, backgroundColor: '#1976d2', '&:hover': { backgroundColor: '#1565c0' } }}
-              >
-                SIMULATE
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+        <div className="col-md-6 mx-auto">
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title mb-0 flex items-center gap-2">
+                <Icon icon="solar:calculator-linear" /> Run a Simulation
+              </h5>
+            </div>
+            <div className="card-body">
+              <form onSubmit={handleSimulate}>
+                <div className="row gy-3">
+                  <div className="col-12">
+                    <label className="form-label">Scenario Name</label>
+                    <div className="icon-field">
+                      <span className="icon">
+                        <Icon icon="solar:tag-linear" />
+                      </span>
+                      <input
+                        type="text"
+                        name="scenarioName"
+                        className={`form-control ${errors.scenarioName ? 'is-invalid' : ''}`}
+                        placeholder="Enter scenario name"
+                        value={scenarioName}
+                        onChange={onChange}
+                      />
+                      {errors.scenarioName && (
+                        <div className="invalid-feedback">{errors.scenarioName}</div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-12">
+                    <label className="form-label">Revenue Change (%)</label>
+                    <div className="icon-field">
+                      <span className="icon">
+                        <Icon icon="solar:chart-linear" />
+                      </span>
+                      <input
+                        type="number"
+                        name="revenueChange"
+                        className={`form-control ${errors.revenueChange ? 'is-invalid' : ''}`}
+                        placeholder="Enter revenue change"
+                        value={revenueChange}
+                        onChange={onChange}
+                      />
+                      {errors.revenueChange && (
+                        <div className="invalid-feedback">{errors.revenueChange}</div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-12">
+                    <label className="form-label">Expense Change (TND)</label>
+                    <div className="icon-field">
+                      <span className="icon">
+                        <Icon icon="solar:money-bag-linear" />
+                      </span>
+                      <input
+                        type="number"
+                        name="expenseChange"
+                        className={`form-control ${errors.expenseChange ? 'is-invalid' : ''}`}
+                        placeholder="Enter expense change"
+                        value={expenseChange}
+                        onChange={onChange}
+                      />
+                      {errors.expenseChange && (
+                        <div className="invalid-feedback">{errors.expenseChange}</div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-12">
+                    <label className="form-label">Investment (TND)</label>
+                    <div className="icon-field">
+                      <span className="icon">
+                        <Icon icon="solar:wallet-money-linear" />
+                      </span>
+                      <input
+                        type="number"
+                        name="investment"
+                        className={`form-control ${errors.investment ? 'is-invalid' : ''}`}
+                        placeholder="Enter investment amount"
+                        value={investment}
+                        onChange={onChange}
+                      />
+                      {errors.investment && (
+                        <div className="invalid-feedback">{errors.investment}</div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-12 flex gap-3">
+                    <button type="submit" className="btn btn-primary-600 w-50">
+                      Submit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData({
+                          scenarioName: '',
+                          revenueChange: '',
+                          expenseChange: '',
+                          investment: '',
+                        });
+                        setErrors({});
+                      }}
+                      className="btn btn-secondary w-50"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       ) : (
-        // Display results in place of the form
-        <Card sx={{ borderRadius: 2, p: 2 }}>
-          <CardContent>
-            <Typography variant="h5" gutterBottom sx={{ textAlign: 'center', color: '#1976d2' }}>
-              Simulation Results
-            </Typography>
-            <Divider sx={{ my: 2 }} />
+        <>
+          <div
+            id="export-area"
+            style={{
+              padding: '30px',
+              backgroundColor: '#fff',
+              fontFamily: 'Arial, sans-serif',
+              boxShadow: '0px 0px 10px rgba(0,0,0,0.1)',
+              borderRadius: '8px',
+              margin: '0 auto',
+              maxWidth: '900px',
+            }}
+          >
+            <div className="d-flex align-items-center mb-3">
+              <img
+                src="images/finova-logo.png"
+                alt="Finova Logo"
+                style={{ height: 60, marginRight: 16 }}
+              />
+              <h5 className="fw-bold">Finova</h5>
+            </div>
 
-            {/* Chart container with reference for downloading */}
-            <Box ref={chartRef} sx={{ display: 'flex', justifyContent: 'center' }}>
-              <LineChart width={800} height={400} data={chartData} margin={{ top: 20, right: 40, left: 40, bottom: 20 }}>
+            <h6 className="text-center mb-3 text-primary fw-bold">
+              Simulation Results: {scenarioName}
+            </h6>
+            <hr />
+            <div className="mb-3" style={{ fontSize: '16px' }}>
+              <p>
+                <strong>Scenario Name:</strong> {scenarioName}
+              </p>
+              <p>
+                <strong>Revenue Change:</strong> {revenueChange} %
+              </p>
+              <p>
+                <strong>Expense Change:</strong> {expenseChange} TND
+              </p>
+              <p>
+                <strong>Investment:</strong> {investment} TND
+              </p>
+            </div>
+
+            <div className="d-flex justify-content-center">
+              <LineChart width={700} height={400} data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
-                <YAxis label={{ value: 'TND', angle: -90, position: 'insideLeft' }} />
+                <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="revenues" stroke="#1976d2" name="Revenues" strokeWidth={2} />
-                <Line type="monotone" dataKey="expenses" stroke="#ff9800" name="Expenses" strokeWidth={2} />
-                <Line type="monotone" dataKey="cashFlow" stroke="#4caf50" name="Cash Flow" strokeWidth={2} />
+                <Line
+                  type="monotone"
+                  dataKey="revenues"
+                  stroke="#1976d2"
+                  name="Revenues"
+                  strokeWidth={2}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="expenses"
+                  stroke="#ff9800"
+                  name="Expenses"
+                  strokeWidth={2}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="cashFlow"
+                  stroke="#4caf50"
+                  name="Cash Flow"
+                  strokeWidth={2}
+                />
               </LineChart>
-            </Box>
+            </div>
+          </div>
 
-            {/* Download buttons */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, gap: 2 }}>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={downloadPNG}
-                sx={{ backgroundColor: '#ff9800', '&:hover': { backgroundColor: '#f57c00' } }}
-              >
-                Download as PNG
-              </Button>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={downloadPDF}
-                sx={{ backgroundColor: '#ff9800', '&:hover': { backgroundColor: '#f57c00' } }}
-              >
-                Download as PDF
-              </Button>
-            </Box>
-
-            {/* Recommendation */}
-            <Typography variant="h6" sx={{ mt: 4, textAlign: 'center' }}>
-              Recommendation
-            </Typography>
-            <Typography
-              color={simulationResult.simulated.cashFlow < 0 ? 'error' : 'success'}
-              sx={{ textAlign: 'center', fontSize: '1.2rem' }}
-            >
-              {simulationResult.recommendation}
-            </Typography>
-
-            {/* Button to return to form */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={handleBackToForm}
-                sx={{ borderColor: '#1976d2', color: '#1976d2', '&:hover': { borderColor: '#1565c0', color: '#1565c0' } }}
-              >
-                Back to Form
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
+          <div className="d-flex gap-3 justify-content-center mt-4">
+            <button onClick={downloadPNG} className="btn btn-outline-primary">
+              Download PNG
+            </button>
+            <button onClick={downloadPDF} className="btn btn-outline-primary">
+              Download PDF
+            </button>
+            <button onClick={handleBackToForm} className="btn btn-secondary">
+              New Simulation
+            </button>
+          </div>
+        </>
       )}
-
-      {/* Display errors (only if the form is visible) */}
-      {showForm && error && (
-        <Typography color="error" sx={{ mt: 2, textAlign: 'center' }}>
-          {error}
-        </Typography>
-      )}
-    </Box>
+    </div>
   );
 };
 

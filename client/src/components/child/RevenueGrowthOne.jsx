@@ -128,14 +128,14 @@ const RevenueGrowthOne = () => {
       yaxis: {
         labels: {
           show: true,
-          formatter: (val) => `${val.toFixed(2)} €`,
+          formatter: (val) => `${val.toFixed(2)} DT`,
           style: { fontSize: "10px" },
         },
         title: { text: "", style: { fontSize: "10px" } },
       },
       tooltip: {
         x: { format: "dd/MM/yy HH:mm" },
-        y: { formatter: (val) => `${val.toFixed(2)} €` },
+        y: { formatter: (val) => `${val.toFixed(2)} DT` },
       },
       annotations: {
         points: chartData.map((item) => ({
@@ -155,7 +155,7 @@ const RevenueGrowthOne = () => {
               fontSize: "9px",
               padding: { left: 4, right: 4, top: 2, bottom: 2 },
             },
-            text: `${item.type}: ${item.amount.toFixed(2)} €`,
+            text: `${item.type}: ${item.amount.toFixed(2)} DT`,
             offsetY: -15,
           },
         })),
@@ -190,7 +190,7 @@ const RevenueGrowthOne = () => {
             bar: {
               horizontal: false,
               columnWidth: "50%",
-              dataLabels: { position: "top", enabled: true, formatter: (val) => `${val} €` },
+              dataLabels: { position: "top", enabled: true, formatter: (val) => `${val} DT` },
             },
           },
           stroke: { width: 0 },
@@ -279,7 +279,7 @@ const RevenueGrowthOne = () => {
                 className={`fw-bold ${total < 0 ? "text-danger" : "text-success"}`}
                 style={{ margin: 0, fontSize: "16px" }}
               >
-                {total.toFixed(2)} €
+                {total.toFixed(2)} DT
               </h5>
               <span
                 className="bg-success-focus rounded-2 fw-medium text-success-main"
@@ -288,8 +288,8 @@ const RevenueGrowthOne = () => {
                 {filteredTransactions.length > 0 &&
                 filteredTransactions[filteredTransactions.length - 1] &&
                 typeof filteredTransactions[filteredTransactions.length - 1].amount === "number"
-                  ? `${filteredTransactions[filteredTransactions.length - 1].amount.toFixed(2)} €`
-                  : "0 €"}
+                  ? `${filteredTransactions[filteredTransactions.length - 1].amount.toFixed(2)} DT`
+                  : "0 DT"}
               </span>
             </div>
             <div className="d-flex align-items-center" style={{ gap: "8px" }}>

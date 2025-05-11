@@ -7,7 +7,7 @@ const Transaction = require('../models/FinancialTransaction');
 
 
 router.post('/create', authMiddleware(['Accountant']), taxRuleController.createTaxRule);
-router.get('/', authMiddleware(['Accountant', 'Financial manager']), async (req, res) => {
+router.get('/', authMiddleware(['Accountant', 'Financial manager' ]), async (req, res) => {
     try {
       console.log('Requête GET /api/transactions - Utilisateur:', req.user);
       // Récupérer toutes les transactions, sans filtrer par utilisateur

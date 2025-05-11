@@ -440,7 +440,7 @@ const MasterLayout = ({ children }) => {
                     }
                   >
                     <i className="ri-circle-fill circle-icon text-info-main w-auto" />
-                    Expense dashboard
+                    Finance & Banking
                   </NavLink>
                 </li>
               </ul>
@@ -467,7 +467,7 @@ const MasterLayout = ({ children }) => {
             </li>
             <li>
               <NavLink
-               to="/calender"
+                to="/calendar-main"
                 className={(navData) => (navData.isActive ? "active-page" : "")}
               >
                 <Icon icon="solar:calendar-outline" className="menu-icon" />
