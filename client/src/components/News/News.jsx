@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FiRefreshCw, FiExternalLink } from 'react-icons/fi';
 import './NewsApi.css';
-
+import MasterLayout from '../../masterLayout/MasterLayout.jsx';
 const NewsAPI = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +70,7 @@ const NewsAPI = () => {
     }
   }, [articles]);
 
-  return (
+  return ( <MasterLayout>
     <div className="news-api-container">
       <div className="news-controls">
         <div className="category-selector">
@@ -138,6 +138,7 @@ const NewsAPI = () => {
         </div>
       )}
     </div>
+    </MasterLayout>
   );
 };
 

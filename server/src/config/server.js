@@ -25,6 +25,7 @@ const socket = require('../socket');
 const financialTrendsRoutes = require('../routes/financialTrends');
 const simulationRoutes = require('../routes/simulationRoutes');
 const taskRoutes = require('../routes/tasksRoutes');
+const geminiRoute = require('../routes/geminiRoute');
 
 
 const gptRoute = require("../routes/gptSummary");
@@ -82,6 +83,7 @@ app.use('/api/taxRules', taxRulesRoutes);
 app.use('/api/financial-trends', financialTrendsRoutes);
 app.use('/api/simulations', simulationRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use("/api/gemini", geminiRoute); 
 
 
 app.use("/api/gpt", gptRoute);

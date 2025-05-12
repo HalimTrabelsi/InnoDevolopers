@@ -13,7 +13,6 @@ const TopExpenses = () => {
     date: "",
   });
 
-  // Fetch top expenses on mount
   useEffect(() => {
     const fetchTopExpenses = async () => {
       try {
@@ -24,19 +23,16 @@ const TopExpenses = () => {
           return;
         }
 
-        const response = await axios.get(
-          "http://localhost:5001/api/expenses/top-expenses",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const response = await axios.get("http://localhost:5001/api/expenses/top-expenses", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         if (response.status === 200) {
           setTopExpenses(response.data.data);
         } else {
           setError("Failed to fetch top expenses.");
         }
-      } catch (error) {
+      } catch (err) {
         setError("An error occurred while fetching top expenses.");
       } finally {
         setLoading(false);
@@ -46,9 +42,8 @@ const TopExpenses = () => {
     fetchTopExpenses();
   }, []);
 
-  // Read important expenses aloud
   const handleReadDetailedExpenses = () => {
-    const importantExpenses = topExpenses.filter(exp => exp.amount >= 400);
+    const importantExpenses = topExpenses.filter((expense) => expense.amount >= 400);
 
     if (importantExpenses.length === 0) {
       speak("No important expenses recorded in the current period.");
@@ -58,7 +53,9 @@ const TopExpenses = () => {
     const readText = importantExpenses
       .map((expense, index) => {
         const position = ["first", "second", "third", "fourth", "fifth"][index] || `${index + 1}th`;
-        return `The ${position} most significant expense is in the category of ${expense.category}, amounting to ${expense.amount} dinars, recorded on ${new Date(expense.date).toLocaleDateString()}.`;
+        return `The ${position} most significant expense is in the category of ${expense.category}, amounting to ${expense.amount} dinars, recorded on ${new Date(
+          expense.date
+        ).toLocaleDateString()}.`;
       })
       .join(" ");
 
@@ -67,7 +64,6 @@ const TopExpenses = () => {
     );
   };
 
-  // Submit new expense
   const handleAddExpense = async (e) => {
     e.preventDefault();
 
@@ -87,18 +83,21 @@ const TopExpenses = () => {
       );
 
       if (response.status === 201) {
-        setTopExpenses([...topExpenses, response.data.data]);
+        setTopExpenses((prev) => [...prev, response.data.data]);
         setShowForm(false);
         setNewExpense({ category: "", amount: "", date: "" });
       }
-    } catch {
+    } catch (err) {
       setError("An error occurred while adding the expense.");
     }
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewExpense((prev) => ({ ...prev, [name]: value }));
+    setNewExpense((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return (
@@ -146,7 +145,7 @@ const TopExpenses = () => {
                 className="btn btn-sm rounded-circle bg-light"
                 onClick={handleReadDetailedExpenses}
                 title="Read important expenses aloud"
-                style={{ color: "#0d6efd", fontSize: "1.5rem", padding: "0.5rem" }}
+                style={{ color: "#0d6efd", padding: "0.5rem", fontSize: "1.5rem" }}
               >
                 🔊
               </button>
@@ -193,26 +192,21 @@ const TopExpenses = () => {
         </div>
       </div>
 
-      {/* Add Expense Modal */}
+      {/* Add Expense Form Modal */}
       {showForm && (
         <div className="modal fade show" style={{ display: "block" }} tabIndex="-1">
           <div className="modal-dialog">
-            <div className="modal-content shadow-lg">
+            <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">💵 Add New Expense</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowForm(false)}
-                ></button>
+                <button type="button" className="btn-close" onClick={() => setShowForm(false)}></button>
               </div>
               <div className="modal-body">
                 <form onSubmit={handleAddExpense}>
                   <div className="mb-3">
-                    <label htmlFor="category" className="form-label">Category</label>
+                    <label className="form-label">Category</label>
                     <input
                       type="text"
-                      id="category"
                       name="category"
                       className="form-control"
                       value={newExpense.category}
@@ -221,10 +215,9 @@ const TopExpenses = () => {
                     />
                   </div>
                   <div className="mb-3">
-                    <label htmlFor="amount" className="form-label">Amount (DT)</label>
+                    <label className="form-label">Amount (DT)</label>
                     <input
                       type="number"
-                      id="amount"
                       name="amount"
                       className="form-control"
                       value={newExpense.amount}
@@ -233,10 +226,9 @@ const TopExpenses = () => {
                     />
                   </div>
                   <div className="mb-3">
-                    <label htmlFor="date" className="form-label">Date</label>
+                    <label className="form-label">Date</label>
                     <input
                       type="date"
-                      id="date"
                       name="date"
                       className="form-control"
                       value={newExpense.date}
@@ -244,11 +236,9 @@ const TopExpenses = () => {
                       required
                     />
                   </div>
-                  <div className="text-end">
-                    <button type="submit" className="btn btn-success">
-                      Save Expense
-                    </button>
-                  </div>
+                  <button type="submit" className="btn btn-primary">
+                    Add Expense
+                  </button>
                 </form>
               </div>
             </div>

@@ -6,6 +6,7 @@ import * as tf from '@tensorflow/tfjs';
 import Modal from 'react-modal';
 import jsPDF from 'jspdf';
 import domtoimage from 'dom-to-image';
+import MasterLayout from '../masterLayout/MasterLayout';
 
 Modal.setAppElement('#root');
 
@@ -660,7 +661,9 @@ const FinancialTrends = () => {
     }
   };
 
-  return (
+  return (  
+  <MasterLayout>
+
     <div style={{ background: '#fff', padding: '20px', margin: '20px 0', borderRadius: '8px', border: '1px solid #ccc' }}>
       <h3 style={{ color: '#333', marginBottom: '20px' }}>Global Financial Trends (3-Month Forecast)</h3>
 
@@ -832,7 +835,8 @@ const FinancialTrends = () => {
           </Modal>
         </>
       )}
-    </div>
+    </div>   </MasterLayout>
+
   );
 };
 

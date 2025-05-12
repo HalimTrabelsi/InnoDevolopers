@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import './TransactionForm.css';
-
+import MasterLayout from '../../masterLayout/MasterLayout.jsx';
 const AddTransaction = () => {
   const location = useLocation();
   const { userId, sourceAccount } = location.state || {};
@@ -53,7 +53,7 @@ const AddTransaction = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  return (
+  return ( <MasterLayout>
     <div className="transaction-form-container">
       <div className="circuit-background"></div>
       <h2 className="form-title">💳 Nouvelle Transaction</h2>
@@ -118,6 +118,7 @@ const AddTransaction = () => {
         </button>
       </form>
     </div>
+    </MasterLayout>
   );
 };
 

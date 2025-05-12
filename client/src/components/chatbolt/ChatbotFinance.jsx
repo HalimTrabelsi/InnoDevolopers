@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-
+import MasterLayout from '../../masterLayout/MasterLayout.jsx';
 const FinancialAssistant = () => {
   // Définition des 4 types de documents avec leurs champs requis
   const documentTypes = [
@@ -427,7 +427,7 @@ const FinancialAssistant = () => {
     }
   };
 
-  return (
+  return ( <MasterLayout>
     <div style={styles.container}>
       <h2 style={{ textAlign: 'center', color: colors.primary, marginBottom: '1.5rem' }}>
         💼 Financial Documentation Assistant
@@ -530,6 +530,7 @@ const FinancialAssistant = () => {
         </div>
       )}
     </div>
+    </MasterLayout>
   );
 };
 

@@ -3,7 +3,7 @@ import ReactApexChart from "react-apexcharts";
 import axios from "axios";
 import io from "socket.io-client";
 import { FaExpandAlt, FaCompressAlt } from 'react-icons/fa';
-
+import MasterLayout from "../../masterLayout/MasterLayout.jsx";
 const socket = io("http://localhost:5001", {
   withCredentials: true,
   transports: ["websocket", "polling"],
@@ -242,8 +242,8 @@ const RevenueGrowthOne = () => {
   const toggleExpand = () => {
     setIsExpanded((prev) => !prev);
   };
-
-  return (
+ 
+  return ( <MasterLayout>
     <div className="container-fluid" style={{ margin: 0, padding: 0 }}>
       <div
         className="card"
@@ -351,6 +351,7 @@ const RevenueGrowthOne = () => {
         </div>
       </div>
     </div>
+    </MasterLayout>
   );
 };
 

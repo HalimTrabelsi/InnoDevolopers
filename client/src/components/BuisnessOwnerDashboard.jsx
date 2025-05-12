@@ -33,15 +33,11 @@ const BuisnessOwnerDashboard = () => {
 
      
 
-      <FinancialT  />
       
       <CompteBancaireTable userId={userId} />      
       <Trading></Trading>
-      <ChatBot></ChatBot>
       <Transaction></Transaction>
-      <RevenueGrowthOne></RevenueGrowthOne>
       <EarningStaticOne></EarningStaticOne>
-      <News></News>
 
     </section>
 

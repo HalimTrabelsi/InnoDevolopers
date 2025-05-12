@@ -1,37 +1,24 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { MdTextsms } from "react-icons/md";
-
-// Function to handle GPT query
-const askGPT = async (query, transactions) => {
-  try {
-    const response = await axios.post("http://localhost:5001/api/gpt/ask", {
-      query,
-      transactions,
-    });
-    return response.data.answer;
-  } catch (err) {
-    console.error("Error fetching GPT response:", err);
-    return "❌ Error fetching GPT response.";
-  }
-};
+import { Line } from "react-chartjs-2";
+import { Chart as ChartJS } from "chart.js/auto";
 
 const RecentTransactions = () => {
-  // ===== State Variables =====
   const [transactions, setTransactions] = useState([]);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [analysis, setAnalysis] = useState(null);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
+
+  const [query, setQuery] = useState("");
+  const [queryResponse, setQueryResponse] = useState("");
+  const [queryLoading, setQueryLoading] = useState(false);
+
   const [currentPage, setCurrentPage] = useState(1);
   const transactionsPerPage = 5;
 
-<<<<<<< Updated upstream
-  const [gptQuery, setGptQuery] = useState("");
-  const [gptResponse, setGptResponse] = useState("");
-  const [gptLoading, setGptLoading] = useState(false);
-
-=======
-  // ===== Fetch Transactions =====
->>>>>>> Stashed changes
   useEffect(() => {
     fetchTransactions();
   }, []);
@@ -40,78 +27,50 @@ const RecentTransactions = () => {
     setLoading(true);
     try {
       const response = await axios.get("http://localhost:5001/api/transactions/viewTransaction");
-      if (response.status === 200) {
-        setTransactions(response.data);
-      }
-    } catch (error) {
+      setTransactions(response.data || []);
+    } catch (err) {
       setError("Error fetching transactions.");
     } finally {
       setLoading(false);
     }
   };
 
-  // ===== Trigger SMS Notification =====
   const handleTriggerSMS = async (transactionId) => {
     const transaction = transactions.find((t) => t._id === transactionId);
-    if (!transaction) {
-      alert("❌ Transaction not found.");
+    if (!transaction || transaction.amount <= 600) {
+      alert("⚠️ Transaction must exist and exceed 600 TND.");
       return;
     }
-    if (transaction.amount <= 600) {
-      alert("⚠️ SMS not sent: Transaction amount must be greater than 600.");
-      return;
-    }
+
     try {
-      await axios.post("http://localhost:5001/api/transactions/trigger-sms", {
-        transactionId,
-      });
+      await axios.post("http://localhost:5001/api/transactions/trigger-sms", { transactionId });
       alert("🚀 SMS notification sent successfully!");
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
-      if (errorMessage.includes("Invalid 'To' Phone Number")) {
-        alert("❌ SMS failed: Invalid phone number format. Please check the user's phone number.");
-      } else {
-        alert("❌ Failed to send SMS: " + errorMessage);
-      }
+      alert(`❌ SMS Failed: ${errorMessage}`);
     }
   };
 
-  // ===== Download Report (PDF/Excel) =====
   const downloadReport = async (type) => {
     try {
       const url = `http://localhost:5001/api/export/generate-${type}`;
       const response = await axios.post(url, { transactions }, { responseType: "blob" });
-
       const blob = new Blob([response.data], {
         type:
           type === "pdf"
             ? "application/pdf"
             : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
-
       const link = document.createElement("a");
       link.href = window.URL.createObjectURL(blob);
       link.download = `recent_transactions.${type === "excel" ? "xlsx" : "pdf"}`;
       link.click();
-<<<<<<< Updated upstream
-      alert(`✅ ${type.toUpperCase()} file downloaded successfully.`);
-=======
-
       alert(`✅ ${type.toUpperCase()} file downloaded.`);
->>>>>>> Stashed changes
     } catch (error) {
-      alert("❌ Failed to download " + type.toUpperCase() + ": " + (error.response?.data?.message || error.message));
+      alert("❌ Failed to download " + type.toUpperCase());
     }
   };
 
-<<<<<<< Updated upstream
-  const handleAskGPT = async () => {
-    setGptLoading(true);
-    const answer = await askGPT(gptQuery, transactions);
-    setGptResponse(answer);
-    setGptLoading(false);
-=======
-  // ===== Download CSV =====
   const downloadCSV = () => {
     if (!transactions || transactions.length === 0) {
       alert("❌ No transactions to export.");
@@ -139,7 +98,6 @@ const RecentTransactions = () => {
     link.click();
   };
 
-  // ===== Client Payment Prediction (Gemini AI) =====
   const handleClientAnalysis = async () => {
     setAnalysisLoading(true);
     try {
@@ -154,9 +112,9 @@ const RecentTransactions = () => {
     }
   };
 
-  // ===== Ask Gemini AI Query =====
   const handleAskGemini = async () => {
     if (!query.trim()) return;
+
     setQueryLoading(true);
     try {
       const response = await axios.post("http://localhost:5001/api/gemini/ask", {
@@ -169,31 +127,18 @@ const RecentTransactions = () => {
     } finally {
       setQueryLoading(false);
     }
->>>>>>> Stashed changes
   };
 
-  // ===== Pagination Logic =====
   const paginateTransactions = () => {
-    const startIndex = (currentPage - 1) * transactionsPerPage;
-    const endIndex = startIndex + transactionsPerPage;
-    return transactions.slice(startIndex, endIndex);
+    const start = (currentPage - 1) * transactionsPerPage;
+    return transactions.slice(start, start + transactionsPerPage);
   };
 
-<<<<<<< Updated upstream
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  const totalPages = Math.ceil(transactions.length / transactionsPerPage);
-
-=======
-  // ===== Transaction Stats =====
   const totalAmount = transactions.reduce((acc, t) => acc + (t.amount || 0), 0);
-  const averageAmount =
-    transactions.length > 0 ? (totalAmount / transactions.length).toFixed(2) : 0;
+  const averageAmount = transactions.length > 0 ? (totalAmount / transactions.length).toFixed(2) : 0;
   const transactionCount = transactions.length;
 
-  // ===== Chart Data (Optional Section) =====
+  // Prepare chart data
   const chartData = {
     labels: transactions.map((t) => new Date(t.date).toLocaleDateString()),
     datasets: [
@@ -207,34 +152,33 @@ const RecentTransactions = () => {
     ],
   };
 
-  // ===== Render UI =====
->>>>>>> Stashed changes
   return (
     <div className="container-fluid px-4 mt-5">
       <div className="card w-100 mt-4">
-        {/* Header & Actions */}
         <div className="card-header d-flex justify-content-between align-items-center">
           <h6 className="fw-bold text-lg mb-0">Recent Transactions</h6>
           <div>
+            <button className="btn btn-outline-primary me-2" onClick={downloadCSV}>
+              Export CSV
+            </button>
             <button className="btn btn-outline-success me-2" onClick={() => downloadReport("excel")}>
               Export Excel
             </button>
-            <button className="btn btn-outline-danger" onClick={() => downloadReport("pdf")}>
+            <button className="btn btn-outline-danger me-2" onClick={() => downloadReport("pdf")}>
               Export PDF
+            </button>
+            <button
+              className="btn btn-outline-warning"
+              onClick={handleClientAnalysis}
+              disabled={analysisLoading}
+            >
+              {analysisLoading ? "Analyzing..." : "Analyze Client"}
             </button>
           </div>
         </div>
 
-        {/* Body */}
         <div className="card-body p-3">
-<<<<<<< Updated upstream
-          {/* GPT Query Section */}
-          <div className="mb-3">
-            <label className="form-label">Ask GPT:</label>
-            <div className="input-group">
-=======
-
-          {/* Stats Summary */}
+          {/* Transaction Stats */}
           <div className="mb-4">
             <div className="alert alert-info">
               <strong>📊 Transaction Stats:</strong><br />
@@ -244,65 +188,60 @@ const RecentTransactions = () => {
             </div>
           </div>
 
-          {/* Prediction Result */}
-          {analysis && (
-            <div
-              className={`alert ${
-                analysis.willMissNextInvoice ? "alert-danger" : "alert-success"
-              } mb-4`}
-            >
-              <strong>Prediction:</strong>{" "}
-              {analysis.willMissNextInvoice
-                ? "❌ Likely to miss next invoice"
-                : "✅ Likely to pay on time"}<br />
-              <strong>Confidence:</strong> {analysis.confidenceScore}/100<br />
-              <strong>Reason:</strong> {analysis.reason}<br />
-              {analysis.healthScore !== undefined && (
-                <>
-                  <strong>Health Score:</strong> {analysis.healthScore}/100
-                </>
-              )}
-            </div>
-          )}
+          {/* Small Line Chart */}
+          <div className="mb-4" style={{ maxWidth: "400px", margin: "auto" }}>
+            <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} height={350} />
+          </div>
 
-          {/* Ask Gemini AI Section */}
+          {/* Analysis Section */}
           <div className="mb-4">
-            <label className="form-label">Ask Gemini (AI):</label>
-            <div className="d-flex">
->>>>>>> Stashed changes
-              <input
-                type="text"
-                className="form-control form-control-sm"
-                placeholder="e.g. How much did I spend on food?"
-                value={gptQuery}
-                onChange={(e) => setGptQuery(e.target.value)}
-                style={{ fontSize: "14px" }}
-              />
-              <button
-<<<<<<< Updated upstream
-                className="btn btn-primary btn-sm"
-                onClick={handleAskGPT}
-                disabled={gptLoading}
-                style={{ fontSize: "14px" }}
+            {analysis && (
+              <div
+                className={`alert ${
+                  analysis.willMissNextInvoice ? "alert-danger" : "alert-success"
+                } mt-2`}
               >
-                {gptLoading ? "Asking..." : "Ask GPT"}
-=======
-                className="btn"
-                style={{ backgroundColor: "#4893D7", color: "white" }}
-                onClick={handleAskGemini}
-                disabled={queryLoading}
-              >
-                {queryLoading ? "Asking..." : "Ask"}
->>>>>>> Stashed changes
-              </button>
-            </div>
-            {gptResponse && (
-              <div className="mt-2 alert alert-info">
-                <strong>GPT Answer:</strong> {gptResponse}
+                <strong>Prediction:</strong>{" "}
+                {analysis.willMissNextInvoice
+                  ? "❌ Likely to miss next invoice"
+                  : "✅ Likely to pay on time"}
+                <br />
+                <strong>Confidence:</strong> {analysis.confidenceScore}/100
+                <br />
+                <strong>Reason:</strong> {analysis.reason}
+                {analysis.healthScore !== undefined && (
+                  <>
+                    <br />
+                    <strong>Health Score:</strong> {analysis.healthScore}/100
+                  </>
+                )}
               </div>
             )}
           </div>
 
+          {/* Ask Gemini */}
+          <div className="mb-4">
+            <label className="form-label">Ask Gemini (AI):</label>
+            <div className="d-flex">
+              <input
+                type="text"
+                className="form-control me-2"
+                placeholder="e.g. What's my highest spending category?"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+              <button className="btn btn-info" onClick={handleAskGemini} disabled={queryLoading}>
+                {queryLoading ? "Asking..." : "Ask"}
+              </button>
+            </div>
+            {queryResponse && (
+              <div className="alert alert-secondary mt-2" style={{ whiteSpace: "pre-line" }}>
+                {queryResponse}
+              </div>
+            )}
+          </div>
+
+          {/* Transactions Table */}
           {loading ? (
             <p>Loading...</p>
           ) : error ? (
@@ -350,32 +289,18 @@ const RecentTransactions = () => {
 
               {/* Pagination */}
               <div className="d-flex justify-content-center">
-<<<<<<< Updated upstream
-                <nav aria-label="Page navigation">
-                  <ul className="pagination">
-                    {[...Array(totalPages)].map((_, index) => (
-                      <li key={index} className="page-item">
-                        <button
-                          className="page-link"
-                          onClick={() => handlePageChange(index + 1)}
-                        >
-                          {index + 1}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-=======
                 <ul className="pagination">
                   {[...Array(Math.ceil(transactions.length / transactionsPerPage))].map((_, i) => (
                     <li className="page-item" key={i}>
-                      <button className="page-link" onClick={() => setCurrentPage(i + 1)}>
+                      <button
+                        className="page-link"
+                        onClick={() => setCurrentPage(i + 1)}
+                      >
                         {i + 1}
                       </button>
                     </li>
                   ))}
                 </ul>
->>>>>>> Stashed changes
               </div>
             </div>
           )}

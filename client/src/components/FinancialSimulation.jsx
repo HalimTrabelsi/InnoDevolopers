@@ -8,7 +8,7 @@ import {
 } from 'recharts';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-
+import MasterLayout from '../masterLayout/MasterLayout.jsx';
 const FinancialSimulation = () => {
   const [formData, setFormData] = useState({
     scenarioName: '',
@@ -170,8 +170,8 @@ const FinancialSimulation = () => {
     setErrors({});
     setSimulationResult(null);
   };
-
-  return (
+ 
+  return ( <MasterLayout>
     <div className="container my-5">
       <h3 className="text-center mb-4 text-primary fw-bold">Financial Simulation</h3>
 
@@ -375,6 +375,7 @@ const FinancialSimulation = () => {
         </>
       )}
     </div>
+    </MasterLayout>
   );
 };
 
