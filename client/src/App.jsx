@@ -45,6 +45,7 @@ import FinancialTrends from "./components/FinancialTrends.jsx";
 import ChatBot from './components/chatbolt/ChatbotFinance.jsx';
 import FinancialSimulation from "./components/FinancialSimulation.jsx";
 import RevenueGrowthOne from "./components/child/RevenueGrowthOne.jsx";
+import Cryptotrading from "./components/crypto/trading.jsx";
 function App() {
   const userId = "67ff6c1b6a739a45e0a45655";
   const [refresh, setRefresh] = useState(false);
@@ -129,6 +130,7 @@ function App() {
         <Route path="/financial-assistant" element={<ChatBot />} />
         <Route path="/financial-simulation" element={<FinancialSimulation />} />
         <Route path="/cash-flow" element={<RevenueGrowthOne/>} />
+        <Route path="/crypto-trading" element={<Cryptotrading/>} />
 
         <Route 
           path="/admin-dashboard"

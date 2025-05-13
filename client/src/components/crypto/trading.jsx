@@ -18,7 +18,7 @@ import {
   Badge
 } from "reactstrap";
 import { FaArrowUp, FaArrowDown, FaSearch, FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
-
+import MasterLayout from "../../masterLayout/MasterLayout";
 const FinancialDashboard = () => {
   // Référence pour le widget TradingView
   const tradingViewContainerRef = useRef(null);
@@ -216,7 +216,7 @@ const FinancialDashboard = () => {
     usePagination
   );
 
-  return (
+  return ( <MasterLayout>
     <div className="p-4">
       {/* Crypto Ticker */}
       <Card className="mb-4">
@@ -479,6 +479,7 @@ const FinancialDashboard = () => {
         </CardBody>
       </Card>
     </div>
+    </MasterLayout>
   );
 };
 

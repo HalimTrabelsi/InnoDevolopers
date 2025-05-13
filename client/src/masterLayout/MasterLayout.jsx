@@ -513,57 +513,12 @@ const MasterLayout = ({ children }) => {
               </ul>
             </li>
 
-            <li className="dropdown">
-              <Link to="#">
+            <li className="">
+              <Link to="/crypto-trading">
                 <i className="ri-btc-line mr-10" />
                 <span>Crypto Currency</span>
               </Link>
-              <ul className="sidebar-submenu">
-                <li>
-                  <NavLink
-                    to="/wallet"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />
-                    Wallet
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/marketplace"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-warning-main w-auto" />
-                    Marketplace
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/marketplace-details"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-warning-main w-auto" />
-                    Marketplace Details
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/portfolio"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-warning-main w-auto" />
-                    Portfolios
-                  </NavLink>
-                </li>
-              </ul>
+             
             </li>
 
             <li className="sidebar-menu-group-title">Financial Management</li>
