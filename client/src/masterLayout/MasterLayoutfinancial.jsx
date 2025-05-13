@@ -695,6 +695,7 @@ const MasterLayoutfinancial = ({ children }) => {
                     Cash Flow
                   </NavLink>
                 </li>
+                
                 <li>
                   <NavLink
                     to="/financial-assistant"
@@ -732,6 +733,7 @@ const MasterLayoutfinancial = ({ children }) => {
                 <span>News</span>
               </NavLink>
             </li>
+            
            
 
             <li className="sidebar-menu-group-title">N/A</li>

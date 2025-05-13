@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { loadStripe } from '@stripe/stripe-js';
 import './payment.css'; // Import CSS standard
+import { justeNom } from '../AuthUtils'; // adapte le chemin
 
 const stripePromise = loadStripe('pk_test_51QmNFiBHq30Q7wRRS2u1lBBUM6LS0X9sdUtWBu1UJWgQvUvXmUmF327Y8NOgFDga7ym5qDWimgsJqsqi47lzm9WO00KlOv4Lxu');
 
 const PaymentFromExpress = () => {
-  const [userId, setUserId] = useState('67cc34299384fa66108bb394');
+  const [userId, setUserId] = useState(justeNom());
   const [amount, setAmount] = useState(100);
   const [currency, setCurrency] = useState('eur');
-  const [bankAccountNumber, setBankAccountNumber] = useState('TN59 1000 6035 583340670 65');
+  const [bankAccountNumber, setBankAccountNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -34,7 +35,9 @@ const PaymentFromExpress = () => {
           sessionId: data.sessionId 
         });
         if (stripeError) throw stripeError;
-      } else {
+      } 
+      
+      else {
         throw new Error('Aucun session ID reçu');
       }
     } catch (err) {
@@ -48,13 +51,13 @@ const PaymentFromExpress = () => {
     <div className="paymentContainer"> {/* Supprimé styles. */}
       <h2 className="title"> {/* Supprimé styles. */}
         <span role="img" aria-label="money-bag">💰</span>
-        Paiement Sécurisé
+        Secure Payment
         <span role="img" aria-label="credit-card">💳</span>
       </h2>
 
       <form onSubmit={handlePayment} className="paymentForm"> {/* Supprimé styles. */}
         <div className="formGroup"> {/* Supprimé styles. */}
-          <label htmlFor="userId">Identifiant Utilisateur :</label>
+          <label htmlFor="userId">User </label>
           <input
             id="userId"
             type="text"
@@ -65,7 +68,7 @@ const PaymentFromExpress = () => {
         </div>
 
         <div className="formGroup"> {/* Supprimé styles. */}
-          <label htmlFor="amount">Montant (€) :</label>
+          <label htmlFor="amount">Amount(TND) :</label>
           <input
             id="amount"
             type="number"
@@ -76,7 +79,7 @@ const PaymentFromExpress = () => {
         </div>
 
         <div className="formGroup"> {/* Supprimé styles. */}
-          <label htmlFor="currency">Devise :</label>
+          <label htmlFor="currency">Currency :</label>
           <input
             id="currency"
             type="text"

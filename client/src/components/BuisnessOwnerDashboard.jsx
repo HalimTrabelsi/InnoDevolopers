@@ -34,8 +34,7 @@ const BuisnessOwnerDashboard = () => {
      
 
       
-      <CompteBancaireTable userId={userId} />      
-      <Transaction></Transaction>
+    
       <EarningStaticOne></EarningStaticOne>
 
     </section>

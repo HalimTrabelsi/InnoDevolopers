@@ -629,6 +629,17 @@ const MasterLayout = ({ children }) => {
         Health Board
       </NavLink>
     </li>
+    <li>
+      <NavLink
+        to="/transactions"
+        className={(navData) =>
+          navData.isActive ? "active-page" : ""
+        }
+      >
+        <i className="ri-circle-fill circle-icon text-warning-main w-auto" />
+        Deteils Transaction
+      </NavLink>
+    </li>
   </ul>
 </li>
 
@@ -718,6 +729,16 @@ const MasterLayout = ({ children }) => {
                 <span>News</span>
               </NavLink>
             </li>
+            <li>
+              <NavLink
+                to="/comptes-bancaires"
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+                <Icon icon="ion:wallet" className="menu-icon" />
+                <span>Wallet</span>
+              </NavLink>
+            </li>
+           
            
 
             <li className="sidebar-menu-group-title">N/A</li>

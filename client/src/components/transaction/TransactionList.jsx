@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import DataTable from 'react-data-table-component';
 import { Line } from 'react-chartjs-2';
+import MasterLayoutfinancial from "../../masterLayout/MasterLayoutfinancial";
+
 import { 
   Chart as ChartJS, 
   CategoryScale, 
@@ -15,6 +17,9 @@ import {
 import { FaEye, FaTimes } from 'react-icons/fa';
 import QRCode from 'react-qr-code';
 import './TransactionList.css'
+import { justeNom } from '../AuthUtils'; // adapte le chemin
+import MasterLayout from '../../masterLayout/MasterLayout';
+
 
 // Initialisation de Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -29,7 +34,9 @@ const TransactionsTable = ({ userId }) => {
 
   // Charger les transactions depuis l'API
   useEffect(() => {
-    axios.get(`http://localhost:5001/transactionsayf/transactions/67cc34299384fa66108bb394`)
+    const userId = justeNom();
+
+    axios.get(`http://localhost:5001/api/transactions-saif/transactions/${userId}`)
       .then(response => {
         setTransactions(response.data);
         setFilteredTransactions(response.data);
@@ -55,7 +62,7 @@ const TransactionsTable = ({ userId }) => {
 
   const columns = [
     { 
-      name: 'Montant', 
+      name: 'Balance', 
       selector: row => `${row.amount} TND`, 
       sortable: true 
     },
@@ -65,7 +72,7 @@ const TransactionsTable = ({ userId }) => {
       sortable: true 
     },
     { 
-      name: 'Type', 
+      name: 'Catgories', 
       selector: row => row.type === 'debit' ? 'Débit 💸' : 'Crédit 💰', 
       sortable: true 
     },
@@ -110,6 +117,7 @@ const TransactionsTable = ({ userId }) => {
   };
 
   return (
+    <MasterLayout>
     <div className="saif-transaction-container">
       <button onClick={toggleView} className="saif-view-toggle-btn">
         {view === 'table' ? 'Afficher les statistiques' : 'Afficher le tableau'}
@@ -117,7 +125,7 @@ const TransactionsTable = ({ userId }) => {
 
       {view === 'table' ? (
         <DataTable
-          title="Historique des Transactions"
+          title="Transaction History"
           columns={columns}
           data={filteredTransactions}
           pagination
@@ -129,7 +137,7 @@ const TransactionsTable = ({ userId }) => {
         />
       ) : (
         <div className="saif-stats-container">
-          <h2>Statistiques des Transactions</h2>
+          <h2>states of Transactions</h2>
           <Line data={chartData} />
         </div>
       )}
@@ -139,7 +147,7 @@ const TransactionsTable = ({ userId }) => {
         <div className="saif-modal-overlay">
           <div className="saif-modal-content">
             <div className="saif-modal-header">
-              <h3 className="saif-modal-title">Détails de la Transaction</h3>
+              <h3 className="saif-modal-title">Transaction Details</h3>
               <button className="saif-close-btn" onClick={closeModal}>
                 <FaTimes />
               </button>
@@ -150,12 +158,12 @@ const TransactionsTable = ({ userId }) => {
                 <div className="saif-transaction-details">
                    
                   <div className="saif-detail-item">
-                    <div className="saif-detail-label">Montant</div>
+                    <div className="saif-detail-label">Balance</div>
                     <div className="saif-detail-value">{selectedTransaction.amount} TND</div>
                   </div>
                   
                   <div className="saif-detail-item">
-                    <div className="saif-detail-label">Type</div>
+                    <div className="saif-detail-label">Categories</div>
                     <div className="saif-detail-value">
                       {selectedTransaction.type === 'debit' ? 'Débit' : 'Crédit'}
                     </div>
@@ -174,7 +182,7 @@ const TransactionsTable = ({ userId }) => {
                   </div>
                   
                   <div className="saif-detail-item">
-                    <div className="saif-detail-label">Anomalie</div>
+                    <div className="saif-detail-label">	Anomaly</div>
                     <div className={`saif-detail-value ${selectedTransaction.anomalie ? 'saif-anomalie-true' : 'saif-anomalie-false'}`}>
                       {selectedTransaction.anomalie ? 'Oui' : 'Non'}
                     </div>
@@ -182,7 +190,7 @@ const TransactionsTable = ({ userId }) => {
                   
                   {selectedTransaction.anomalie && (
                     <div className="saif-detail-item">
-                      <div className="saif-detail-label">Commentaire Anomalie</div>
+                      <div className="saif-detail-label">	Anomaly Comment</div>
                       <div className="saif-detail-value">
                         {selectedTransaction.commentaireAnomalie || 'Aucun commentaire'}
                       </div>
@@ -190,14 +198,14 @@ const TransactionsTable = ({ userId }) => {
                   )}
                   
                   <div className="saif-detail-item">
-                    <div className="saif-detail-label">Compte Source</div>
+                    <div className="saif-detail-label">	Source Account</div>
                     <div className="saif-detail-value">
                       {accounts[selectedTransaction.compteBancaire] || 'Inconnu'}
                     </div>
                   </div>
                   
                   <div className="saif-detail-item">
-                    <div className="saif-detail-label">Destinataire</div>
+                    <div className="saif-detail-label">DesTination</div>
                     <div className="saif-detail-value">
                       {accounts[selectedTransaction.recipient]?.user.name || 'Inconnu'}
                     </div>
@@ -218,7 +226,7 @@ const TransactionsTable = ({ userId }) => {
               </div>
               
               <div className="saif-qr-sidebar">
-                <h4 className="saif-qr-title">QR Code de Transaction</h4>
+                <h4 className="saif-qr-title">QR Code  Transaction</h4>
                 <div className="saif-qr-container">
                   <QRCode 
                     value={JSON.stringify({
@@ -232,13 +240,13 @@ const TransactionsTable = ({ userId }) => {
                     size={200}
                   />
                 </div>
-                <p>Scannez ce code pour vérifier la transaction</p>
+                <p>	Scan this code to verify the transaction</p>
               </div>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </div></MasterLayout>
   );
 };
 

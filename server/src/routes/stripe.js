@@ -35,8 +35,8 @@ router.post('/pay/:userId', async (req, res) => {
         userId,
         numeroCompte: bankAccountNumber // ✅ cohérent avec webhook
       },
-      success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+      success_url: `http://localhost:3000/comptes-bancaires`,
+      cancel_url: `http://localhost:3000/erreur-paiement`,
     });
 
     // Mise à jour temporaire avant confirmation via webhook

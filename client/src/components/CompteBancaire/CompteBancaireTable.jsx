@@ -13,6 +13,10 @@ import { QRCode } from "react-qr-code";
 import PaymentModal from "../stripe/PaymentFromExpress"; // Importer le composant PaymentModal
 import "./CompteBancaireTable.css";
 import { Dialog } from '@mui/material';
+import MasterLayout from "../../masterLayout/MasterLayout";
+import MasterLayoutfinancial from "../../masterLayout/MasterLayoutfinancial";
+import { justeNom } from '../AuthUtils'; // adapte le chemin
+
 
 
 const CompteBancaireTable = ({ userId, refresh, onRefresh }) => {
@@ -26,6 +30,8 @@ const CompteBancaireTable = ({ userId, refresh, onRefresh }) => {
   const navigate = useNavigate();
 
   const fetchComptes = useCallback(async () => {
+    const userId = justeNom();
+
     if (!userId) return;
     setLoading(true);
     try {
@@ -198,12 +204,13 @@ const CompteBancaireTable = ({ userId, refresh, onRefresh }) => {
   ];
 
   return (
+   <MasterLayout>
     <div className="app-container">
       <div className="main-content">
         <div className="compte-bancaire-container">
           <div className="compte-bancaire-content">
             
-            <h2 className="compte-bancaire-title">💳 List of Bank Accounts</h2>
+            <h2 className="compte-bancaire-title">List of Bank Accounts</h2>
             <div className="toolbar">
               <div className="filter-container">
                 <FaFilter className="filter-icon" />
@@ -259,10 +266,10 @@ const CompteBancaireTable = ({ userId, refresh, onRefresh }) => {
             ) : (
               <div className="cards-container">
                 {filteredComptes.map((compte) => (
-                  <div key={compte._id} className="card">
+                  <div key={compte._id} className="card-saiff">
                     <div className="card-header">
                       <FaWallet className="wallet-icon" />
-                      <h3 className="card-title">{compte.numeroCompte}</h3>
+                      <h5 className="card-title">{compte.numeroCompte}</h5>
                     </div>
                     <p className="card-balance">Balance: {compte.balance} TND</p>
                     <p className="card-date">Creation {format(new Date(compte.createdAt), "dd/MM/yyyy")}</p>
@@ -289,7 +296,7 @@ const CompteBancaireTable = ({ userId, refresh, onRefresh }) => {
             {isQrModalOpen && (
               <div className="modal-overlay">
                 <div className="modal-content">
-                  <h3 className="modal-title">Informations du Compte</h3>
+                  <h3 className="modal-title">Informations Of Account</h3>
                   <div className="qr-code-container">
                     <QRCode
                       value={JSON.stringify(selectedCompte)}
@@ -308,7 +315,8 @@ const CompteBancaireTable = ({ userId, refresh, onRefresh }) => {
                   </button>
                 </div>
               </div>
-            )}
+             
+             )}
 
 <Dialog open={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)}>
 <PaymentModal
@@ -329,7 +337,7 @@ onPaymentSuccess={() => {
         </div>
       </div>
     </div>
-  );
+    </MasterLayout>  );
 };
 
 export default CompteBancaireTable;

@@ -46,8 +46,10 @@ import ChatBot from './components/chatbolt/ChatbotFinance.jsx';
 import FinancialSimulation from "./components/FinancialSimulation.jsx";
 import RevenueGrowthOne from "./components/child/RevenueGrowthOne.jsx";
 import Cryptotrading from "./components/crypto/trading.jsx";
+import { justeNom } from './components/AuthUtils'; // adapte le chemin
+
 function App() {
-  const userId = "67ff6c1b6a739a45e0a45655";
+  const userId = justeNom();
   const [refresh, setRefresh] = useState(false);
   const [chatbotOpen, setChatbotOpen] = useState(false);
 

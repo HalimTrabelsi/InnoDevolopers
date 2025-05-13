@@ -26,6 +26,7 @@ const financialTrendsRoutes = require('../routes/financialTrends');
 const simulationRoutes = require('../routes/simulationRoutes');
 const taskRoutes = require('../routes/tasksRoutes');
 const geminiRoute = require('../routes/geminiRoute');
+const transactionRoutesSaif = require("../routes/transactionRoutes");
 
 
 const gptRoute = require("../routes/gptSummary");
@@ -34,7 +35,6 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 5001;
-const transactionRoutesSaif = require("../routes/transactionRoutes");
 const io = socket.init(server);
 
 app.use((req, res, next) => {
@@ -140,7 +140,7 @@ app.use('/api/profile', profileRoutes);
 app.use('/stripe', require('../routes/stripe'));
 app.use('/crypto', cryptoRoutes);
 app.use('/compteBancaire', compteBanciareRoutes);
-app.use('/transactionsayf', transactionRoutesSaif);
+app.use('/api/transactions-saif', transactionRoutesSaif);
 
 server.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);

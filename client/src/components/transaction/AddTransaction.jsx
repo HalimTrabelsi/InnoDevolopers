@@ -3,12 +3,14 @@ import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import './TransactionForm.css';
 import MasterLayout from '../../masterLayout/MasterLayout.jsx';
+import { justeNom } from '../AuthUtils'; // adapte le chemin
+
 const AddTransaction = () => {
   const location = useLocation();
-  const { userId, sourceAccount } = location.state || {};
+  const { userId=justeNom(), sourceAccount } = location.state || {};
   const [formData, setFormData] = useState({
     amount: '',
-    type: 'debit',
+    type: '',
     description: '',
     recipient: ''
   });
@@ -28,14 +30,14 @@ const AddTransaction = () => {
 
     try {
       await axios.post(
-        `http://localhost:5001/transaction/addTransaction/${userId}/${sourceAccount}`,
+        `http://localhost:5001/api/transactions-saif/addTransaction/${userId}/${sourceAccount}`,
         { ...formData, amount: Number(formData.amount) }
       );
 
       setSuccessMessage('✅ Transaction réussie !');
       setFormData({
         amount: '',
-        type: 'debit',
+        type: '',
         description: '',
         recipient: ''
       });
