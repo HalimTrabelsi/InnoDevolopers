@@ -3,7 +3,11 @@ sudo systemctl status jenkins.service
 192.168.33.10/24
 docker start 6a6ad6e84253 //sonarqube
 sudo chmod 666 /var/run/docker.sock
+//netoyer l'espace jenkins
+sudo rm -rf /var/lib/jenkins/workspace/*
 
+lancer le projet:
+http://192.168.33.10/#
 
 pipeline {
     agent any
