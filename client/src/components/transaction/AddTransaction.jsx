@@ -39,6 +39,9 @@ const AddTransaction = () => {
         description: '',
         recipient: ''
       });
+
+      window.location.href = `/comptes-bancaires`;
+
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message;
       setError(`❌ Échec de la transaction : ${errorMessage}`);

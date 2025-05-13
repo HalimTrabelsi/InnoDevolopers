@@ -8,37 +8,6 @@ const EarningStaticOne = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // useEffect(() => {
-  //   const fetchRevenueData = async () => {
-  //     try {
-  //       const response = await fetch("http://localhost:5001/api/ownerdashboard/ownerdashboard");
-  //       if (!response.ok) {
-  //         throw new Error("Failed to fetch revenue data");
-  //       }
-  //       const data = await response.json();
-
-  //             // Ensure the response is an array before using reduce
-  //     if (!Array.isArray(data)) {
-  //       console.error("API response is not an array:", data);
-  //       throw new Error("Unexpected response format");
-  //     }
-  //       // Calculate total revenue
-  //       const total = data.reduce((sum, revenue) => sum + revenue.amount, 0);
-
-
-
-  //       setRevenueData(data);
-
-  //       setTotalRevenue(total);
-  //     } catch (err) {
-  //       setError(err.message);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchRevenueData();
-  // }, []);
 
   useEffect(() => {
     const fetchRevenueData = async () => {

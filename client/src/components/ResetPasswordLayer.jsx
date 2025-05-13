@@ -2,7 +2,6 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-
 const ResetPasswordLayer = () => {
     const [resetpassword, setResetPassword] = useState("");
     const [passwordconfirm, setPasswordConfirm] = useState("");
@@ -33,7 +32,6 @@ const ResetPasswordLayer = () => {
 
       try {
         const response = await axios.post(`http://localhost:5001/api/password/reset-password/${userId}/${token}`, {
-
           password: resetpassword,
         });
         console.log("Response received:", response.data);
@@ -118,7 +116,6 @@ const ResetPasswordLayer = () => {
     </div>
   </div>
 </section>
-
   );
 };
 

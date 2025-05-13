@@ -1,3 +1,5 @@
+
+
 // models/Transaction.js
 class Transaction {
     constructor(crypto, amount, rate, currency) {
@@ -16,3 +18,4 @@ class Transaction {
   
   module.exports = Transaction;
   
+

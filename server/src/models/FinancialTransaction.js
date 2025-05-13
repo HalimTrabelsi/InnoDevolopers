@@ -7,11 +7,20 @@ const transactionSchema = new mongoose.Schema({
   date: { type: Date, required: true, default: Date.now },
   user: {  ref: 'User',type: mongoose.Schema.Types.ObjectId, required: true },
   compteBancaire: { type: String, ref: 'CompteBancaire', required: true },
-  recipient: { ref: 'User',type: mongoose.Schema.Types.ObjectId }, // Champ pour indiquer le destinataire
+  recipient: { ref: 'User',type: mongoose.Schema.Types.ObjectId }, 
   ipAddress: { type: String },
   location: { type: String },
   anomalie: { type: Boolean, default: false },
-  commentaireAnomalie: { type: String, default: "" }
-});
+  commentaireAnomalie: { type: String, default: "" },
+  taxType: {String}, 
+  taxCalculated: {Number},
+  isTaxValidated: {Boolean},
+  category: {String}, 
+  consumption: {Number}, 
+  isExport: {Boolean},
+},
+{ collection: "transactions" }
+);
 
 module.exports = mongoose.model('Transaction', transactionSchema);
+

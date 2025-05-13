@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const CompteBancaire = require('../models/compteBancaire');
-const  User  = require('../models/User');
+const  User  = require('../models/user');
 
 // Ajouter un compte bancaire
 const addCompteBancaire = async (req, res) => {

@@ -135,14 +135,14 @@ const SignUpLayer = () => {
     }
     return true;
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-   
+    setLoading(true);
     if (!validateForm()){
       setLoading(false);
       return;} 
-   
-   
+
     const data = new FormData();
     for (const key in formData) {
       data.append(key, formData[key]);
@@ -155,7 +155,7 @@ const SignUpLayer = () => {
         }
       });
       console.log(response.data);
-      toast.success('Sign-up successful!', {
+      toast.success('Sign-up successful! Redirecting to sign in page', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -165,7 +165,6 @@ const SignUpLayer = () => {
         progress: undefined,
       });
       setTimeout(() => {navigate('/sign-in'); },3000);
-
     } catch (error) {
       console.error('Error during sign-up:', error.response ? error.response.data : error.message);
     
@@ -186,7 +185,6 @@ const SignUpLayer = () => {
           progress: undefined,
         });
       }
-      // Check if required fields are missing
       else if (error.response && error.response.data && error.response.data.message && error.response.data.message.includes("Field is missing")) {
         toast.error('Please fill in all the required fields.', {
           position: "top-right",
@@ -216,19 +214,20 @@ const SignUpLayer = () => {
     <section className='auth bg-base d-flex flex-wrap'>
       <div className='auth-left d-lg-block d-none'>
         <div className='d-flex align-items-center flex-column h-100 justify-content-center'>
-          <img src='/assets/images/signup.jpg' alt='Sign up illustration' />
+          <img src='/assets/images/signup.jpg' alt='Illustration of signing up' />
         </div>
       </div>
       <div className='auth-right py-32 px-24 d-flex flex-column justify-content-center'>
         <div className='max-w-464-px mx-auto w-100'>
           <div>
-            
+          <h1 className="mb-12" style={{ color: "blue" }}>Finova</h1>
+
             <h4 className='mb-12'>Sign Up to your Account</h4>
             <p className='mb-32 text-secondary-light text-lg'>
               Welcome back! please enter your detail
             </p>
           </div>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <div className='icon-field mb-16'>
               <span className='icon top-50 translate-middle-y'>
                 <Icon icon='f7:person' />
@@ -277,25 +276,21 @@ const SignUpLayer = () => {
                 />
               </div>
               <span className='mt-12 text-sm text-secondary-light'>
-                Your password must have at least 8 characters
+              Password must be at least 8 characters long, contain 1 uppercase letter and at least 3 numbers.
               </span>
             </div>
-            <div className='icon-field mb-16'>
-              <span className='icon top-50 translate-middle-y'>
-                <Icon icon='mdi:phone' />
+            <div className="icon-field mb-16">
+              <span className="icon top-50 translate-middle-y">
+                <Icon icon="mdi:phone" />
               </span>
               <PhoneInput
-                country={"tn"} // Default to Tunisia (+216)
-                name='phoneNumber' 
+                country={"tn"}
                 value={formData.phoneNumber}
                 onChange={handlePhoneChange}
-                placeholder='Phone Number'
-                enableSearch={true} // Allows searching countries
+                inputClass="form-control h-56-px bg-neutral-50 radius-12"
+                placeholder="Phone Number"
               />
             </div>
-            <span className="mt-12 text-sm text-secondary-light">
-              Add a valid phone number (select your country of residence)
-            </span>
             <div className='icon-field mb-16'>
               <span className='icon top-50 translate-middle-y'>
                 <Icon icon='mdi:account' />
@@ -315,16 +310,15 @@ const SignUpLayer = () => {
               </select>
             </div>
             <div className='icon-field mb-16'>
-              <span className='icon top-50 translate-middle-y'>
-                <Icon icon='mdi:image' />
-              </span>
-              <input
-                type='file'
-                name='image'
-                onChange={handleFileChange}
-                className='form-control h-56-px bg-neutral-50 radius-12'
-              />
-            </div>
+    <Icon icon='mdi:image' className='icon top-50 translate-middle-y' />
+    <input
+        type='file'
+        name='image'
+        onChange={handleFileChange}
+        className='form-control h-56-px bg-neutral-50 radius-12'
+        required
+    />
+</div>
             <div className=''>
               <div className='d-flex justify-content-between gap-2'>
                 <div className='form-check style-check d-flex align-items-start'>
@@ -339,11 +333,11 @@ const SignUpLayer = () => {
                     htmlFor='condition'
                   >
                     By creating an account means you agree to the
-                    <Link to='#' className='text-primary-600 fw-semibold'>
+                    <Link to='/sign-up/terms-conditions' className='text-primary-600 fw-semibold'>
                       Terms &amp; Conditions
                     </Link>{" "}
                     and our
-                    <Link to='#' className='text-primary-600 fw-semibold'>
+                    <Link to='/sign-up/terms-conditions' className='text-primary-600 fw-semibold'>
                       Privacy Policy
                     </Link>
                   </label>

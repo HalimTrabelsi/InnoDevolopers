@@ -1,88 +1,111 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import Confetti from 'react-confetti';
+import { ProgressBar } from 'react-bootstrap'; 
 
 const Investment = () => {
+  // States for goal, progress, and quotes
+  const [goal, setGoal] = useState(20000); // Default goal (20,000 DT)
+  const [currentSavings, setCurrentSavings] = useState(0);
+  const [quote, setQuote] = useState('');
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  // Example quotes for motivation
+  const quotes = [
+    "You're on track for growth!",
+    "Keep going, you're almost there!",
+    "Amazing progress! You're doing great!",
+    "Fantastic! You're crushing your goals!",
+  ];
+
+  // Function to handle goal setting
+  const handleGoalChange = (e) => {
+    setGoal(e.target.value);
+  };
+
+  // Function to handle savings update
+  const handleSavingsChange = (e) => {
+    setCurrentSavings(e.target.value);
+  };
+
+  // Function to handle milestone achievement
+  const checkMilestone = () => {
+    const milestone = Math.floor(currentSavings / (goal / 5)) * (goal / 5);
+    if (currentSavings >= milestone) {
+      setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3000); // Hide confetti after 3 seconds
+    }
+  };
+
+  // Effect to check milestone achievement when savings change
+  useEffect(() => {
+    checkMilestone();
+  }, [currentSavings]);
+
+  // Calculate progress percentage
+  const progress = (currentSavings / goal) * 100;
+
   return (
-    <div className='card radius-16 mt-24'>
-      <div className='card-header'>
-        <div className='d-flex align-items-center flex-wrap gap-2 justify-content-between'>
-          <h6 className='mb-2 fw-bold text-lg mb-0'>Investment</h6>
-          <select className='form-select form-select-sm w-auto bg-base border text-secondary-light'>
-            <option>Today</option>
-            <option>Weekly</option>
-            <option>Monthly</option>
-            <option>Yearly</option>
-          </select>
-        </div>
+    <div className="savings-tracker">
+      {/* Confetti effect when milestone is achieved */}
+      {showConfetti && <Confetti />}
+
+      <h2 className="tracker-title">Savings Milestones Tracker</h2>
+
+      {/* Goal input */}
+      <div className="goal-setting">
+        <label htmlFor="goal">Set your financial goal for the year:</label>
+        <input
+          type="number"
+          id="goal"
+          value={goal}
+          onChange={handleGoalChange}
+          className="goal-input"
+        />
       </div>
-      <div className='card-body py-20'>
-        <p className='text-center text-secondary-light d-flex align-items-center gap-8 justify-content-center'>
-          Total Investment:{" "}
-          <span className='fw-semibold text-primary-light'>500 TND</span>{" "}
-        </p>
-        <div className='mt-40 mb-24 text-center pe-110 position-relative max-w-288-px mx-auto'>
-          <div className='w-170-px h-170-px rounded-circle z-1 position-relative d-inline-flex justify-content-center align-items-center border border-white border-width-2-px'>
-            <img
-              src='assets/images/home-eleven/bg/radial-bg1.png'
-              alt=''
-              className='position-absolute top-0 start-0 z-n1 w-100 h-100 object-fit-cover'
-            />
-            <h5 className='text-white'> 60% </h5>
-          </div>
-          <div className='w-144-px h-144-px rounded-circle z-1 position-relative d-inline-flex justify-content-center align-items-center border border-white border-width-3-px position-absolute top-0 end-0 mt--36'>
-            <img
-              src='assets/images/home-eleven/bg/radial-bg2.png'
-              alt=''
-              className='position-absolute top-0 start-0 z-n1 w-100 h-100 object-fit-cover'
-            />
-            <h5 className='text-white'> 30% </h5>
-          </div>
-          <div className='w-110-px h-110-px rounded-circle z-1 position-relative d-inline-flex justify-content-center align-items-center border border-white border-width-3-px position-absolute bottom-0 start-50 translate-middle-x ms-48'>
-            <img
-              src='assets/images/home-eleven/bg/radial-bg3.png'
-              alt=''
-              className='position-absolute top-0 start-0 z-n1 w-100 h-100 object-fit-cover'
-            />
-            <h5 className='text-white'> 10% </h5>
-          </div>
+
+      {/* Current savings input */}
+      <div className="savings-input">
+        <label htmlFor="currentSavings">Current Savings:</label>
+        <input
+          type="number"
+          id="currentSavings"
+          value={currentSavings}
+          onChange={handleSavingsChange}
+          className="savings-input-field"
+        />
+      </div>
+
+      {/* Progress bar */}
+      <div className="progress-bar">
+        <ProgressBar
+          now={progress}
+          label={`${progress.toFixed(2)}%`}
+          variant="success"
+        />
+      </div>
+
+      {/* Milestone message */}
+      {quote && (
+        <div className="milestone-message">
+          <h3>{quote}</h3>
         </div>
-        <div className='d-flex align-items-center flex-wrap gap-24 justify-content-between'>
-          <div className='d-flex flex-column align-items-start'>
-            <div className='d-flex align-items-center gap-2'>
-              <span className='w-12-px h-12-px rounded-pill bg-primary-600' />
-              <span className='text-secondary-light text-sm fw-normal'>
-                Product Development
-              </span>
-            </div>
-            <h6 className='text-primary-light fw-semibold mb-0 mt-4 text-lg'>
-              6000 TND
-            </h6>
-          </div>
-          <div className='d-flex flex-column align-items-start'>
-            <div className='d-flex align-items-center gap-2'>
-              <span className='w-12-px h-12-px rounded-pill bg-purple' />
-              <span className='text-secondary-light text-sm fw-normal'>
-                Digital marketing
-              </span>
-            </div>
-            <h6 className='text-primary-light fw-semibold mb-0 mt-4 text-lg'>
-              4500 TND
-            </h6>
-          </div><br></br>
-          <div className='d-flex flex-column align-items-start'>
-            <div className='d-flex align-items-center gap-2'>
-              <span className='w-12-px h-12-px rounded-pill bg-success-600' />
-              <span className='text-secondary-light text-sm fw-normal'>
-                Business
-              </span>
-            </div>
-            <h6 className='text-primary-light fw-semibold mb-0 mt-4 text-lg'>
-              5000 TND
-            </h6>
-          </div>
-        </div>
+      )}
+
+      {/* Visualizing savings goals */}
+      <div className="savings-goals">
+        <h4>Milestones:</h4>
+        <ul>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <li key={i}>
+              <strong>{((i + 1) * 20)}%</strong> - {((i + 1) * (goal / 5)).toFixed(0)} DT
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
 };
+
 
 export default Investment;

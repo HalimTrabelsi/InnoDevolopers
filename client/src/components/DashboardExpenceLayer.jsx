@@ -8,7 +8,7 @@ import MonthlyExpenseBreakdown from "./child/MonthlyExpenseBreakdown";
 import QuickTransfer from "./child/QuickTransfer";
 import Investment from "./child/Investment";
 import PaymentHistoryOne from "./child/PaymentHistoryOne";
-
+import ActiveList from "./child/ActiveList";
 const DashboardExpenceLayer = () => {
   return (
     <>
@@ -21,33 +21,37 @@ const DashboardExpenceLayer = () => {
               {/* BalanceStatistic */}
               {/* <BalanceStatistic /> */}
 
-              {/* EarningCategories */}
+              {/* Expense Categories */}
               <EarningCategories />
 
-              {/* ExpenseStatistics */}
+
+              {/* TotalExpenses */}
               <ExpenseStatistics />
 
-              {/* PaymentHistory */}
-              <PaymentHistory />
 
-              {/* MonthlyExpenseBreakdown */}
-              <MonthlyExpenseBreakdown />
+
+              {/* SpendingHealthMeter  */}
+              {/* <MonthlyExpenseBreakdown /> */}
             </div>
           </div>
           {/* Sidebar start */}
-          <div className='col-xl-4'>
 
-
+              <div className='col-xl-4'>
             {/* Investment */}
             <Investment />
           </div>
+                    <div className='col-xl-4'>
+
+              {/* RecurringPieChart */}
+              <PaymentHistory />
+</div>
           {/* Sidebar end */}
         </div>
       </div>
 
-      {/* PaymentHistoryOne */}
+      {/* Tax count down */}
       <PaymentHistoryOne />
-      
+      <ActiveList/>
     </>
   );
 };

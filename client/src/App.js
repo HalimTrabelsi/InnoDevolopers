@@ -15,7 +15,6 @@ import CryptoTable from "./components/crypto/CryptoTable";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AddTransaction from "./components/transaction/AddTransaction";
 import TransactionList from "./components/transaction/TransactionList";
-import Sidebar from "./components/backofficeDashboard/Sidebar";
 import "./App.css";
 import ViewProfilePage from "./pages/ViewProfilePage.jsx";
 import UsersListPage from "./pages/UsersListPage.jsx";  

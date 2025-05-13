@@ -1,37 +1,32 @@
 import React from 'react'
-import SalesStatisticOne from './child/SalesStatisticOne';
-import TotalSubscriberOne from './child/TotalSubscriberOne';
-import UsersOverviewOne from './child/UsersOverviewOne';
-import LatestRegisteredOne from './child/LatestRegisteredOne';
-import TopPerformerOne from './child/TopPerformerOne';
 
+import LatestRegisteredOne from './child/LatestRegisteredOne';
 import UnitCountOne from './child/UnitCountOne';
+import TextGeneratonLayer from './CompilanceLayer';
+import FileTranslator from './FileTranslator';
+import  TotslSubscription from './child/TotalSubscriberOne';
+import UsersOverviewOne from './child/UsersOverviewOne';
+import StatStatisticOne from './child/StatStatisticOne';
+import SalesStatisticOne from './child/SalesStatisticOne';
+import PdfSummarizer  from './PdfSummarize';
+import InputFormWithA from './child/InputFormWithAdmin';
+
 
 const AdminDashboard = () => {
 
     return (
         <>
-            {/* UnitCountOne */}
-            <UnitCountOne />
-
-            <section className="row gy-4 mt-1">
-
-                {/* SalesStatisticOne */}
-                <SalesStatisticOne />
-
-                {/* TotalSubscriberOne */}
-                <TotalSubscriberOne />
-
-                {/* UsersOverviewOne */}
+                <UnitCountOne />
+                <section className="row gy-4 mt-1">
+                <TextGeneratonLayer/>
+                <FileTranslator/>
+                <TotslSubscription/>
+                <StatStatisticOne />
                 <UsersOverviewOne />
-
-                {/* LatestRegisteredOne */}
-                <LatestRegisteredOne />
-
-                {/* TopPerformerOne */}
-                <TopPerformerOne />
-
-               
+                <SalesStatisticOne />
+                <PdfSummarizer/>
+                <InputFormWithA/>
+                
             </section>
         </>
 

@@ -1,6 +1,6 @@
 // services/CoinGeckoService.js
 const axios = require('axios');
-const User = require('../models/User'); // Assurez-vous que le chemin est correct
+const User = require('../models/user'); // Assurez-vous que le chemin est correct
 
 class CoinGeckoService {
     static async getCryptoDetails(crypto, currency) {

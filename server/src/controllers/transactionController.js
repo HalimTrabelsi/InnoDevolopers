@@ -134,11 +134,40 @@ const trainAI = async (req, res) => {
     res.status(500).send({ error: 'Erreur entraînement IA' });
   }
 };
+// Voir toutes les transactions
+const viewTransaction = async (req, res) => {
+  try {
+    const transactions = await FinancialTransaction.find().sort({ date: -1 });
+    res.status(200).send(transactions);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des transactions :", error.message);
+    res.status(500).send({ error: "Erreur serveur" });
+  }
+};
+
+// Simuler l'envoi de SMS
+const triggerSMSNotification = async (req, res) => {
+  try {
+    const { transactionId } = req.body;
+    if (!transactionId) {
+      return res.status(400).send({ error: "transactionId manquant" });
+    }
+
+    // ici tu peux appeler un service d’envoi de SMS si tu en as un
+    res.status(200).send({ message: `SMS envoyé pour la transaction ${transactionId}` });
+  } catch (error) {
+    console.error("Erreur SMS:", error.message);
+    res.status(500).send({ error: "Erreur envoi SMS" });
+  }
+};
+
 
 module.exports = {
   addTransaction,
   predictFutureTransaction,
   detectFraud,
   getRecommendations,
-  trainAI
+  trainAI,
+  viewTransaction,
+  triggerSMSNotification
 };

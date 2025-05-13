@@ -1,101 +1,91 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+// No need to import the default CSS if you're customizing or using Tailwind
 
-const MonthlyExpenseBreakdown = () => {
+const BudgetHealth = () => {
+  const [totalExpenses, setTotalExpenses] = useState(null);
+  const [showTips, setShowTips] = useState(false);
+  const monthlyBudget = 1000; // You can make this dynamic later
+
+  // Fetch total expenses from your API
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const res = await fetch("/api/expenses/total");
+        const data = await res.json();
+        if (data.success) {
+          setTotalExpenses(data.total);
+        }
+      } catch (err) {
+        console.error("Failed to fetch expenses:", err);
+        setTotalExpenses(0);
+      }
+    };
+
+    fetchExpenses();
+  }, []);
+
+  // Show loading until data is ready
+  if (totalExpenses === null) return <p>Loading...</p>;
+
+  // Calculate percentage safely
+  const percentage =
+    monthlyBudget && monthlyBudget > 0
+      ? Math.min(100, Math.round((totalExpenses / monthlyBudget) * 100))
+      : 0;
+
+  const getColor = () => {
+    if (percentage < 70) return "#3BC14A";
+    if (percentage < 90) return "#FFD700";
+    return "#FF4C4C";
+  };
+
+  const getMessage = () => {
+    if (percentage < 70) return "👍 Good Control";
+    if (percentage < 90) return "⚠️ Watch Spending";
+    return "🚨 High Spending!";
+  };
+
   return (
-    <div className="col-md-6">
-      <div className="card radius-16">
-        <div className="card-header">
-          <div className="d-flex align-items-center flex-wrap gap-2 justify-content-between">
-            <h6 className="mb-2 fw-bold text-lg mb-0">
-              Monthly Expense Breakdown
-            </h6>
-          </div>
-        </div>
-        <div className="card-body">
-          <div className="mb-3 d-flex">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width={464}
-              height={12}
-              viewBox="0 0 464 12"
-              fill="none"
-            >
-              <g clipPath="url(#clip0_6886_52892)">
-                <rect width={464} height={12} rx={6} fill="#6B7280" />
-                <rect width={464} height={12} rx={6} fill="#06B6D4" />
-                <rect width={418} height={12} rx={6} fill="#22C55E" />
-                <rect width={365} height={12} rx={6} fill="#84CC16" />
-                <rect width={295} height={12} rx={6} fill="#EAB308" />
-                <rect width={210} height={12} rx={6} fill="#F59E0B" />
-                <rect width={111} height={12} rx={6} fill="#F97316" />
-              </g>
-              <defs>
-                <clipPath id="clip0_6886_52892">
-                  <rect width={464} height={12} rx={6} fill="white" />
-                </clipPath>
-              </defs>
-            </svg>
-          </div>
+    <div className="bg-white shadow-md rounded-xl p-4 w-52 text-center text-xs">
+      <h2 className="text-sm font-semibold text-gray-700 mb-3">
+        💼 Budget Health
+      </h2>
 
-          {/* Expense Entries */}
-          <div className="d-flex align-items-center justify-content-between p-12 bg-neutral-100">
-            <div className="d-flex align-items-center gap-2">
-              <span className="w-12-px h-8-px bg-orange rounded-pill" />
-              <span className="text-secondary-light">Software Development</span>
-            </div>
-            <div className="d-flex align-items-center gap-2">
-              <span className="text-secondary-light">6,000 TND</span>
-              <span className="text-primary-light fw-semibold">25%</span>
-            </div>
-          </div>
-
-          <div className="d-flex align-items-center justify-content-between p-12 bg-base">
-            <div className="d-flex align-items-center gap-2">
-              <span className="w-12-px h-8-px bg-warning-600 rounded-pill" />
-              <span className="text-secondary-light">Marketing & Advertising</span>
-            </div>
-            <div className="d-flex align-items-center gap-2">
-              <span className="text-secondary-light">4,500 TND</span>
-              <span className="text-primary-light fw-semibold">20%</span>
-            </div>
-          </div>
-
-          <div className="d-flex align-items-center justify-content-between p-12 bg-neutral-100">
-            <div className="d-flex align-items-center gap-2">
-              <span className="w-12-px h-8-px bg-success-600 rounded-pill" />
-              <span className="text-secondary-light">Employee Salaries</span>
-            </div>
-            <div className="d-flex align-items-center gap-2">
-              <span className="text-secondary-light">3,000 TND</span>
-              <span className="text-primary-light fw-semibold">15%</span>
-            </div>
-          </div>
-
-          <div className="d-flex align-items-center justify-content-between p-12 bg-base">
-            <div className="d-flex align-items-center gap-2">
-              <span className="w-12-px h-8-px bg-red-600 rounded-pill" />
-              <span className="text-secondary-light">Operational Costs</span>
-            </div>
-            <div className="d-flex align-items-center gap-2">
-              <span className="text-secondary-light">2,000 TND</span>
-              <span className="text-primary-light fw-semibold">10%</span>
-            </div>
-          </div>
-
-          <div className="d-flex align-items-center justify-content-between p-12 bg-neutral-100">
-            <div className="d-flex align-items-center gap-2">
-              <span className="w-12-px h-8-px bg-cyan-600 rounded-pill" />
-              <span className="text-secondary-light">Infrastructure & Tools</span>
-            </div>
-            <div className="d-flex align-items-center gap-2">
-              <span className="text-secondary-light">2,500 TND</span>
-              <span className="text-primary-light fw-semibold">15%</span>
-            </div>
-          </div>
-        </div>
+      <div style={{ width: 120, height: 120, margin: "0 auto" }}>
+        <CircularProgressbar
+          value={percentage}
+          text={`${percentage}%`}
+          styles={buildStyles({
+            textColor: "#333",
+            pathColor: getColor(),
+            trailColor: "#eee",
+            textSize: "28px",
+            pathTransitionDuration: 0.5,
+          })}
+        />
       </div>
+
+      <p className="mt-3 font-medium text-gray-700">{getMessage()}</p>
+
+      <button
+        onClick={() => setShowTips(!showTips)}
+        className="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition duration-200"
+      >
+        {showTips ? "Hide 💡" : "Tips 💰"}
+      </button>
+
+      {showTips && (
+        <div className="mt-3 bg-gray-100 p-3 rounded text-left text-[10px]">
+          <ul className="list-disc pl-4 space-y-1">
+            <li>Cancel unused subscriptions</li>
+            <li>Set weekly expense goals</li>
+            <li>Track daily expenses</li>
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
 
-export default MonthlyExpenseBreakdown;
+export default BudgetHealth;

@@ -1,168 +1,89 @@
-import React from "react";
-import { Link } from "react-router-dom";
 
-const PaymentHistoryOne = () => {
+import React, { useState } from 'react';
+import axios from 'axios';
+
+const AddDeadlineForm = ({ onAdd }) => {
+const [title, setTitle] = useState('');
+  const [date, setDate] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState(null);
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent the form from refreshing the page
+
+    // Validate inputs 
+    if (!title || !date || !message) {
+      setError("All fields are required");
+      return;
+    }
+
+    // Prepare the new deadline object to send in the POST request
+    const newDeadline = {
+      title,
+      date,
+      message,
+    };
+
+    try {
+      const response = await axios.post('http://localhost:5001/api/tax-deadlines', newDeadline, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      if (response.status === 201) {
+        alert('Deadline created successfully');
+        // Optionally, reset the form
+        setTitle('');
+        setDate('');
+        setMessage('');
+      }
+    } catch (error) {
+      console.error("Error creating deadline:", error);
+      setError("An error occurred while creating the deadline");
+    }
+  };
+
   return (
-    <div className="card radius-16 mt-24">
-      <div className="card-header">
-        <div className="d-flex align-items-center flex-wrap gap-2 justify-content-between">
-          <h6 className="mb-2 fw-bold text-lg mb-0">Payment Details</h6>
-
+    <div>
+      <h2>Create New Tax Deadline</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error message */}
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="title">Title:</label>
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
         </div>
-      </div>
-      <div className="card-body">
-        <div className="table-responsive scroll-sm">
-          <table className="table bordered-table sm-table mb-0">
-            <thead>
-              <tr>
-                <th scope="col">Utilisateurs</th>
-                <th scope="col" className="text-center">
-                  Email
-                </th>
-                <th scope="col" className="text-center">
-                  ID de la transaction
-                </th>
-                <th scope="col" className="text-center">
-                  Montant
-                </th>
-                <th scope="col" className="text-center">
-                  Méthode de paiement
-                </th>
-                <th scope="col" className="text-center">
-                  Date
-                </th>
-                <th scope="col" className="text-center">
-                  Statut
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="">
-                  <div className="d-flex align-items-center">
-                    <img
-                      src="assets/images/users/user1.png"
-                      alt=""
-                      className="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden"
-                    />
-                    <div className="flex-grow-1">
-                      <h6 className="text-md mb-0 fw-medium">Khaled Ben Ali</h6>
-                    </div>
-                  </div>
-                </td>
-                <td className="text-center">khaledbenali@gmail.com</td>
-                <td className="text-center">9562415412263</td>
-                <td className="text-center">80.00 TND</td>
-                <td className="text-center">Banque</td>
-                <td className="text-center">24 Janv 2025</td>
-                <td className="text-center">
-                  <span className="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">
-                    Actif
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td className="">
-                  <div className="d-flex align-items-center">
-                    <img
-                      src="assets/images/users/user2.png"
-                      alt=""
-                      className="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden"
-                    />
-                    <div className="flex-grow-1">
-                      <h6 className="text-md mb-0 fw-medium">Mouna Larbi</h6>
-                    </div>
-                  </div>
-                </td>
-                <td className="text-center">mounalarbi@gmail.com</td>
-                <td className="text-center">9562415412263</td>
-                <td className="text-center">65.00 TND</td>
-                <td className="text-center">Banque</td>
-                <td className="text-center">22 Mars 2025</td>
-                <td className="text-center">
-                  <span className="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">
-                    Actif
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td className="">
-                  <div className="d-flex align-items-center">
-                    <img
-                      src="assets/images/users/user3.png"
-                      alt=""
-                      className="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden"
-                    />
-                    <div className="flex-grow-1">
-                      <h6 className="text-md mb-0 fw-medium">Sami Ben Ahmed</h6>
-                    </div>
-                  </div>
-                </td>
-                <td className="text-center">sami@gmail.com</td>
-                <td className="text-center">9562415412263</td>
-                <td className="text-center">120.00 TND</td>
-                <td className="text-center">Carte bancaire</td>
-                <td className="text-center">03 Mars 2025</td>
-                <td className="text-center">
-                  <span className="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">
-                    Actif
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td className="">
-                  <div className="d-flex align-items-center">
-                    <img
-                      src="assets/images/users/user4.png"
-                      alt=""
-                      className="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden"
-                    />
-                    <div className="flex-grow-1">
-                      <h6 className="text-md mb-0 fw-medium">Ahmed Morsi</h6>
-                    </div>
-                  </div>
-                </td>
-                <td className="text-center">ahmedmorsi@gmail.com</td>
-                <td className="text-center">9562415412263</td>
-                <td className="text-center">50.00 TND</td>
-                <td className="text-center">Banque</td>
-                <td className="text-center">15 Fev 2025</td>
-                <td className="text-center">
-                  <span className="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">
-                    Actif
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td className="">
-                  <div className="d-flex align-items-center">
-                    <img
-                      src="assets/images/users/user5.png"
-                      alt=""
-                      className="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden"
-                    />
-                    <div className="flex-grow-1">
-                      <h6 className="text-md mb-0 fw-medium">Leila Chouiref</h6>
-                    </div>
-                  </div>
-                </td>
-                <td className="text-center">leilachouiref@mail.tn</td>
-                <td className="text-center">9562415412263</td>
-                <td className="text-center">95.00 TND</td>
-                <td className="text-center">Carte bancaire</td>
-                <td className="text-center">30 Janv 2025</td>
-                <td className="text-center">
-                  <span className="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">
-                    Actif
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div>
+          <label htmlFor="date">Deadline Date:</label>
+          <input
+            type="date"
+            id="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            required
+          />
         </div>
-      </div>
+        <div>
+          <label htmlFor="message">Message:</label>
+          <textarea
+            id="message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            required
+          ></textarea>
+        </div>
+        <button type="submit">Add Deadline</button>
+      </form>
     </div>
   );
 };
 
-export default PaymentHistoryOne;
+export default AddDeadlineForm;
+
