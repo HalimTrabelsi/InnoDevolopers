@@ -1,12 +1,13 @@
-FROM node:20.18.2-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+COPY package.json package-lock.json ./
+
+RUN npm ci && npm rebuild bcrypt --build-from-source
 
 COPY . .
 
-EXPOSE 5002
+EXPOSE 5000
 
 CMD ["npm", "start"]
