@@ -32,6 +32,9 @@ services:
       - mern-network
 
   frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
     image: 192.168.33.10:8083/docker-repo/mern-frontend:1.0
     container_name: frontend
     restart: always
