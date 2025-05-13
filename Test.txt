@@ -9,6 +9,24 @@ sudo rm -rf /var/lib/jenkins/workspace/*
 lancer le projet:
 http://192.168.33.10/#
 
+
+
+dockerfile backend
+FROM node:20.18.2-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["npm", "start"]
+
+
+###jenkinsfile 
 pipeline {
     agent any
 
@@ -18,63 +36,68 @@ pipeline {
 
     environment {
         CI = 'false'
+        registryCredentials = "nexus"
+        registry = "192.168.33.10:8083"
     }
 
     stages {
-        stage('Install Dependencies') {
-            parallel {
-                stage('Install Server') {
-                    steps {
-                        dir('server') {
-                            sh 'npm install'
-                        }
-                    }
-                }
-                stage('Install Client') {
-                    steps {
-                        dir('client') {
-                            sh 'npm install'
-                        }
-                    }
-                }
-            }
+         stage('Install Dependencies') {
+             parallel {
+                 stage('Install Server') {
+                     steps {
+                         dir('server') {
+                             sh 'npm install'
+                         }
+                     }
+                 }
+                 stage('Install Client') {
+                     steps {
+                         dir('client') {
+                             sh 'npm install'
+                         }
+                     }
+                 }
+             }
+         }
+
+         stage('SonarQube Analysis') {
+             steps {
+                 script {
+                     def scannerHome = tool 'sonar'
+                     withSonarQubeEnv('sonar') {
+                         sh "${scannerHome}/bin/sonar-scanner"
+                     }
+                 }
+             }
+         }
+
+         stage('Building Docker Images') {
+             steps {
+                 script {
+                     sh 'docker-compose build'
+                 }
+             }
         }
 
-        stage('Build Application') {
-            parallel {
-                stage('Build Server') {
-                    steps {
-                        dir('server') {
-                            sh 'npm run build || true'
-                        }
-                    }
-                }
-
-                stage('Build Client') {
-                    steps {
-                        dir('client') {
-                            sh 'npm run build'
-                        }
-                    }
-                }
-            }
-        }
-
-        stage('SonarQube Analysis') {
+        stage('Deploy to Nexus') {
             steps {
                 script {
-                    def scannerHome = tool 'sonar'  
-                    withSonarQubeEnv('sonar') {   
-                        sh "${scannerHome}/bin/sonar-scanner"
+                    docker.withRegistry("http://${registry}", registryCredentials) {
+                        sh 'docker push $registry/docker-repo/mern-backend:1.0'
+                        sh 'docker push $registry/docker-repo/mern-frontend:1.0'
                     }
                 }
             }
         }
 
-        stage('Building images ') {
+        stage('Run Application') {
             steps {
                 script {
-                    sh('docker-compose build')
+                    docker.withRegistry("http://${registry}", registryCredentials) {
+                        sh 'docker pull $registry/docker-repo/mern-backend:1.0'
+                        sh 'docker pull $registry/docker-repo/mern-frontend:1.0'
+                        sh 'docker-compose up -d'
+                    }
                 }
             }
         }
@@ -82,10 +105,59 @@ pipeline {
 
     post {
         always {
-            echo '✅ Pipeline completed'
+            echo '✅ Pipeline terminé'
         }
         failure {
-            echo '❌ Pipeline failed'
+            echo '❌ Pipeline échoué'
         }
     }
 }
+dockercompose:
+version: '3.8'
+
+services:
+  db:
+    image: mongo:4.2
+    container_name: db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/db:/data/db
+    networks:
+      - mern-network
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: 192.168.33.10:8083/docker-repo/mern-backend:1.0
+    container_name: backend
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      MONGO_URI: mongodb://root:example@db:27017/test?authSource=admin
+    networks:
+      - mern-network
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: 192.168.33.10:8083/docker-repo/mern-frontend:1.0
+    container_name: frontend
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - mern-network
+
+networks:
+  mern-network:
+    driver: bridge

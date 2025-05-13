@@ -12,7 +12,7 @@ pipeline {
     }
 
     stages {
-        // === Étapes ignorées temporairement pour gagner du temps ===
+        // === Étapes facultatives ignorées pour gagner du temps ===
         /*
         stage('Install Dependencies') {
             parallel {
@@ -43,22 +43,21 @@ pipeline {
                 }
             }
         }
+        */
 
-        stage('Building Docker Images') {
+        stage('Build Backend Image') {
             steps {
                 script {
-                    sh 'docker-compose build'
+                    sh 'docker-compose build backend'
                 }
             }
         }
-        */
 
         stage('Deploy to Nexus') {
             steps {
                 script {
                     docker.withRegistry("http://${registry}", registryCredentials) {
                         sh 'docker push $registry/docker-repo/mern-backend:1.0'
-                        // sh 'docker push $registry/docker-repo/mern-frontend:1.0' // facultatif
                     }
                 }
             }
@@ -67,7 +66,11 @@ pipeline {
         stage('Clean Backend') {
             steps {
                 script {
-                    sh 'docker rm -f backend || true'
+                    sh '''
+                        docker stop backend || true
+                        docker rm -f backend || true
+                        docker rmi $registry/docker-repo/mern-backend:1.0 || true
+                    '''
                 }
             }
         }
@@ -76,8 +79,10 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("http://${registry}", registryCredentials) {
-                        sh 'docker pull $registry/docker-repo/mern-backend:1.0'
-                        sh 'docker-compose up -d backend'
+                        sh '''
+                            docker pull $registry/docker-repo/mern-backend:1.0
+                            docker-compose up -d backend
+                        '''
                     }
                 }
             }
@@ -90,6 +95,7 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline échoué'
+            sh 'docker logs backend || true'
         }
     }
 }
