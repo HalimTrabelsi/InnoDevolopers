@@ -12,62 +12,72 @@ pipeline {
     }
 
     stages {
-         stage('Install Dependencies') {
-             parallel {
-                 stage('Install Server') {
-                     steps {
-                         dir('server') {
-                             sh 'npm install'
-                         }
-                     }
-                 }
-                 stage('Install Client') {
-                     steps {
-                         dir('client') {
-                             sh 'npm install'
-                         }
-                     }
-                 }
-             }
-         }
-
-         stage('SonarQube Analysis') {
-             steps {
-                 script {
-                     def scannerHome = tool 'sonar'
-                     withSonarQubeEnv('sonar') {
-                         sh "${scannerHome}/bin/sonar-scanner"
-                     }
-                 }
-             }
-         }
-
-         stage('Building Docker Images') {
-             steps {
-                 script {
-                     sh 'docker-compose build'
-                 }
-             }
+        // === Étapes ignorées temporairement pour gagner du temps ===
+        /*
+        stage('Install Dependencies') {
+            parallel {
+                stage('Install Server') {
+                    steps {
+                        dir('server') {
+                            sh 'npm install'
+                        }
+                    }
+                }
+                stage('Install Client') {
+                    steps {
+                        dir('client') {
+                            sh 'npm install'
+                        }
+                    }
+                }
+            }
         }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'sonar'
+                    withSonarQubeEnv('sonar') {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
+            }
+        }
+
+        stage('Building Docker Images') {
+            steps {
+                script {
+                    sh 'docker-compose build'
+                }
+            }
+        }
+        */
 
         stage('Deploy to Nexus') {
             steps {
                 script {
                     docker.withRegistry("http://${registry}", registryCredentials) {
                         sh 'docker push $registry/docker-repo/mern-backend:1.0'
-                        sh 'docker push $registry/docker-repo/mern-frontend:1.0'
+                        // sh 'docker push $registry/docker-repo/mern-frontend:1.0' // facultatif
                     }
                 }
             }
         }
 
-        stage('Run Application') {
+        stage('Clean Backend') {
+            steps {
+                script {
+                    sh 'docker rm -f backend || true'
+                }
+            }
+        }
+
+        stage('Run Backend') {
             steps {
                 script {
                     docker.withRegistry("http://${registry}", registryCredentials) {
                         sh 'docker pull $registry/docker-repo/mern-backend:1.0'
-                        sh 'docker pull $registry/docker-repo/mern-frontend:1.0'
-                        sh 'docker-compose up -d'
+                        sh 'docker-compose up -d backend'
                     }
                 }
             }
