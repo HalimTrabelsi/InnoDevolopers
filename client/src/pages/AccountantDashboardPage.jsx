@@ -1,5 +1,5 @@
 import React from "react";
-import MasterLayout from "../masterLayout/MasterLayout";
+import MasterLayoutaccountant from "../masterLayout/MasterLayoutaccountant";
 import Breadcrumb from "../components/Breadcrumb";
 import AccountantDashboardLayer from "../components/AccountantDashboardLayer";
 
@@ -7,11 +7,11 @@ const AccountantDashboardPage = () => {
   return (
     <>
      {/* MasterLayout */}
-     <MasterLayout>
+     <MasterLayoutaccountant>
         {/* Breadcrumb */}
         <Breadcrumb title="Accountant Dashboard" />
       <AccountantDashboardLayer />
-      </MasterLayout>
+      </MasterLayoutaccountant>
     </>
   );
 };

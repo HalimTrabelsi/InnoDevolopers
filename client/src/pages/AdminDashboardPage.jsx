@@ -1,17 +1,17 @@
 import React from "react";
-import MasterLayout from "../masterLayout/MasterLayout";
+import MasterLayoutadmin from "../masterLayout/MasterLayoutadmin";
 import Breadcrumb from "../components/Breadcrumb";
 import AdminDashboard from "../components/AdminDashboard";
 
 const AdminDashboardPage = () => {
   return (
     <>
-      {/* MasterLayout */}
-      <MasterLayout>
+      {/* MasterLayoutadmin */}
+      <MasterLayoutadmin>
         {/* Breadcrumb */}
         <Breadcrumb title="Admin Dashboard" />
         <AdminDashboard />
-      </MasterLayout>
+      </MasterLayoutadmin>
     </>
   );
 };

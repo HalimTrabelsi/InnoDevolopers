@@ -1,5 +1,5 @@
 import React from "react";
-import MasterLayout from "../masterLayout/MasterLayout";
+import MasterLayoutfinancial from "../masterLayout/MasterLayoutfinancial";
 import Breadcrumb from "../components/Breadcrumb";
 import FinancialMangerLayer from "../components/FinancialMangerLayer";
 
@@ -8,11 +8,11 @@ const FinancialManagerPage = () => {
   return (
     <>
      {/* MasterLayout */}
-     <MasterLayout>
+     <MasterLayoutfinancial>
         {/* Breadcrumb */}
         <Breadcrumb title="Financial-Manager-Dashboard" />
       <FinancialMangerLayer />
-      </MasterLayout>
+      </MasterLayoutfinancial>
     </>
   );
 };

@@ -138,7 +138,6 @@ const RecentTransactions = () => {
   const averageAmount = transactions.length > 0 ? (totalAmount / transactions.length).toFixed(2) : 0;
   const transactionCount = transactions.length;
 
-  // Prepare chart data
   const chartData = {
     labels: transactions.map((t) => new Date(t.date).toLocaleDateString()),
     datasets: [
@@ -157,14 +156,14 @@ const RecentTransactions = () => {
       <div className="card w-100 mt-4">
         <div className="card-header d-flex justify-content-between align-items-center">
           <h6 className="fw-bold text-lg mb-0">Recent Transactions</h6>
-          <div>
-            <button className="btn btn-outline-primary me-2" onClick={downloadCSV}>
+          <div className="d-flex flex-wrap gap-2">
+            <button className="btn btn-outline-primary" onClick={downloadCSV}>
               Export CSV
             </button>
-            <button className="btn btn-outline-success me-2" onClick={() => downloadReport("excel")}>
+            <button className="btn btn-outline-success" onClick={() => downloadReport("excel")}>
               Export Excel
             </button>
-            <button className="btn btn-outline-danger me-2" onClick={() => downloadReport("pdf")}>
+            <button className="btn btn-outline-danger" onClick={() => downloadReport("pdf")}>
               Export PDF
             </button>
             <button
@@ -172,13 +171,12 @@ const RecentTransactions = () => {
               onClick={handleClientAnalysis}
               disabled={analysisLoading}
             >
-              {analysisLoading ? "Analyzing..." : "Analyze Client"}
+              {analysisLoading ? "Analyzing..." : "Analyze My Transactions"}
             </button>
           </div>
         </div>
 
         <div className="card-body p-3">
-          {/* Transaction Stats */}
           <div className="mb-4">
             <div className="alert alert-info">
               <strong>📊 Transaction Stats:</strong><br />
@@ -188,12 +186,10 @@ const RecentTransactions = () => {
             </div>
           </div>
 
-          {/* Small Line Chart */}
           <div className="mb-4" style={{ maxWidth: "400px", margin: "auto" }}>
             <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} height={350} />
           </div>
 
-          {/* Analysis Section */}
           <div className="mb-4">
             {analysis && (
               <div
@@ -219,7 +215,6 @@ const RecentTransactions = () => {
             )}
           </div>
 
-          {/* Ask Gemini */}
           <div className="mb-4">
             <label className="form-label">Ask Gemini (AI):</label>
             <div className="d-flex">
@@ -241,7 +236,6 @@ const RecentTransactions = () => {
             )}
           </div>
 
-          {/* Transactions Table */}
           {loading ? (
             <p>Loading...</p>
           ) : error ? (
@@ -287,15 +281,11 @@ const RecentTransactions = () => {
                 </tbody>
               </table>
 
-              {/* Pagination */}
               <div className="d-flex justify-content-center">
                 <ul className="pagination">
                   {[...Array(Math.ceil(transactions.length / transactionsPerPage))].map((_, i) => (
                     <li className="page-item" key={i}>
-                      <button
-                        className="page-link"
-                        onClick={() => setCurrentPage(i + 1)}
-                      >
+                      <button className="page-link" onClick={() => setCurrentPage(i + 1)}>
                         {i + 1}
                       </button>
                     </li>
