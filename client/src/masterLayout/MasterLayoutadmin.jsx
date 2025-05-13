@@ -295,7 +295,7 @@ const MasterLayoutadmin = ({ children }) => {
         <div>
           <Link to="/" className="sidebar-logo">
             <img
-              src="assets/images/logo.png"
+              src="images/finova-logo.png"
               alt="site logo"
               className="light-logo"
             />
@@ -421,17 +421,7 @@ const MasterLayoutadmin = ({ children }) => {
                     Analytics
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink
-                    to="/financialoverview"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-info-main w-auto" />
-                    Financial Overview
-                  </NavLink>
-                </li>
+               
                 <li>
                   <NavLink
                     to="/index-11"

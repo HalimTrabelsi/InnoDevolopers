@@ -295,7 +295,7 @@ const MasterLayoutfinancial = ({ children }) => {
         <div>
           <Link to="/" className="sidebar-logo">
             <img
-              src="assets/images/logo.png"
+              src="images/finova-logo.png"
               alt="site logo"
               className="light-logo"
             />

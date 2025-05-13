@@ -295,7 +295,7 @@ const MasterLayout = ({ children }) => {
         <div>
           <Link to="/" className="sidebar-logo">
             <img
-              src="assets/images/logo.png"
+              src="images/finova-logo.png"
               alt="site logo"
               className="light-logo"
             />
@@ -706,17 +706,7 @@ const MasterLayout = ({ children }) => {
                      Financial Documentation
                   </NavLink>
                 </li>
-                 <li>
-                  <NavLink
-                    to="/table-data"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-warning-main w-auto" />
-                     Tax
-                  </NavLink>
-                </li>
+              
               </ul>
             </li>
 
@@ -764,21 +754,6 @@ const MasterLayout = ({ children }) => {
 
            
 
-            <li className="">
-              <Link to="/view-users">
-                <Icon
-                  icon="flowbite:users-group-outline"
-                  className="menu-icon"
-                />
-                <span>Users</span>
-              </Link>
-              <ul className="sidebar-submenu">
-              
-             
-            
-      
-              </ul>
-            </li>
  <li>
               <NavLink
                 to="/news"
