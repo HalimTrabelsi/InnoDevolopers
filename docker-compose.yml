@@ -30,6 +30,8 @@ services:
       MONGO_URI: mongodb://root:example@db:27017/test?authSource=admin
     networks:
       - mern-network
+    command: sh -c "sleep infinity"
+
 
   frontend:
     build:
