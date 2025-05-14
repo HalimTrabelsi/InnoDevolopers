@@ -25,7 +25,7 @@ const socket = require('../socket');
 const financialTrendsRoutes = require('../routes/financialTrends');
 const simulationRoutes = require('../routes/simulationRoutes');
 const geminiRoute = require('../routes/geminiRoute');
-
+const summarizationRoutes = require('../routes/summarizationRoutes');
 dotenv.config();
 
 const app = express();
@@ -80,7 +80,7 @@ app.use('/api/taxRules', taxRulesRoutes);
 app.use('/api/financial-trends', financialTrendsRoutes);
 app.use('/api/simulations', simulationRoutes);
 app.use("/api/gemini", geminiRoute); 
-
+app.use("/api/summarize-pdf", summarizationRoutes); // Add this line for PDF summarization
 require("../controllers/passport");
 mongoose
     .connect(process.env.MONGO_URI, {

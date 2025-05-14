@@ -13,7 +13,7 @@ pipeline {
 
     stages {
         // === Étapes facultatives ignorées pour gagner du temps ===
-        /*
+        
         stage('Install Dependencies') {
             parallel {
                 stage('Install Server') {
@@ -43,7 +43,7 @@ pipeline {
                 }
             }
         }
-        */
+        
 
         stage('Build Backend Image') {
             steps {
