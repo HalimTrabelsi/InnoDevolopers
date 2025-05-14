@@ -1,18 +1,7 @@
 version: '3.8'
 
 services:
-  db:
-    image: mongo:4.2
-    container_name: db
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    ports:
-      - "27017:27017"
-    networks:
-      - mern-network
-
+  
   backend:
     build:
       context: ./server
@@ -22,8 +11,7 @@ services:
     restart: always
     ports:
       - "5000:5000"
-    depends_on:
-      - db
+    
     environment:
       MONGO_URI: mongodb://root:example@db:27017/test?authSource=admin
     networks:
