@@ -122,6 +122,8 @@ mern-backend/
 - [Ouday Oueslati](https://github.com/oudayoueslati)
 - [Mahmoud Abdulkareem](https://github.com/MahmoudAbdulkareem)
 
+## 👨‍💻 Coach
+- [Ghada Ben Khalifa](https://github.com/BenKhalifaGHADA)
 ---
 
 ## 📜 License
