@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+    
+    stages {
+        // 1️⃣ Récupération du code depuis Git
+        stage('Checkout') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/Backend']],  // branche ciblée
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/LaameriSayf/AS-Lnirvana-.git'
+                    ]]
+                ])
+            }
+        }
+        
+        // 2️⃣ Build Maven
+        stage('Build') {
+            steps {
+                // Lance Maven, adapte si mvn n'est pas dans le PATH
+                sh 'mvn clean install'
+            }
+        }
+        
+        // 3️⃣ (Optionnel) Tests, déploiement, etc.
+    }
+}
